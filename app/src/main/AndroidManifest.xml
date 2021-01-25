@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidERestaurant">
-        <activity android:name=".EntreesActivity"
+        <activity android:name=".DisplayMenuItemsActivity"
                   android:parentActivityName=".HomeActivity">
             <!-- HomeActivity is the main parent for any other activities -->
             <meta-data
