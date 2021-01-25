@@ -1,5 +1,6 @@
 package fr.isen.david.androiderestaurant
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
@@ -10,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.home_activity_layout)
+        setContentView(R.layout.activity_home)
 
         // temporary display function to display a toast given a text string
         val displayToast = { text: CharSequence ->
@@ -20,7 +21,9 @@ class HomeActivity : AppCompatActivity() {
 
         // listen click on every text in the main menu
         findViewById<TextView>(R.id.homeEntreeButton).setOnClickListener {
-            displayToast("Entrées")
+            //displayToast("Entrées")
+            val intent = Intent(this, EntreesActivity::class.java)
+            startActivity(intent)
         }
         findViewById<TextView>(R.id.homePlatsButton).setOnClickListener {
             displayToast("Plats")
