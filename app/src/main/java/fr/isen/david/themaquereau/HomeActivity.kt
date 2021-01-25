@@ -38,7 +38,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val TAG = "HomeActivity"
+        val TAG: String = HomeActivity::class.java.simpleName
         const val CATEGORY = "category"
     }
 }

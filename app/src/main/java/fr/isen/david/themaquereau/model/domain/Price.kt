@@ -1,4 +1,4 @@
-package fr.isen.david.themaquereau.domain
+package fr.isen.david.themaquereau.model.domain
 
 import java.util.*
 
@@ -10,4 +10,6 @@ data class Price(
     val create_date: Date,
     val update_date: Date,
     val size: String
-)
+) {
+    constructor() : this(0, 0, 0, 0, Date(), Date(), "")
+}

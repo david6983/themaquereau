@@ -2,17 +2,14 @@ package fr.isen.david.themaquereau.adapters
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import fr.isen.david.themaquereau.DishDetailActivity
-import fr.isen.david.themaquereau.DishesListActivity
 import fr.isen.david.themaquereau.R
-import fr.isen.david.themaquereau.domain.Item
+import fr.isen.david.themaquereau.model.domain.Item
 
 // Create the basic adapter extending from RecyclerView.Adapter
 // Note that we specify the custom ViewHolder which gives us access to our views
@@ -49,8 +46,10 @@ class ItemAdapter(
         textView.text = item.name_fr
         // listener on the item
         textView.setOnClickListener {
+            // intent with external context
             val intent = Intent(context, DishDetailActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            // give the id of the item to the next activity to retrieve it from the API
             intent.putExtra(ITEM_ID, item.id)
             context.startActivity(intent)
         }

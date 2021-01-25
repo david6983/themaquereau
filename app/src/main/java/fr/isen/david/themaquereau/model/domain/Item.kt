@@ -1,4 +1,4 @@
-package fr.isen.david.themaquereau.domain
+package fr.isen.david.themaquereau.model.domain
 
 data class Item(
         val id: Long,
@@ -10,4 +10,16 @@ data class Item(
         val images: List<String>,
         val ingredients: List<Ingredient>,
         val prices: List<Price>
-)
+) {
+        constructor() : this(
+                0,
+                "",
+                "",
+                0,
+                "",
+                "",
+                listOf(),
+                listOf(),
+                listOf()
+        )
+}

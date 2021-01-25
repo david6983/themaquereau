@@ -19,4 +19,8 @@ class DishDetailActivity : AppCompatActivity() {
             binding.textView.text = it.toString()
         }
     }
+
+    companion object {
+        val TAG: String = DishDetailActivity::class.java.simpleName
+    }
 }
