@@ -33,10 +33,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/mainDivider1"
+        android:id="@+id/homeDivider1"
         android:layout_width="170dp"
         android:layout_height="1dp"
-        android:background="@color/black"
+        android:background="@color/secondary_variant"
         android:src="@android:drawable/divider_horizontal_dark"
         app:layout_constraintBottom_toTopOf="@+id/homePlatsButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,10 +58,10 @@
         app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
 
     <ImageView
-        android:id="@+id/mainDivider2"
+        android:id="@+id/homeDivider2"
         android:layout_width="170dp"
         android:layout_height="1dp"
-        android:background="@color/black"
+        android:background="@color/secondary_variant"
         android:src="@android:drawable/divider_horizontal_dark"
         app:layout_constraintBottom_toTopOf="@+id/homeDesertsButton"
         app:layout_constraintEnd_toEndOf="parent"
