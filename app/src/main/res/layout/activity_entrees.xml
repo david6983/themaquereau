@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DisplayMenuItemsActivity">
+    tools:context=".DisplayDishesActivity">
 
     <TextView
         android:id="@+id/categoryText"
@@ -12,10 +12,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:fontFamily="cursive"
-        android:text="Nos Entrées"
+        android:text="@string/entree_title"
         android:textColor="@color/main"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryText" />
 </androidx.constraintlayout.widget.ConstraintLayout>

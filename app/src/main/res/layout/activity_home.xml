@@ -15,16 +15,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="logo of the application" />
+        android:contentDescription="@string/logo_description" />
 
     <TextView
         android:id="@+id/homeEntreeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="350dp"
-        android:contentDescription="link to see the Entrées"
+        android:contentDescription="@string/entree_description"
         android:fontFamily="cursive"
-        android:text="Entrées"
+        android:text="@string/entree_menu_item"
         android:textAlignment="center"
         android:textColor="@color/main_darker"
         android:textSize="36sp"
@@ -41,16 +41,17 @@
         app:layout_constraintBottom_toTopOf="@+id/homePlatsButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
+        app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton"
+        android:contentDescription="@string/divider_description" />
 
     <TextView
         android:id="@+id/homePlatsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:contentDescription="link to see the Plats"
+        android:contentDescription="@string/plats_description"
         android:fontFamily="cursive"
-        android:text="Plats"
+        android:text="@string/plats_menu_item"
         android:textColor="@color/main_darker"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,16 +67,17 @@
         app:layout_constraintBottom_toTopOf="@+id/homeDesertsButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homePlatsButton" />
+        app:layout_constraintTop_toBottomOf="@+id/homePlatsButton"
+        android:contentDescription="@string/divider_description" />
 
     <TextView
         android:id="@+id/homeDesertsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:contentDescription="link to see the Deserts"
+        android:contentDescription="@string/deserts_description"
         android:fontFamily="cursive"
-        android:text="Déserts"
+        android:text="@string/deserts_menu_item"
         android:textColor="@color/main_darker"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
