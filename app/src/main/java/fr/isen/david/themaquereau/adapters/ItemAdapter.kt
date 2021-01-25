@@ -1,17 +1,25 @@
 package fr.isen.david.themaquereau.adapters
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import fr.isen.david.themaquereau.DishDetailActivity
+import fr.isen.david.themaquereau.DishesListActivity
 import fr.isen.david.themaquereau.R
 import fr.isen.david.themaquereau.domain.Item
 
 // Create the basic adapter extending from RecyclerView.Adapter
 // Note that we specify the custom ViewHolder which gives us access to our views
-class ItemAdapter(private val items: List<Item>) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+class ItemAdapter(
+    private val items: List<Item>,
+    private val context: Context
+) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
@@ -39,8 +47,13 @@ class ItemAdapter(private val items: List<Item>) : RecyclerView.Adapter<ItemAdap
         // Set item views based on your views and data model
         val textView = viewHolder.nameTextView
         textView.text = item.name_fr
-
-        Log.i(TAG, items.size.toString())
+        // listener on the item
+        textView.setOnClickListener {
+            val intent = Intent(context, DishDetailActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.putExtra(ITEM_ID, item.id)
+            context.startActivity(intent)
+        }
     }
 
     // Returns the total count of items in the list
@@ -50,5 +63,6 @@ class ItemAdapter(private val items: List<Item>) : RecyclerView.Adapter<ItemAdap
 
     companion object {
         const val TAG = "ItemAdapter"
+        const val ITEM_ID = "item_id"
     }
 }

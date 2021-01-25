@@ -16,17 +16,17 @@ class HomeActivity : AppCompatActivity() {
         setContentView(view)
 
         binding.homeEntreeButton.setOnClickListener {
-            val intent = Intent(this, DisplayDishesActivity::class.java)
+            val intent = Intent(this, DishesListActivity::class.java)
             intent.putExtra(CATEGORY, R.string.entree_title)
             startActivity(intent)
         }
         binding.homePlatsButton.setOnClickListener {
-            val intent = Intent(this, DisplayDishesActivity::class.java)
+            val intent = Intent(this, DishesListActivity::class.java)
             intent.putExtra(CATEGORY, R.string.plats_title)
             startActivity(intent)
         }
         binding.homeDesertsButton.setOnClickListener {
-            val intent = Intent(this, DisplayDishesActivity::class.java)
+            val intent = Intent(this, DishesListActivity::class.java)
             intent.putExtra(CATEGORY, R.string.deserts_title)
             startActivity(intent)
         }

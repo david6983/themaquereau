@@ -9,14 +9,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidERestaurant">
-        <activity android:name="fr.isen.david.themaquereau.DisplayDishesActivity"
-                  android:parentActivityName="fr.isen.david.themaquereau.HomeActivity">
+        <activity android:name=".DishDetailActivity">
+            <!-- DishesListActivity is the main parent of DishDetailActivity -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fr.isen.david.themaquereau.DishesListActivity" />
+        </activity>
+        <activity
+            android:name=".DishesListActivity"
+            android:parentActivityName=".HomeActivity">
+
             <!-- HomeActivity is the main parent for any other activities -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fr.isen.david.themaquereau.HomeActivity" />
         </activity>
-        <activity android:name="fr.isen.david.themaquereau.HomeActivity">
+        <activity android:name=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

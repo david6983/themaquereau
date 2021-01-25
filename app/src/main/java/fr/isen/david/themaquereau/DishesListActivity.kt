@@ -6,10 +6,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityEntreesBinding
-import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
 import fr.isen.david.themaquereau.domain.Item
 
-class DisplayDishesActivity : AppCompatActivity() {
+class DishesListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEntreesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +51,7 @@ class DisplayDishesActivity : AppCompatActivity() {
             )
         )
 
-        val adapter = ItemAdapter(items)
+        val adapter = ItemAdapter(items, applicationContext)
         rvItems.adapter = adapter
         rvItems.layoutManager = LinearLayoutManager(this)
     }
