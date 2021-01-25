@@ -29,6 +29,7 @@
         android:textColor="@color/main_darker"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,12 +38,13 @@
         android:layout_width="170dp"
         android:layout_height="1dp"
         android:background="@color/secondary_variant"
+        android:contentDescription="@string/divider_description"
         android:src="@android:drawable/divider_horizontal_dark"
         app:layout_constraintBottom_toTopOf="@+id/homePlatsButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton"
-        android:contentDescription="@string/divider_description" />
+        app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
 
     <TextView
         android:id="@+id/homePlatsButton"
@@ -55,6 +57,7 @@
         android:textColor="@color/main_darker"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.7"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
 
@@ -63,12 +66,13 @@
         android:layout_width="170dp"
         android:layout_height="1dp"
         android:background="@color/secondary_variant"
+        android:contentDescription="@string/divider_description"
         android:src="@android:drawable/divider_horizontal_dark"
         app:layout_constraintBottom_toTopOf="@+id/homeDesertsButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homePlatsButton"
-        android:contentDescription="@string/divider_description" />
+        app:layout_constraintTop_toBottomOf="@+id/homePlatsButton" />
 
     <TextView
         android:id="@+id/homeDesertsButton"
@@ -81,7 +85,20 @@
         android:textColor="@color/main_darker"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homePlatsButton" />
+
+    <ImageView
+        android:id="@+id/homeDivider3"
+        android:layout_width="170dp"
+        android:layout_height="1dp"
+        android:background="@color/secondary_variant"
+        android:contentDescription="@string/divider_description"
+        android:src="@android:drawable/divider_horizontal_dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeDesertsButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
