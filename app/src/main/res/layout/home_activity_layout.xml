@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeActivity">
+
+    <ImageView
+        android:id="@+id/homeLogo"
+        android:layout_width="410dp"
+        android:layout_height="286dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/themaquereau_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="logo of the application" />
+
+    <TextView
+        android:id="@+id/homeEntreeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="350dp"
+        android:contentDescription="link to see the Entrées"
+        android:fontFamily="cursive"
+        android:text="Entrées"
+        android:textAlignment="center"
+        android:textColor="@color/main_darker"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/mainDivider1"
+        android:layout_width="170dp"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        android:src="@android:drawable/divider_horizontal_dark"
+        app:layout_constraintBottom_toTopOf="@+id/homePlatsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
+
+    <TextView
+        android:id="@+id/homePlatsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:contentDescription="link to see the Plats"
+        android:fontFamily="cursive"
+        android:text="Plats"
+        android:textColor="@color/main_darker"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
+
+    <ImageView
+        android:id="@+id/mainDivider2"
+        android:layout_width="170dp"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        android:src="@android:drawable/divider_horizontal_dark"
+        app:layout_constraintBottom_toTopOf="@+id/homeDesertsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homePlatsButton" />
+
+    <TextView
+        android:id="@+id/homeDesertsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:contentDescription="link to see the Deserts"
+        android:fontFamily="cursive"
+        android:text="Déserts"
+        android:textColor="@color/main_darker"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homePlatsButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
