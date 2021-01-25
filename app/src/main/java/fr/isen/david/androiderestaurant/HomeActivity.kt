@@ -1,9 +1,10 @@
 package fr.isen.david.androiderestaurant
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
 
 class HomeActivity : AppCompatActivity() {
@@ -27,5 +28,14 @@ class HomeActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.homeDesertsButton).setOnClickListener {
             displayToast("Deserts")
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, " destroyed") // log the destroy cycle
+    }
+
+    companion object {
+        const val TAG = "HomeActivity"
     }
 }
