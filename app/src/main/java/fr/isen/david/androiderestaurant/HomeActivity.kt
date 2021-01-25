@@ -5,27 +5,31 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import fr.isen.david.androiderestaurant.databinding.ActivityHomeBinding
 
 
 class HomeActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityHomeBinding // Best practise instead of findViewById
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        binding = ActivityHomeBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        // listen click on every text in the main menu
-        findViewById<TextView>(R.id.homeEntreeButton).setOnClickListener {
+        binding.homeEntreeButton.setOnClickListener {
             val intent = Intent(this, DisplayDishesActivity::class.java)
-            intent.putExtra("category", R.string.entree_title)
+            intent.putExtra(CATEGORY, R.string.entree_title)
             startActivity(intent)
         }
-        findViewById<TextView>(R.id.homePlatsButton).setOnClickListener {
+        binding.homePlatsButton.setOnClickListener {
             val intent = Intent(this, DisplayDishesActivity::class.java)
-            intent.putExtra("category", R.string.plats_title)
+            intent.putExtra(CATEGORY, R.string.plats_title)
             startActivity(intent)
         }
-        findViewById<TextView>(R.id.homeDesertsButton).setOnClickListener {
+        binding.homeDesertsButton.setOnClickListener {
             val intent = Intent(this, DisplayDishesActivity::class.java)
-            intent.putExtra("category", R.string.deserts_title)
+            intent.putExtra(CATEGORY, R.string.deserts_title)
             startActivity(intent)
         }
     }
@@ -37,5 +41,6 @@ class HomeActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "HomeActivity"
+        const val CATEGORY = "category"
     }
 }
