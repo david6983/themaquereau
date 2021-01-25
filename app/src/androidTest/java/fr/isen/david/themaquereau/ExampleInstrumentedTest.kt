@@ -1,4 +1,4 @@
-package fr.isen.david.androiderestaurant
+package fr.isen.david.themaquereau
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

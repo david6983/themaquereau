@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fr.isen.david.androiderestaurant">
+    package="fr.isen.david.themaquereau">
 
     <application
         android:allowBackup="true"
@@ -9,14 +9,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidERestaurant">
-        <activity android:name=".DisplayDishesActivity"
-                  android:parentActivityName=".HomeActivity">
+        <activity android:name="fr.isen.david.themaquereau.DisplayDishesActivity"
+                  android:parentActivityName="fr.isen.david.themaquereau.HomeActivity">
             <!-- HomeActivity is the main parent for any other activities -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".HomeActivity" />
+                android:value="fr.isen.david.themaquereau.HomeActivity" />
         </activity>
-        <activity android:name=".HomeActivity">
+        <activity android:name="fr.isen.david.themaquereau.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

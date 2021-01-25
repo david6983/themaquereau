@@ -1,12 +1,10 @@
-package fr.isen.david.androiderestaurant
+package fr.isen.david.themaquereau
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import fr.isen.david.androiderestaurant.databinding.ActivityHomeBinding
-
+import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding // Best practise instead of findViewById

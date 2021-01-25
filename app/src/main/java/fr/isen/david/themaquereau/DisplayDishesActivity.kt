@@ -1,14 +1,13 @@
-package fr.isen.david.androiderestaurant
+package fr.isen.david.themaquereau
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import fr.isen.david.androiderestaurant.adapters.ItemAdapter
-import fr.isen.david.androiderestaurant.databinding.ActivityEntreesBinding
-import fr.isen.david.androiderestaurant.databinding.ActivityHomeBinding
-import fr.isen.david.androiderestaurant.domain.Item
+import fr.isen.david.themaquereau.adapters.ItemAdapter
+import fr.isen.david.themaquereau.databinding.ActivityEntreesBinding
+import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
+import fr.isen.david.themaquereau.domain.Item
 
 class DisplayDishesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEntreesBinding

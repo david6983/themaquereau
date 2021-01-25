@@ -1,4 +1,4 @@
-package fr.isen.david.androiderestaurant.domain
+package fr.isen.david.themaquereau.domain
 
 import java.util.*
 

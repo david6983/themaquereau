@@ -1,4 +1,4 @@
-package fr.isen.david.androiderestaurant.adapters
+package fr.isen.david.themaquereau.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import fr.isen.david.androiderestaurant.R
-import fr.isen.david.androiderestaurant.domain.Item
+import fr.isen.david.themaquereau.R
+import fr.isen.david.themaquereau.domain.Item
 
 // Create the basic adapter extending from RecyclerView.Adapter
 // Note that we specify the custom ViewHolder which gives us access to our views

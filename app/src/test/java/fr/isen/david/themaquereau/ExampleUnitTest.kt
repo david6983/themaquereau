@@ -1,4 +1,4 @@
-package fr.isen.david.androiderestaurant
+package fr.isen.david.themaquereau
 
 import org.junit.Test
 
