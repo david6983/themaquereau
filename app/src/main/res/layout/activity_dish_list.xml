@@ -7,16 +7,31 @@
     tools:context=".DishesListActivity">
 
     <TextView
+        android:id="@+id/prefixDisListTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:fontFamily="cursive"
+        android:text="@string/ours"
+        android:textColor="@color/main"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/categoryText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:fontFamily="cursive"
-        android:text="@string/entree_title"
+        android:text="@string/entree_menu_item"
         android:textColor="@color/main"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.03"
+        app:layout_constraintStart_toEndOf="@+id/prefixDisListTitle"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar

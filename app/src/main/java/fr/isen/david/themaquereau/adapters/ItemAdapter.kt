@@ -27,7 +27,6 @@ class ItemAdapter(
         // for any view that will be set as you render a row
         //TODO replace findViewById by binding
         val dishNameView: TextView = itemView.findViewById(R.id.dishName)
-        val dishNameEnView: TextView = itemView.findViewById(R.id.dishNameEn)
         val dishImage: ImageView = itemView.findViewById(R.id.dishImage)
         val dishPrice: TextView = itemView.findViewById(R.id.dishPrice)
     }
@@ -51,7 +50,6 @@ class ItemAdapter(
         // Set item views based on your views and data model
         val textView = holder.dishNameView
         textView.text = item.name_fr
-        holder.dishNameEnView.text = item.name_en
         // Image
         val picasso = Picasso.get()
         if (item.images.size > 1) {
