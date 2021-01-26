@@ -9,6 +9,8 @@
     <string name="entree_menu_item">Entrées</string>
     <string name="plats_menu_item">Plats</string>
     <string name="deserts_menu_item">Deserts</string>
+    <!-- Item Adapter -->
+    <string name="known_as">Known as: </string>
     <!-- Descriptions -->
     <string name="logo_description">Logo principale</string>
     <string name="entree_description">Voir nos Entrées</string>

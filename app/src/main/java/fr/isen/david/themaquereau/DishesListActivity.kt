@@ -7,25 +7,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.VolleyLog
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import fr.isen.david.themaquereau.adapters.ItemAdapter
-import fr.isen.david.themaquereau.databinding.ActivityEntreesBinding
+import fr.isen.david.themaquereau.databinding.ActivityDishListBinding
 import fr.isen.david.themaquereau.model.domain.Data
 import fr.isen.david.themaquereau.model.domain.Item
 import org.json.JSONObject
 
 class DishesListActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityEntreesBinding
+    private lateinit var binding: ActivityDishListBinding
     private var items: List<Item> = listOf()
     private lateinit var rvItems: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityEntreesBinding.inflate(layoutInflater)
+        binding = ActivityDishListBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 

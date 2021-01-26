@@ -15,7 +15,7 @@ class DishDetailActivity : AppCompatActivity() {
         setContentView(view)
 
         // get the selected item id
-        intent.extras?.getLong(ItemAdapter.ITEM_ID)?.let {
+        intent.extras?.getLong(ItemAdapter.ITEM)?.let {
             binding.textView.text = it.toString()
         }
     }
