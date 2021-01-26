@@ -1,69 +1,65 @@
-package fr.isen.david.themaquereau
+# Cache System Implementation Experimentation & Proof of Concept
 
-import android.os.Bundle
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.*
-import com.android.volley.toolbox.*
-import com.google.gson.GsonBuilder
-import fr.isen.david.themaquereau.adapters.ItemAdapter
-import fr.isen.david.themaquereau.databinding.ActivityDishListBinding
-import fr.isen.david.themaquereau.model.domain.Data
-import fr.isen.david.themaquereau.model.domain.Item
-import fr.isen.david.themaquereau.util.displayToast
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.UnsupportedEncodingException
-import java.nio.charset.Charset
+The first goal of this document is to prove that the cache system is implemented in the project.
+Then, this document is aim to compare the difference between a `JsonObjectRequest` without overriding
+`parseNetworkResponse` and a `JsonObjectRequest` with overriding `parseNetworkResponse`
 
+## Implementation without overriding
 
-class DishesListActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityDishListBinding
-    private var items: List<Item> = listOf()
-    private val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
-    private val params = JSONObject()
-    private var category = 0
+Kotlin code:
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityDishListBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+```kotlin
+private fun loadData() {
+        // Setting cache
+        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
+        val network = BasicNetwork(HurlStack())
 
-        params.put("id_shop", "1")
+        // Or perform the request if no data found
+        // Request a string response from the provided URL.
+        val req = JsonObjectRequest(
+            Method.POST, API_URL, params,
+            Response.Listener<JSONObject> { response ->
+                Log.d(TAG, "Response: $response")
+                val dataList = gson.fromJson(response["data"].toString(), Array<Data>::class.java)
+                val data = dataList[category]
+                binding.categoryText.text = data.name_fr
 
-        // The list is not visible until the content is loaded
-        binding.itemRecyclerView.isVisible = false
+                // items
+                val rvItems = binding.itemRecyclerView
+                val adapter = ItemAdapter(data.items, applicationContext)
+                rvItems.adapter = adapter
 
-        // Get the category number
-        intent.extras?.getInt(HomeActivity.CATEGORY)?.let {
-            category = it
+                binding.itemRecyclerView.isVisible = true
+            },
+            Response.ErrorListener { error ->
+                Log.e(TAG, "Error: ${error.message}")
+        })
+
+        // Add the request to the RequestQueue.
+        val queue = RequestQueue(cache, network).apply {
+            start()
         }
-
-        // Recycler view adapter
-        // Retrieve the recycler view
-        val rvItems = binding.itemRecyclerView
-        val adapter = ItemAdapter(items, applicationContext)
-        rvItems.adapter = adapter
-        rvItems.layoutManager = LinearLayoutManager(this)
-
-        loadData()
-
-        // Swipe container
-        val swipeContainer = binding.swipeContainer
-        swipeContainer.setOnRefreshListener {
-            // fetch the data again
-            loadData()
-            // stop the refresh
-            swipeContainer.isRefreshing = false
-        }
+        queue.add(req)
     }
+```
 
-    private fun loadData() {
+Network profiler results :
+
+![before](before_override_parse_network_response.png)
+
+We can see on the graph 4 call of `DishesListActivity` which is the Activity 
+where the `RecyclerView` is implemented and where the function `loadData` is launched in `onCreate`.
+
+On 4 calls of the activity, we can see in light brow and blue 4 network requests each time the activity is created.
+Therefore it means that the data on the 3 last call except the first one are fetching the data from the network
+and not from the cache
+
+## Fixed Implementation
+
+Fixed Kotlin code:
+
+```kotlin
+private fun loadData() {
         // Setting cache
         val cache = DiskBasedCache(cacheDir, 1024 * 1024)
         val network = BasicNetwork(HurlStack())
@@ -87,8 +83,6 @@ class DishesListActivity : AppCompatActivity() {
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Error: ${error.message}")
-                displayToast("Cannot Load dishes", applicationContext)
-                //TODO display no dishes found + display a message if no data
         }) {
             override fun parseNetworkResponse(response: NetworkResponse?): Response<JSONObject> {
                 response?.let { res ->
@@ -151,9 +145,28 @@ class DishesListActivity : AppCompatActivity() {
         }
         queue.add(req)
     }
+```
 
-    companion object {
-        val TAG: String = DishesListActivity::class.java.simpleName
-        const val API_URL = "http://test.api.catering.bluecodegames.com/menu"
-    }
-}
+Network profiler results:
+
+![after](with_override_parse_network_response.png)
+
+On 4 calls of the activity, we can see in light brow and blue **only one** network request on the
+first call of the activity
+
+Therefore it means that the data on the 3 last call except the first one are fetching the data from the **cache**
+and not from the network.
+
+The goal is achieved
+
+## Note about File Explorer
+
+In both cases, cache files has been created. Did I missed something on the first implementation
+
+![filesystem](file_cache.png)
+
+## Note 2 about Singleton Implementation
+
+The next goal would be to extract the code to a singleton to use the queue across activities.
+
+🏗 To continue ... 🏗
