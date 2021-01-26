@@ -22,9 +22,11 @@ class DishDetailActivity : AppCompatActivity() {
         setContentView(view)
 
         // get the selected item id
-        intent.extras?.getSerializable(ItemAdapter.ITEM)?.let {
-            val item = it as Item
+        intent.extras?.getSerializable(ItemAdapter.ITEM)?.let { serializedItem ->
+            val item = serializedItem as Item
             binding.dishDetailName.text = item.name_fr
+            // Ingredients
+            binding.dishDetailIngredients.text = item.ingredients.joinToString(", ") { it.name_fr }
             // Get quantity 2
             try {
                 val quantity2 = Integer.parseInt(binding.quantity2.text.toString())
