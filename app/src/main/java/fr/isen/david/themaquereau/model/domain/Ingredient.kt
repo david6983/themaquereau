@@ -1,5 +1,6 @@
 package fr.isen.david.themaquereau.model.domain
 
+import java.io.Serializable
 import java.util.*
 
 data class Ingredient(
@@ -9,6 +10,4 @@ data class Ingredient(
     val create_date: Date,
     val update_date: Date,
     val id_pizza: Long
-) {
-    constructor() : this(0, 0, "", Date(), Date() , 0)
-}
+) : Serializable

@@ -1,5 +1,7 @@
 package fr.isen.david.themaquereau.model.domain
 
+import java.io.Serializable
+
 data class Item(
         val id: Long,
         val name_fr: String,
@@ -10,16 +12,4 @@ data class Item(
         val images: List<String>,
         val ingredients: List<Ingredient>,
         val prices: List<Price>
-) {
-        constructor() : this(
-                0,
-                "",
-                "",
-                0,
-                "",
-                "",
-                listOf(),
-                listOf(),
-                listOf()
-        )
-}
+) : Serializable
