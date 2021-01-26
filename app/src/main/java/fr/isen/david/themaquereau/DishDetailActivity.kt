@@ -9,6 +9,7 @@ import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityDishDetailBinding
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.util.displayToast
+import org.json.JSONObject
 import java.lang.NumberFormatException
 
 //TODO redirection to previous activity not correct
@@ -52,14 +53,18 @@ class DishDetailActivity : AppCompatActivity() {
             }
 
             // Number Input Listener
-            binding.quantity.addTextChangedListener { nb ->
+            binding.quantity.addTextChangedListener {
                 try {
-                    val newQuantity = Integer.parseInt(nb.toString())
+                    val newQuantity = Integer.parseInt(it.toString())
                     val realPrice: Double = newQuantity * item.prices[0].price
                     binding.dishDetailPrice.text = realPrice.toString()
                 } catch (e: NumberFormatException) {
                     displayToast("no number", applicationContext)
                 }
+            }
+
+            binding.fishImageButton.setOnClickListener {
+                Log.i(TAG, "submit maquereau")
             }
         }
     }

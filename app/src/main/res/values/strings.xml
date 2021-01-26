@@ -20,6 +20,7 @@
     <string name="ingredients">eau, rougets, thon rouge, crabes, sel, épices pimentés TIPIAK, gingembre</string>
     <string name="total">Total</string>
     <string name="order_number">En commander</string>
+    <string name="order">Order</string>
     <!-- Descriptions -->
     <string name="logo_description">Logo principale</string>
     <string name="entree_description">Voir nos Entrées</string>

@@ -14,7 +14,6 @@ import com.google.gson.GsonBuilder
 import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityDishListBinding
 import fr.isen.david.themaquereau.model.domain.Data
-import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.util.displayToast
 import org.json.JSONObject
 
@@ -55,6 +54,9 @@ class DishesListActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
+        // Reset recyclerview
+
+
         // Setting cache
         val cache = DiskBasedCache(cacheDir, 1024 * 1024)
         val network = BasicNetwork(HurlStack())
@@ -80,6 +82,8 @@ class DishesListActivity : AppCompatActivity() {
                 rvItems.layoutManager = LinearLayoutManager(this)
 
                 binding.itemRecyclerView.isVisible = true
+
+                // Add to cache
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Error: ${error.message}")
