@@ -20,9 +20,10 @@ class ItemAdapter(
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
+    inner class ViewHolder(val layout: View) : RecyclerView.ViewHolder(layout) {
         // Your holder should contain and initialize a member variable
         // for any view that will be set as you render a row
+        //TODO replace findViewById by binding
         val nameTextView: TextView = itemView.findViewById(R.id.dishName)
     }
 
@@ -38,14 +39,15 @@ class ItemAdapter(
     }
 
     // Involves populating data into the item through holder
-    override fun onBindViewHolder(viewHolder: ItemAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemAdapter.ViewHolder, position: Int) {
         // Get the data model based on position
         val item: Item = items[position]
         // Set item views based on your views and data model
-        val textView = viewHolder.nameTextView
+        val textView = holder.nameTextView
         textView.text = item.name_fr
         // listener on the item
-        textView.setOnClickListener {
+        //TODO extract this function in the activity
+        holder.layout.setOnClickListener {
             // intent with external context
             val intent = Intent(context, DishDetailActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -61,7 +63,7 @@ class ItemAdapter(
     }
 
     companion object {
-        const val TAG = "ItemAdapter"
+        val TAG = ItemAdapter::class.java.simpleName
         const val ITEM_ID = "item_id"
     }
 }

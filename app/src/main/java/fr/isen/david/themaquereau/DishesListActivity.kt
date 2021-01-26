@@ -11,6 +11,7 @@ import com.android.volley.VolleyLog
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityEntreesBinding
 import fr.isen.david.themaquereau.model.domain.Data
@@ -19,6 +20,8 @@ import org.json.JSONObject
 
 class DishesListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEntreesBinding
+    private var items: List<Item> = listOf()
+    private lateinit var rvItems: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,35 +35,10 @@ class DishesListActivity : AppCompatActivity() {
         }
 
         // Retrieve the recycler view
-        val rvItems = findViewById<RecyclerView>(R.id.itemRecyclerView)
+        this.rvItems = binding.itemRecyclerView
 
         // initialise gson
-        val gson = Gson()
-
-        val items = listOf(
-            Item(
-                0,
-                "soupe de poisson",
-                "",
-                0,
-                "",
-                "",
-                listOf(),
-                listOf(),
-                listOf()
-            ),
-            Item(
-                1,
-                "cordon bleu a la truffe",
-                "",
-                0,
-                "",
-                "",
-                listOf(),
-                listOf(),
-                listOf()
-            )
-        )
+        val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
 
         val params = JSONObject()
         params.put("id_shop", "1")
@@ -72,10 +50,14 @@ class DishesListActivity : AppCompatActivity() {
             Request.Method.POST, API_URL, params,
             Response.Listener<JSONObject> { response ->
                 Log.d(TAG, "Response: $response")
-                val data = gson.fromJson(response["data"].toString(), List::class.java)
-                Log.d(TAG, "Gson response: $data")
-                val entrees = data[0].toString()
-                Log.d(TAG, "Entrees: $entrees")
+                val data: Array<Data> = gson.fromJson(response["data"].toString(), Array<Data>::class.java)
+                this.items = data[0].items
+                Log.d(TAG, "entrees: $items")
+
+                // Recycler view adapter
+                val adapter = ItemAdapter(this.items, applicationContext)
+                rvItems.adapter = adapter
+                rvItems.layoutManager = LinearLayoutManager(this)
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Error: ${error.message}")
@@ -83,10 +65,6 @@ class DishesListActivity : AppCompatActivity() {
 
         // Add the request to the RequestQueue.
         queue.add(req)
-
-        val adapter = ItemAdapter(items, applicationContext)
-        rvItems.adapter = adapter
-        rvItems.layoutManager = LinearLayoutManager(this)
     }
 
     companion object {
