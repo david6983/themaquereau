@@ -19,7 +19,6 @@ import org.json.JSONObject
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding // Best practise instead of findViewById
-    private var data: Array<Data> = arrayOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,54 +26,20 @@ class HomeActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        loadData()
-
         //TODO is it possible to refactor this part into one click listener ?
         val intent = Intent(this, DishesListActivity::class.java)
         binding.homeEntreeButton.setOnClickListener {
-            Log.i(TAG, "data: ${data[0]}")
-            intent.putExtra(DATA, data[0])
+            intent.putExtra(CATEGORY, 0)
             startActivity(intent)
         }
         binding.homePlatsButton.setOnClickListener {
-            Log.i(TAG, "data: ${data[1]}")
-            intent.putExtra(DATA, data[1])
+            intent.putExtra(CATEGORY, 1)
             startActivity(intent)
         }
         binding.homeDesertsButton.setOnClickListener {
-            Log.i(TAG, "data: ${data[2]}")
-            intent.putExtra(DATA, data[2])
+            intent.putExtra(CATEGORY, 2)
             startActivity(intent)
         }
-    }
-
-    private fun loadData() {
-        // initialise gson
-        val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
-
-        val params = JSONObject()
-        params.put("id_shop", "1")
-
-        // Setting cache
-        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
-        val network = BasicNetwork(HurlStack())
-        val queue = RequestQueue(cache, network).apply {
-            start()
-        }
-
-        // Request a string response from the provided URL.
-        val req = JsonObjectRequest(
-            Request.Method.POST, API_URL, params,
-            Response.Listener<JSONObject> { response ->
-                Log.d(DishesListActivity.TAG, "Response: $response")
-                data = gson.fromJson(response["data"].toString(), Array<Data>::class.java)
-            },
-            Response.ErrorListener { error ->
-                Log.e(DishesListActivity.TAG, "Error: ${error.message}")
-            })
-
-        // Add the request to the RequestQueue.
-        queue.add(req)
     }
 
     override fun onDestroy() {
@@ -84,7 +49,6 @@ class HomeActivity : AppCompatActivity() {
 
     companion object {
         val TAG: String = HomeActivity::class.java.simpleName
-        const val API_URL = "http://test.api.catering.bluecodegames.com/menu"
-        const val DATA = "data"
+        const val CATEGORY = "category"
     }
 }
