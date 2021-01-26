@@ -25,8 +25,6 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        //TODO is it possible to refactor this part into one click listener ?
         val intent = Intent(this, DishesListActivity::class.java)
         binding.homeEntreeButton.setOnClickListener {
             intent.putExtra(CATEGORY, 0)

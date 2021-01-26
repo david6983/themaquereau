@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import fr.isen.david.themaquereau.DishDetailActivity
 import fr.isen.david.themaquereau.R
+import fr.isen.david.themaquereau.databinding.LayoutDishCardBinding
 import fr.isen.david.themaquereau.model.domain.Item
 
 // Create the basic adapter extending from RecyclerView.Adapter
@@ -22,13 +23,13 @@ class ItemAdapter(
 ) : RecyclerView.Adapter<ItemAdapter.ItemHolder>() {
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    inner class ItemHolder(val layout: View) : RecyclerView.ViewHolder(layout) {
+    inner class ItemHolder(val binding: LayoutDishCardBinding) : RecyclerView.ViewHolder(binding.root) {
         // Your holder should contain and initialize a member variable
         // for any view that will be set as you render a row
-        //TODO replace findViewById by binding
-        val dishNameView: TextView = itemView.findViewById(R.id.dishName)
-        val dishImage: ImageView = itemView.findViewById(R.id.dishImage)
-        val dishPrice: TextView = itemView.findViewById(R.id.dishPrice)
+        val dishNameView: TextView = binding.dishName
+        val dishImage: ImageView = binding.dishImage
+        val dishPrice: TextView = binding.dishPrice
+        val layout = binding.root
     }
 
     // ... constructor and member variables
@@ -37,7 +38,7 @@ class ItemAdapter(
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         // Inflate the custom layout
-        val contactView = inflater.inflate(R.layout.layout_dish_card, parent, false)
+        val contactView = LayoutDishCardBinding.inflate(inflater, parent, false)
         // Return a new holder instance
         return ItemHolder(contactView)
     }
@@ -69,13 +70,11 @@ class ItemAdapter(
         }
 
         // listener on the item
-        //TODO extract this function in the activity
         holder.layout.setOnClickListener {
             // intent with external context
             val intent = Intent(context, DishDetailActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             // give the id of the item to the next activity to retrieve it from the API
-            //TODO send the entire information
             intent.putExtra(ITEM, item)
             context.startActivity(intent)
         }

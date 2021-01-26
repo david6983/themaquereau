@@ -12,7 +12,6 @@ import fr.isen.david.themaquereau.util.displayToast
 import org.json.JSONObject
 import java.lang.NumberFormatException
 
-//TODO redirection to previous activity not correct
 class DishDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDishDetailBinding
 

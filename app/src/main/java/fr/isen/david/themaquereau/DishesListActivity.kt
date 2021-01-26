@@ -54,9 +54,6 @@ class DishesListActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
-        // Reset recyclerview
-
-
         // Setting cache
         val cache = DiskBasedCache(cacheDir, 1024 * 1024)
         val network = BasicNetwork(HurlStack())
