@@ -15,6 +15,7 @@ import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityDishListBinding
 import fr.isen.david.themaquereau.model.domain.Data
 import fr.isen.david.themaquereau.model.domain.Item
+import fr.isen.david.themaquereau.util.displayToast
 import org.json.JSONObject
 
 class DishesListActivity : AppCompatActivity() {
@@ -42,6 +43,15 @@ class DishesListActivity : AppCompatActivity() {
         }
 
         loadData()
+
+        // Swipe container
+        val swipeContainer = binding.swipeContainer
+        swipeContainer.setOnRefreshListener {
+            // fetch the data again
+            loadData()
+            // stop the refresh
+            swipeContainer.isRefreshing = false
+        }
     }
 
     private fun loadData() {
@@ -73,7 +83,9 @@ class DishesListActivity : AppCompatActivity() {
             },
             Response.ErrorListener { error ->
                 Log.e(TAG, "Error: ${error.message}")
-            })
+                displayToast("Cannot Load dishes", applicationContext)
+                //TODO display no dishes found + display a message if no data
+        })
 
         // Reset the cache
         queue.cache.clear()

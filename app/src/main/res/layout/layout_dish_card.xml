@@ -23,7 +23,7 @@
             android:fontFamily="cursive"
             android:text="@string/dish_name_default"
             android:textColor="@color/main_text"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:translationZ="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/dishImage"
@@ -45,15 +45,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.96" />
+            app:layout_constraintVertical_bias="0.95" />
 
         <TextView
             android:id="@+id/dishPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:fontFamily="cursive"
             android:text="10,3"
             android:textColor="@color/main_darker"
+            android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.18"
@@ -68,13 +70,13 @@
             android:fontFamily="cursive"
             android:text="@string/euros"
             android:textColor="@color/main_text"
-            android:textSize="12sp"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.02"
             app:layout_constraintStart_toEndOf="@+id/dishPrice"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.961" />
+            app:layout_constraintVertical_bias="0.95" />
 
         <ImageView
             android:id="@+id/dishImage"

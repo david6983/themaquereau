@@ -17,7 +17,7 @@ import fr.isen.david.themaquereau.model.domain.Item
 // Create the basic adapter extending from RecyclerView.Adapter
 // Note that we specify the custom ViewHolder which gives us access to our views
 class ItemAdapter(
-    private val items: List<Item>,
+    private var items: List<Item>,
     private val context: Context
 ) : RecyclerView.Adapter<ItemAdapter.ItemHolder>() {
     // Provide a direct reference to each of the views within a data item
@@ -46,7 +46,6 @@ class ItemAdapter(
     override fun onBindViewHolder(holder: ItemAdapter.ItemHolder, position: Int) {
         // Get the data model based on position
         val item: Item = items[position]
-        Log.i(TAG, "items: ${item.images.size}")
         // Set item views based on your views and data model
         val textView = holder.dishNameView
         textView.text = item.name_fr
@@ -77,7 +76,7 @@ class ItemAdapter(
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             // give the id of the item to the next activity to retrieve it from the API
             //TODO send the entire information
-            intent.putExtra(ITEM, item.id)
+            intent.putExtra(ITEM, item)
             context.startActivity(intent)
         }
     }
