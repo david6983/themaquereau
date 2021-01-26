@@ -29,6 +29,7 @@ class ItemAdapter(
         val dishNameView: TextView = itemView.findViewById(R.id.dishName)
         val dishNameEnView: TextView = itemView.findViewById(R.id.dishNameEn)
         val dishImage: ImageView = itemView.findViewById(R.id.dishImage)
+        val dishPrice: TextView = itemView.findViewById(R.id.dishPrice)
     }
 
     // ... constructor and member variables
@@ -52,12 +53,22 @@ class ItemAdapter(
         textView.text = item.name_fr
         holder.dishNameEnView.text = item.name_en
         // Image
+        val picasso = Picasso.get()
         if (item.images.size > 1) {
-            val picasso = Picasso.get()
             picasso
                 .load(item.images[0])
                 .resize(400, 400)
                 .into(holder.dishImage)
+        } else {
+            picasso
+                .load(R.drawable.maquereau_not_found)
+                .resize(400, 400)
+                .into(holder.dishImage)
+        }
+        // Price
+        if (item.prices.isNotEmpty()) {
+            // Extract the first price only ('from ...')
+            holder.dishPrice.text = item.prices[0].price.toString()
         }
 
         // listener on the item

@@ -11,6 +11,10 @@
     <string name="deserts_menu_item">Deserts</string>
     <!-- Item Adapter -->
     <string name="known_as">Known as: </string>
+    <string name="dish_name_default">La Bouille à baisse</string>
+    <string name="dish_name_en_default">The Fish Soup</string>
+    <string name="from_price">À partir de</string>
+    <string name="euros">€</string>
     <!-- Descriptions -->
     <string name="logo_description">Logo principale</string>
     <string name="entree_description">Voir nos Entrées</string>
