@@ -46,15 +46,15 @@ class ItemAdapter(
     override fun onBindViewHolder(holder: ItemAdapter.ItemHolder, position: Int) {
         // Get the data model based on position
         val item: Item = items[position]
-
+        Log.i(TAG, "items: ${item.images.size}")
         // Set item views based on your views and data model
         val textView = holder.dishNameView
         textView.text = item.name_fr
         // Image
         val picasso = Picasso.get()
-        if (item.images.size > 1) {
+        if (item.images.first().isNotEmpty()) {
             picasso
-                .load(item.images[0])
+                .load(item.images.first())
                 .resize(400, 400)
                 .into(holder.dishImage)
         } else {
@@ -88,6 +88,7 @@ class ItemAdapter(
     }
 
     companion object {
+        val TAG = ItemAdapter::class.java.simpleName
         const val ITEM = "item"
     }
 }
