@@ -88,7 +88,6 @@ class ItemAdapter(
     }
 
     companion object {
-        val TAG = ItemAdapter::class.java.simpleName
         const val ITEM = "item"
     }
 }

@@ -6,17 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <ImageView
-        android:id="@+id/homeLogo"
-        android:layout_width="410dp"
-        android:layout_height="286dp"
-        android:layout_marginTop="32dp"
-        android:src="@drawable/themaquereau_logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/logo_description" />
-
     <TextView
         android:id="@+id/homeEntreeButton"
         android:layout_width="wrap_content"
@@ -33,19 +22,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/homeDivider1"
-        android:layout_width="170dp"
-        android:layout_height="1dp"
-        android:background="@color/secondary_variant"
-        android:contentDescription="@string/divider_description"
-        android:src="@android:drawable/divider_horizontal_dark"
-        app:layout_constraintBottom_toTopOf="@+id/homePlatsButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
-
     <TextView
         android:id="@+id/homePlatsButton"
         android:layout_width="wrap_content"
@@ -61,19 +37,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
 
-    <ImageView
-        android:id="@+id/homeDivider2"
-        android:layout_width="170dp"
-        android:layout_height="1dp"
-        android:background="@color/secondary_variant"
-        android:contentDescription="@string/divider_description"
-        android:src="@android:drawable/divider_horizontal_dark"
-        app:layout_constraintBottom_toTopOf="@+id/homeDesertsButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homePlatsButton" />
-
     <TextView
         android:id="@+id/homeDesertsButton"
         android:layout_width="wrap_content"
@@ -86,6 +49,43 @@
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homePlatsButton" />
+
+    <ImageView
+        android:id="@+id/homeLogo"
+        android:layout_width="410dp"
+        android:layout_height="286dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/themaquereau_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/logo_description" />
+
+    <ImageView
+        android:id="@+id/homeDivider1"
+        android:layout_width="170dp"
+        android:layout_height="1dp"
+        android:background="@color/secondary_variant"
+        android:contentDescription="@string/divider_description"
+        android:src="@android:drawable/divider_horizontal_dark"
+        app:layout_constraintBottom_toTopOf="@+id/homePlatsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeEntreeButton" />
+
+    <ImageView
+        android:id="@+id/homeDivider2"
+        android:layout_width="170dp"
+        android:layout_height="1dp"
+        android:background="@color/secondary_variant"
+        android:contentDescription="@string/divider_description"
+        android:src="@android:drawable/divider_horizontal_dark"
+        app:layout_constraintBottom_toTopOf="@+id/homeDesertsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/homePlatsButton" />
 

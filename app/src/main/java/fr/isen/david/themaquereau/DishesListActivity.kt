@@ -3,6 +3,7 @@ package fr.isen.david.themaquereau
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.isen.david.themaquereau.adapters.ItemAdapter
@@ -21,6 +22,8 @@ class DishesListActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        binding.itemRecyclerView.isVisible = false
+
         intent.extras?.getSerializable(HomeActivity.DATA)?.let {
             val data: Data = it as Data
             Log.i(TAG, "recevied data: $data")
@@ -35,6 +38,7 @@ class DishesListActivity : AppCompatActivity() {
         val adapter = ItemAdapter(this.items, applicationContext)
         rvItems.adapter = adapter
         rvItems.layoutManager = LinearLayoutManager(this)
+        binding.itemRecyclerView.isVisible = true
     }
 
     companion object {

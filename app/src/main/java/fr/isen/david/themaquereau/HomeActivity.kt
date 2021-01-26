@@ -3,12 +3,14 @@ package fr.isen.david.themaquereau
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
+import com.android.volley.toolbox.*
 import com.google.gson.GsonBuilder
 import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
@@ -27,6 +29,7 @@ class HomeActivity : AppCompatActivity() {
 
         loadData()
 
+        //TODO is it possible to refactor this part into one click listener ?
         val intent = Intent(this, DishesListActivity::class.java)
         binding.homeEntreeButton.setOnClickListener {
             Log.i(TAG, "data: ${data[0]}")
@@ -52,7 +55,12 @@ class HomeActivity : AppCompatActivity() {
         val params = JSONObject()
         params.put("id_shop", "1")
 
-        val queue = Volley.newRequestQueue(this)
+        // Setting cache
+        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
+        val network = BasicNetwork(HurlStack())
+        val queue = RequestQueue(cache, network).apply {
+            start()
+        }
 
         // Request a string response from the provided URL.
         val req = JsonObjectRequest(
