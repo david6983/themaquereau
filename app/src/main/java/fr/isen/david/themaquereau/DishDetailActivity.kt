@@ -29,7 +29,7 @@ class DishDetailActivity : AppCompatActivity() {
             binding.dishDetailIngredients.text = item.ingredients.joinToString(", ") { it.name_fr }
             // Get quantity 2
             try {
-                val quantity2 = Integer.parseInt(binding.quantity2.text.toString())
+                val quantity2 = Integer.parseInt(binding.quantity.text.toString())
                 // Price
                 if (item.prices.isNotEmpty()) {
                     // convert the price to int
@@ -52,9 +52,9 @@ class DishDetailActivity : AppCompatActivity() {
             }
 
             // Number Input Listener
-            binding.quantity2.addTextChangedListener { number ->
+            binding.quantity.addTextChangedListener { nb ->
                 try {
-                    val newQuantity = Integer.parseInt(number.toString())
+                    val newQuantity = Integer.parseInt(nb.toString())
                     val realPrice: Double = newQuantity * item.prices[0].price
                     binding.dishDetailPrice.text = realPrice.toString()
                 } catch (e: NumberFormatException) {
