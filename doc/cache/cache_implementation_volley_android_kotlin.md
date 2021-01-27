@@ -1,7 +1,7 @@
 # Cache System Implementation Experimentation & Proof of Concept
 
 The first goal of this document is to prove that the cache system is implemented in the project.
-Then, this document is aim to compare the difference between a `JsonObjectRequest` without overriding
+Then, this document is aimed to compare the difference between a `JsonObjectRequest` without overriding
 `parseNetworkResponse` and a `JsonObjectRequest` with overriding `parseNetworkResponse`
 
 ## Implementation without overriding
@@ -301,4 +301,7 @@ from the server, there is a network request. Then on the second time we arrive o
 no network request is sent because the data was fetched from the cache thanks to the previous implementation.
 Finally, on pull to refresh event, there is another network request.
 
-Note 2: we can see that the images are not fetched again. Did I cleared the cache entirely ?
+Note 2: we can see that the images are not fetched again because picasso has is own cache also. Can we
+also clear it ? 
+
+... to continue

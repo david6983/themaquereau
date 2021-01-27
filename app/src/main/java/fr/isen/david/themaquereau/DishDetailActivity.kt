@@ -9,7 +9,6 @@ import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityDishDetailBinding
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.util.displayToast
-import org.json.JSONObject
 import java.lang.NumberFormatException
 
 class DishDetailActivity : AppCompatActivity() {
