@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.*
 import com.android.volley.toolbox.*
 import com.google.gson.GsonBuilder
@@ -14,7 +13,6 @@ import fr.isen.david.themaquereau.databinding.ActivityDishListBinding
 import fr.isen.david.themaquereau.model.domain.Data
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.util.displayToast
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.UnsupportedEncodingException
@@ -51,28 +49,39 @@ class DishesListActivity : AppCompatActivity() {
         rvItems.adapter = adapter
         rvItems.layoutManager = LinearLayoutManager(this)
 
-        loadData()
+        // Setting cache
+        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
+        val network = BasicNetwork(HurlStack())
+
+        val req = loadData()
+
+        // Add the request to the RequestQueue.
+        val queue = RequestQueue(cache, network).apply {
+            start()
+        }
+        queue.add(req)
 
         // Swipe container
         val swipeContainer = binding.swipeContainer
         swipeContainer.setOnRefreshListener {
-            // fetch the data again
-            loadData()
+            // invalidate the cache
+            queue.cache.clear()
+            items = listOf()
+            // The list is not visible until the content is loaded
+            binding.itemRecyclerView.isVisible = false
+            // Add the request to the RequestQueue.
+            queue.add(req)
             // stop the refresh
             swipeContainer.isRefreshing = false
         }
     }
 
-    private fun loadData() {
-        // Setting cache
-        val cache = DiskBasedCache(cacheDir, 1024 * 1024)
-        val network = BasicNetwork(HurlStack())
-
+    private fun loadData(): JsonObjectRequest {
         // Or perform the request if no data found
         // Request a string response from the provided URL.
-        val req = object : JsonObjectRequest(
+        return object : JsonObjectRequest(
             Method.POST, API_URL, params,
-            Response.Listener<JSONObject> { response ->
+            Response.Listener { response ->
                 Log.d(TAG, "Response: $response")
                 val dataList = gson.fromJson(response["data"].toString(), Array<Data>::class.java)
                 val data = dataList[category]
@@ -144,12 +153,6 @@ class DishesListActivity : AppCompatActivity() {
                 return super.parseNetworkResponse(response)
             }
         }
-
-        // Add the request to the RequestQueue.
-        val queue = RequestQueue(cache, network).apply {
-            start()
-        }
-        queue.add(req)
     }
 
     companion object {
