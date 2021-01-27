@@ -12,7 +12,7 @@
         android:theme="@style/Theme.AndroidERestaurant"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".DishDetailActivity">
+        <activity android:name=".DishDetailsActivity">
             <!-- DishesListActivity is the main parent of DishDetailActivity -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -12,4 +12,16 @@ data class Item(
         val images: List<String>,
         val ingredients: List<Ingredient>,
         val prices: List<Price>
-) : Serializable
+) : Serializable {
+        constructor() : this(
+                0,
+                "",
+                "",
+                0,
+                "",
+                "",
+                listOf(),
+                listOf(),
+                listOf()
+        )
+}

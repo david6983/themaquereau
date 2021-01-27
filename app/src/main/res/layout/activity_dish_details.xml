@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DishDetailActivity">
+    tools:context=".DishDetailsActivity">
 
     <TextView
         android:id="@+id/dishDetailName"
@@ -24,7 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.303" />
+        app:layout_constraintVertical_bias="0.33999997" />
 
     <TextView
         android:id="@+id/dishDetailIngredients"
@@ -81,6 +81,17 @@
         app:layout_constraintTop_toBottomOf="@+id/dishDetailIngredients"
         app:layout_constraintVertical_bias="0.100000024" />
 
+    <fragment
+        android:id="@+id/dishPagerFragment"
+        android:name="fr.isen.david.themaquereau.fragments.DishImagesPagerFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/dishDetailName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/dividerDetail"
         android:layout_width="130dp"
@@ -92,17 +103,6 @@
         app:layout_constraintTop_toTopOf="@+id/dishDetailName"
         app:layout_constraintVertical_bias="0.8"
         app:srcCompat="@android:drawable/divider_horizontal_dark" />
-
-    <ImageView
-        android:id="@+id/dishDetailImage"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
 
     <ImageView
         android:id="@+id/tagImage"

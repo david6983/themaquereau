@@ -4,19 +4,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.core.widget.addTextChangedListener
-import com.squareup.picasso.Picasso
 import fr.isen.david.themaquereau.adapters.ItemAdapter
-import fr.isen.david.themaquereau.databinding.ActivityDishDetailBinding
+import fr.isen.david.themaquereau.databinding.ActivityDishDetailsBinding
+import fr.isen.david.themaquereau.fragments.DishImagesPagerFragment
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.util.displayToast
 import java.lang.NumberFormatException
 
-class DishDetailActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityDishDetailBinding
+class DishDetailsActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityDishDetailsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDishDetailBinding.inflate(layoutInflater)
+        binding = ActivityDishDetailsBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
@@ -38,22 +38,23 @@ class DishDetailActivity : AppCompatActivity() {
             } catch (e: NumberFormatException) {
                 displayToast("Cannot parse default value", applicationContext)
             }
-            // Image
-            val picasso = Picasso.get()
-            if (item.images.first().isNotEmpty()) {
-                picasso
-                    .load(item.images.first())
-                    .into(binding.dishDetailImage)
-            } else {
-                picasso
-                    .load(R.drawable.maquereau_not_found)
-                    .into(binding.dishDetailImage)
+
+            // Images Pager
+            val pagerFragment = DishImagesPagerFragment()
+            pagerFragment.arguments = Bundle().apply {
+                // Give the item to the pager
+                putSerializable(DishImagesPagerFragment.ARG_OBJECT, item)
             }
+            // Replace the fragment by the new one
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.dishPagerFragment, pagerFragment)
+                .addToBackStack("DishImagesPagerFragment")
+                .commit()
 
             // Number Input Listener
-            binding.quantity.addTextChangedListener {
+            binding.quantity.addTextChangedListener { txt ->
                 try {
-                    val newQuantity = Integer.parseInt(it.toString())
+                    val newQuantity = Integer.parseInt(txt.toString())
                     val realPrice: Double = newQuantity * item.prices[0].price
                     binding.dishDetailPrice.text = realPrice.toString()
                 } catch (e: NumberFormatException) {
@@ -68,6 +69,6 @@ class DishDetailActivity : AppCompatActivity() {
     }
 
     companion object {
-        val TAG: String = DishDetailActivity::class.java.simpleName
+        val TAG: String = DishDetailsActivity::class.java.simpleName
     }
 }

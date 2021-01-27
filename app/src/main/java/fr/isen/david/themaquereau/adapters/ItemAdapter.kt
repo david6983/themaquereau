@@ -2,15 +2,13 @@ package fr.isen.david.themaquereau.adapters
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import fr.isen.david.themaquereau.DishDetailActivity
+import fr.isen.david.themaquereau.DishDetailsActivity
 import fr.isen.david.themaquereau.R
 import fr.isen.david.themaquereau.databinding.LayoutDishCardBinding
 import fr.isen.david.themaquereau.model.domain.Item
@@ -23,7 +21,7 @@ class ItemAdapter(
 ) : RecyclerView.Adapter<ItemAdapter.ItemHolder>() {
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    inner class ItemHolder(val binding: LayoutDishCardBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ItemHolder(binding: LayoutDishCardBinding) : RecyclerView.ViewHolder(binding.root) {
         // Your holder should contain and initialize a member variable
         // for any view that will be set as you render a row
         val dishNameView: TextView = binding.dishName
@@ -72,7 +70,7 @@ class ItemAdapter(
         // listener on the item
         holder.layout.setOnClickListener {
             // intent with external context
-            val intent = Intent(context, DishDetailActivity::class.java)
+            val intent = Intent(context, DishDetailsActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             // give the id of the item to the next activity to retrieve it from the API
             intent.putExtra(ITEM, item)
@@ -86,7 +84,6 @@ class ItemAdapter(
     }
 
     companion object {
-        val TAG = ItemAdapter::class.java.simpleName
         const val ITEM = "item"
     }
 }
