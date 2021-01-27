@@ -1,6 +1,8 @@
 <resources>
     <!-- Application's name -->
     <string name="app_name">The Maquereau</string>
+    <!-- Toolbar -->
+    <string name="basket">Panier</string>
     <!-- Display Menu Items Activity Titles -->
     <string name="entree_title">Nos Entrées</string>
     <string name="plats_title">Nos Plats</string>

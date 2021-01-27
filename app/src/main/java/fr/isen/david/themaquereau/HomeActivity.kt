@@ -3,19 +3,8 @@ package fr.isen.david.themaquereau
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.children
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.toolbox.*
-import com.google.gson.GsonBuilder
-import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
-import fr.isen.david.themaquereau.model.domain.Data
-import org.json.JSONObject
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding // Best practise instead of findViewById
