@@ -62,15 +62,18 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupBadge(menuItem: MenuItem) {
         val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
-        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
-        if (sharedPref.contains(DishDetailsActivity.QUANTITY_KEY)) {
-            val quantity = sharedPref.getInt(DishDetailsActivity.QUANTITY_KEY, 0)
+        val sharedPref = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        if (sharedPref.contains("quantity")) {
+            val quantity = sharedPref.getInt("quantity", 0)
             if (quantity == 0) {
                 textView.isVisible = false
             } else {
                 textView.text = quantity.toString()
                 textView.isVisible = true
             }
+        } else {
+            textView.isVisible = false
         }
     }
 

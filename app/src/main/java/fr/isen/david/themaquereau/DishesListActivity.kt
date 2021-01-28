@@ -167,7 +167,7 @@ class DishesListActivity : AppCompatActivity() {
 
         menu?.findItem(R.id.showBasket)?.let {
             // Setup the badge with the quantity
-            //setupBadge(it)
+            setupBadge(it)
 
             // Add a click listener
             it.actionView.setOnClickListener {
@@ -179,6 +179,23 @@ class DishesListActivity : AppCompatActivity() {
         }
 
         return true
+    }
+
+    private fun setupBadge(menuItem: MenuItem) {
+        val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
+        val sharedPref = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        if (sharedPref.contains("quantity")) {
+            val quantity = sharedPref.getInt("quantity", 0)
+            if (quantity == 0) {
+                textView.isVisible = false
+            } else {
+                textView.text = quantity.toString()
+                textView.isVisible = true
+            }
+        } else {
+            textView.isVisible = false
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

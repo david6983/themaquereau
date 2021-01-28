@@ -2,7 +2,6 @@ package fr.isen.david.themaquereau
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -112,14 +111,13 @@ class DishDetailsActivity : AppCompatActivity() {
 
     private fun updateQuantity(newQuantity: Int) {
         // Save the quantity
-        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
-        if (sharedPref.contains(QUANTITY_KEY)) {
-            val currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
-            // add the quantity to the previous quantity
-            with(sharedPref.edit()) {
-                putInt(QUANTITY_KEY, currentQuantity + newQuantity)
-                apply()
-            }
+        val sharedPref = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        val currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
+        // add the quantity to the previous quantity
+        with(sharedPref.edit()) {
+            putInt(QUANTITY_KEY, currentQuantity + newQuantity)
+            apply()
         }
         // Setup the badge with the quantity
         setupBadge(basketMenu)
@@ -144,15 +142,14 @@ class DishDetailsActivity : AppCompatActivity() {
 
     private fun setupBadge(menuItem: MenuItem) {
         val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
-        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
-        if (sharedPref.contains(QUANTITY_KEY)) {
-            val quantity = sharedPref.getInt(QUANTITY_KEY, 0)
-            if (quantity == 0) {
-                textView.isVisible = false
-            } else {
-                textView.text = quantity.toString()
-                textView.isVisible = true
-            }
+        val sharedPref = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        val quantity = sharedPref.getInt(QUANTITY_KEY, 0)
+        if (quantity == 0) {
+            textView.isVisible = false
+        } else {
+            textView.text = quantity.toString()
+            textView.isVisible = true
         }
     }
 
