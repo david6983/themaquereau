@@ -14,14 +14,18 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityDishDetailsBinding
 import fr.isen.david.themaquereau.fragments.DishImagesPagerFragment
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.io.FileNotFoundException
 import java.lang.NumberFormatException
 
 class DishDetailsActivity : AppCompatActivity() {
@@ -96,12 +100,32 @@ class DishDetailsActivity : AppCompatActivity() {
     }
 
     private fun saveOrder(order: Order) {
-        val jsonOrder = Gson().toJson(order)
-        // Save json order to file
-        applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use {
-            it.write(jsonOrder.toByteArray())
+        // Try to read the json file if exist
+        try {
+            applicationContext.openFileInput(ORDER_FILE).use { inputStream ->
+                inputStream.bufferedReader().use {
+                    val ordersJsonString = it.readText()
+                    val previousOrders = Gson().fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
+                    // update id
+                    order.id += 1
+                    previousOrders.add(order)
+                    val newJsonOrders = Gson().toJson(previousOrders)
+                    applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
+                        outputStream.write(newJsonOrders.toString().toByteArray())
+                        Log.i(TAG, "updated orders: $newJsonOrders")
+                    }
+                }
+            }
+        } catch(e: FileNotFoundException) {
+            val orders = JsonArray()
+            val jsonOrder = Gson().toJsonTree(order)
+            orders.add(Gson().toJsonTree(jsonOrder))
+            // Otherwise save json order to file
+            applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use {
+                it.write(orders.toString().toByteArray())
+                Log.i(TAG, "order saved: $jsonOrder")
+            }
         }
-        Log.i(TAG, "order saved: $jsonOrder")
     }
 
     private fun alertUser(view: View) {
@@ -186,7 +210,8 @@ class DishDetailsActivity : AppCompatActivity() {
 
     companion object {
         val TAG: String = DishDetailsActivity::class.java.simpleName
-        const val ORDER_FILE: String = "basket"
+        //TODO move to strings.xml
+        const val ORDER_FILE: String = "basket.json"
         const val QUANTITY_KEY: String = "quantity"
     }
 }
