@@ -1,9 +1,14 @@
 package fr.isen.david.themaquereau
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -20,6 +25,7 @@ import java.lang.NumberFormatException
 class DishDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDishDetailsBinding
     private lateinit var order: Order
+    private lateinit var item: Item
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +35,7 @@ class DishDetailsActivity : AppCompatActivity() {
 
         // get the selected item id
         intent.extras?.getSerializable(ItemAdapter.ITEM)?.let { serializedItem ->
-            val item = serializedItem as Item
+            item = serializedItem as Item
             binding.dishDetailName.text = item.name_fr
             // Create an order
             order = Order(0, item, 1 , 0.0)
@@ -62,31 +68,81 @@ class DishDetailsActivity : AppCompatActivity() {
 
             // Number Input Listener
             binding.quantity.addTextChangedListener { txt ->
-                try {
-                    order.quantity = Integer.parseInt(txt.toString())
-                    order.realPrice = order.quantity * item.prices[0].price
-                    binding.dishDetailPrice.text = order.realPrice.toString()
-                } catch (e: NumberFormatException) {
-                    displayToast("no number", applicationContext)
-                }
+                updateQuantity(item, txt)
             }
 
             binding.fishImageButton.setOnClickListener { v ->
-                val jsonOrder = Gson().toJson(order)
-                // save json order to file
-                applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use {
-                    it.write(jsonOrder.toByteArray())
-                }
+                // Save the order in a file
+                saveOrder(order)
+                // Save the quantity
+                updateQuantity(order.quantity)
                 // Alert the user with a snack bar
-                val snack = Snackbar.make(v, R.string.order_saved, Snackbar.LENGTH_SHORT)
-                snack.show()
-                Log.i(TAG, "order saved: $jsonOrder")
+                alertUser(v)
             }
+        }
+    }
+
+    private fun updateQuantity(item: Item, quantityValue: Editable?) {
+        try {
+            order.quantity = Integer.parseInt(quantityValue.toString())
+            order.realPrice = order.quantity * item.prices[0].price
+            binding.dishDetailPrice.text = order.realPrice.toString()
+        } catch (e: NumberFormatException) {
+            displayToast("no number", applicationContext)
+        }
+    }
+
+    private fun saveOrder(order: Order) {
+        val jsonOrder = Gson().toJson(order)
+        // Save json order to file
+        applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use {
+            it.write(jsonOrder.toByteArray())
+        }
+        Log.i(TAG, "order saved: $jsonOrder")
+    }
+
+    private fun alertUser(view: View) {
+        val snack = Snackbar.make(view, R.string.order_saved, Snackbar.LENGTH_SHORT)
+        snack.show()
+    }
+
+    private fun updateQuantity(newQuantity: Int) {
+        // Save the quantity
+        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        var currentQuantity = 0
+        if (sharedPref.contains(QUANTITY_KEY)) {
+            currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
+        }
+        // add the quantity to the previous quantity
+        with(sharedPref.edit()) {
+            putInt(QUANTITY_KEY, currentQuantity + newQuantity)
+            apply()
+        }
+        Log.i(TAG, "added to pref: ${sharedPref.getInt(QUANTITY_KEY, 0)}")
+    }
+
+    // Inflate the menu to the toolbar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.basket_toolbar, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.showBasket -> {
+            val menuItemIntent = Intent(this, BasketActivity::class.java)
+            menuItemIntent.putExtra(ItemAdapter.ITEM, this.item)
+            startActivity(menuItemIntent)
+            true
+        }
+
+        else -> {
+            super.onOptionsItemSelected(item)
         }
     }
 
     companion object {
         val TAG: String = DishDetailsActivity::class.java.simpleName
         const val ORDER_FILE: String = "basket"
+        const val QUANTITY_KEY: String = "quantity"
     }
 }

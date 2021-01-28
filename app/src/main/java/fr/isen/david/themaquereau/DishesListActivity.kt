@@ -1,7 +1,10 @@
 package fr.isen.david.themaquereau
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -153,6 +156,26 @@ class DishesListActivity : AppCompatActivity() {
                 }
                 return super.parseNetworkResponse(response)
             }
+        }
+    }
+
+    // Inflate the menu to the toolbar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.basket_toolbar, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.showBasket -> {
+            val menuItemIntent = Intent(this, BasketActivity::class.java)
+            // to return to the right activity, the basket activity need the category
+            menuItemIntent.putExtra(HomeActivity.CATEGORY, category)
+            startActivity(menuItemIntent)
+            true
+        }
+
+        else -> {
+            super.onOptionsItemSelected(item)
         }
     }
 

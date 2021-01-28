@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="fr.isen.david.themaquereau">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,7 +14,13 @@
         android:theme="@style/Theme.Themaquereau"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+        <activity android:name=".BasketActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fr.isen.david.themaquereau.HomeActivity" />
+        </activity>
         <activity android:name=".DishDetailsActivity">
+
             <!-- DishesListActivity is the main parent of DishDetailActivity -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
