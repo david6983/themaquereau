@@ -2,6 +2,7 @@ package fr.isen.david.themaquereau
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -9,6 +10,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -26,6 +29,7 @@ class DishDetailsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDishDetailsBinding
     private lateinit var order: Order
     private lateinit var item: Item
+    private lateinit var basketMenu: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,22 +113,47 @@ class DishDetailsActivity : AppCompatActivity() {
     private fun updateQuantity(newQuantity: Int) {
         // Save the quantity
         val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
-        var currentQuantity = 0
         if (sharedPref.contains(QUANTITY_KEY)) {
-            currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
+            val currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
+            // add the quantity to the previous quantity
+            with(sharedPref.edit()) {
+                putInt(QUANTITY_KEY, currentQuantity + newQuantity)
+                apply()
+            }
         }
-        // add the quantity to the previous quantity
-        with(sharedPref.edit()) {
-            putInt(QUANTITY_KEY, currentQuantity + newQuantity)
-            apply()
-        }
+        // Setup the badge with the quantity
+        setupBadge(basketMenu)
         Log.i(TAG, "added to pref: ${sharedPref.getInt(QUANTITY_KEY, 0)}")
     }
 
     // Inflate the menu to the toolbar
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.basket_toolbar, menu)
+
+        basketMenu = menu?.findItem(R.id.showBasket)!!
+        setupBadge(basketMenu)
+        // Add a click listener
+        basketMenu.actionView.setOnClickListener {
+            val menuItemIntent = Intent(this, BasketActivity::class.java)
+            menuItemIntent.putExtra(ItemAdapter.ITEM, this.item)
+            startActivity(menuItemIntent)
+        }
+
         return true
+    }
+
+    private fun setupBadge(menuItem: MenuItem) {
+        val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
+        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        if (sharedPref.contains(QUANTITY_KEY)) {
+            val quantity = sharedPref.getInt(QUANTITY_KEY, 0)
+            if (quantity == 0) {
+                textView.isVisible = false
+            } else {
+                textView.text = quantity.toString()
+                textView.isVisible = true
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -138,6 +167,24 @@ class DishDetailsActivity : AppCompatActivity() {
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun getSupportParentActivityIntent(): Intent? {
+        return getParentActivityIntentImpl()
+    }
+
+    override fun getParentActivityIntent(): Intent? {
+        return getParentActivityIntentImpl()
+    }
+
+    private fun getParentActivityIntentImpl(): Intent {
+        val parentIntent = Intent(this, DishesListActivity::class.java)
+        // Get the category number to display the right parent view
+        intent.extras?.getInt(HomeActivity.CATEGORY)?.let {
+            parentIntent.putExtra(HomeActivity.CATEGORY, it)
+
+        }
+        return parentIntent
     }
 
     companion object {

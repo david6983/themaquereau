@@ -1,11 +1,15 @@
 package fr.isen.david.themaquereau
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {
@@ -40,18 +44,33 @@ class HomeActivity : AppCompatActivity() {
     // Inflate the menu to the toolbar
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.basket_toolbar, menu)
+
+        menu?.findItem(R.id.showBasket)?.let {
+            // Setup the badge with the quantity
+            setupBadge(it)
+
+            // Add a click listener
+            it.actionView.setOnClickListener {
+                val menuItemIntent = Intent(this, BasketActivity::class.java)
+                startActivity(menuItemIntent)
+            }
+        }
+
+
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.showBasket -> {
-            val menuItemIntent = Intent(this, BasketActivity::class.java)
-            startActivity(menuItemIntent)
-            true
-        }
-
-        else -> {
-            super.onOptionsItemSelected(item)
+    private fun setupBadge(menuItem: MenuItem) {
+        val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
+        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        if (sharedPref.contains(DishDetailsActivity.QUANTITY_KEY)) {
+            val quantity = sharedPref.getInt(DishDetailsActivity.QUANTITY_KEY, 0)
+            if (quantity == 0) {
+                textView.isVisible = false
+            } else {
+                textView.text = quantity.toString()
+                textView.isVisible = true
+            }
         }
     }
 

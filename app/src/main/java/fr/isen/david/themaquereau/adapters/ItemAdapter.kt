@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import fr.isen.david.themaquereau.DishDetailsActivity
+import fr.isen.david.themaquereau.HomeActivity
 import fr.isen.david.themaquereau.R
 import fr.isen.david.themaquereau.databinding.LayoutDishCardBinding
 import fr.isen.david.themaquereau.model.domain.Item
@@ -17,6 +18,7 @@ import fr.isen.david.themaquereau.model.domain.Item
 // Note that we specify the custom ViewHolder which gives us access to our views
 class ItemAdapter(
     private var items: List<Item>,
+    private val category: Int,
     private val context: Context
 ) : RecyclerView.Adapter<ItemAdapter.ItemHolder>() {
     // Provide a direct reference to each of the views within a data item
@@ -74,6 +76,7 @@ class ItemAdapter(
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             // give the id of the item to the next activity to retrieve it from the API
             intent.putExtra(ITEM, item)
+            intent.putExtra(HomeActivity.CATEGORY, category)
             context.startActivity(intent)
         }
     }

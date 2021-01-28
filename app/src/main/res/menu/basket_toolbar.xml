@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
         android:id="@+id/showBasket"
-        android:actionLayout="@layout/layout_cart_action"
-        android:icon="@drawable/cooking_pot"
         android:title="@string/basket"
-        app:showAsAction="ifRoom" />
+        app:actionLayout="@layout/layout_cart_action"
+        app:showAsAction="always" />
 </menu>

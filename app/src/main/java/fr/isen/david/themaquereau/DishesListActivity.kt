@@ -1,10 +1,12 @@
 package fr.isen.david.themaquereau
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,7 +51,7 @@ class DishesListActivity : AppCompatActivity() {
         // Recycler view adapter
         // Retrieve the recycler view
         val rvItems = binding.itemRecyclerView
-        val adapter = ItemAdapter(items, applicationContext)
+        val adapter = ItemAdapter(items, category, applicationContext)
         rvItems.adapter = adapter
         rvItems.layoutManager = LinearLayoutManager(this)
 
@@ -93,7 +95,7 @@ class DishesListActivity : AppCompatActivity() {
 
                 // items
                 val rvItems = binding.itemRecyclerView
-                val adapter = ItemAdapter(data.items, applicationContext)
+                val adapter = ItemAdapter(data.items, category, applicationContext)
                 rvItems.adapter = adapter
 
                 binding.itemRecyclerView.isVisible = true
@@ -162,6 +164,20 @@ class DishesListActivity : AppCompatActivity() {
     // Inflate the menu to the toolbar
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.basket_toolbar, menu)
+
+        menu?.findItem(R.id.showBasket)?.let {
+            // Setup the badge with the quantity
+            //setupBadge(it)
+
+            // Add a click listener
+            it.actionView.setOnClickListener {
+                val menuItemIntent = Intent(this, BasketActivity::class.java)
+                // to return to the right activity, the basket activity need the category
+                menuItemIntent.putExtra(HomeActivity.CATEGORY, category)
+                startActivity(menuItemIntent)
+            }
+        }
+
         return true
     }
 
