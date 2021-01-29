@@ -2,7 +2,6 @@ package fr.isen.david.themaquereau
 
 import android.content.Context
 import android.content.Intent
-import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -13,27 +12,15 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.whenStarted
-import androidx.room.Room
-import androidx.room.withTransaction
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityDishDetailsBinding
 import fr.isen.david.themaquereau.fragments.DishImagesPagerFragment
-import fr.isen.david.themaquereau.model.database.AppDatabase
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.File
 import java.io.FileNotFoundException
 import java.lang.NumberFormatException
 
@@ -111,8 +98,8 @@ class DishDetailsActivity : AppCompatActivity() {
     private fun saveOrder(order: Order) {
         // Try to read the json file if exist
         try {
-            //TODO simplify
-            applicationContext.openFileInput(DishDetailsActivity.ORDER_FILE).use { inputStream ->
+            //TODO simplify with write text
+            applicationContext.openFileInput(ORDER_FILE).use { inputStream ->
                 inputStream.bufferedReader().use {
                     val ordersJsonString = it.readText()
                     val previousOrders = Gson().fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
@@ -120,9 +107,9 @@ class DishDetailsActivity : AppCompatActivity() {
                     order.order_id += 1
                     previousOrders.add(order)
                     val newJsonOrders = Gson().toJson(previousOrders)
-                    applicationContext.openFileOutput(DishDetailsActivity.ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
+                    applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
                         outputStream.write(newJsonOrders.toString().toByteArray())
-                        Log.i(DishDetailsActivity.TAG, "updated orders: $newJsonOrders")
+                        Log.i(TAG, "updated orders: $newJsonOrders")
                     }
                 }
             }
@@ -131,9 +118,9 @@ class DishDetailsActivity : AppCompatActivity() {
             val jsonOrder = Gson().toJsonTree(order)
             orders.add(Gson().toJsonTree(jsonOrder))
             // Otherwise save json order to file
-            applicationContext.openFileOutput(DishDetailsActivity.ORDER_FILE, Context.MODE_PRIVATE).use {
+            applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use {
                 it.write(orders.toString().toByteArray())
-                Log.i(DishDetailsActivity.TAG, "order saved: $jsonOrder")
+                Log.i(TAG, "order saved: $jsonOrder")
             }
         }
     }
