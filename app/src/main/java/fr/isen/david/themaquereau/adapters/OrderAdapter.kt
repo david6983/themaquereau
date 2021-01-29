@@ -138,7 +138,7 @@ class OrderAdapter(
                     // add the quantity to the previous quantity
                     with(sharedPref.edit()) {
                         val orderNewQuantity = orders[position].quantity
-                        var newQuantity = 0
+                        val newQuantity: Int
                         // the user can decrease or increase the quantity
                         if (previousQuantity < orderNewQuantity) {
                             // if the user increase the number
