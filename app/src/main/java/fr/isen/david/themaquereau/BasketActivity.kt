@@ -3,12 +3,52 @@ package fr.isen.david.themaquereau
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import fr.isen.david.themaquereau.adapters.ItemAdapter
+import fr.isen.david.themaquereau.adapters.OrderAdapter
+import fr.isen.david.themaquereau.databinding.ActivityBasketBinding
+import fr.isen.david.themaquereau.helpers.SwipeToDeleteCallback
+import fr.isen.david.themaquereau.model.domain.Order
+import fr.isen.david.themaquereau.util.displayToast
+import java.io.FileNotFoundException
 
 class BasketActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityBasketBinding
+    private lateinit var orders: MutableList<Order>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_basket)
+        binding = ActivityBasketBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        // Retrieve the orders from file if exist
+        try {
+            applicationContext.openFileInput(DishDetailsActivity.ORDER_FILE).use { inputStream ->
+                inputStream.bufferedReader().use {
+                    val ordersJsonString = it.readText()
+                    orders = Gson().fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
+
+                    // Render the orders in the recycle view
+                    val rvOrders = binding.orderList
+                    val adapter = OrderAdapter(orders, applicationContext)
+                    rvOrders.adapter = adapter
+                    rvOrders.layoutManager = LinearLayoutManager(this)
+
+                    // Add our touch helper
+                    val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
+                    itemTouchHelper.attachToRecyclerView(rvOrders)
+                }
+            }
+        } catch(e: FileNotFoundException) {
+            // Alert the user that there are no orders yet
+            displayToast("no orders found", applicationContext)
+            // redirect to the parent activity
+            val intent = getParentActivityIntentImpl()
+            startActivity(intent)
+        }
     }
 
     override fun getSupportParentActivityIntent(): Intent? {
