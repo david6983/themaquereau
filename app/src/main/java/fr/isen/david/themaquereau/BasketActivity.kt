@@ -1,18 +1,26 @@
 package fr.isen.david.themaquereau
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.whenStarted
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
+import androidx.room.withTransaction
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.adapters.OrderAdapter
 import fr.isen.david.themaquereau.databinding.ActivityBasketBinding
 import fr.isen.david.themaquereau.helpers.SwipeToDeleteCallback
+import fr.isen.david.themaquereau.model.database.AppDatabase
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
+import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 
 class BasketActivity : AppCompatActivity() {
@@ -58,6 +66,26 @@ class BasketActivity : AppCompatActivity() {
             // Convert to JsonArray the orders
             val finalOrder = gson.toJson(orders)
             Log.i(TAG, "The final order is $finalOrder")
+            // Save the order in a database
+            lifecycleScope.launch {
+                whenStarted {
+                    persistFinalOrderToDb(orders)
+                }
+            }
+        }
+    }
+
+    private suspend fun persistFinalOrderToDb(finalOrder: List<Order>) {
+        //TODO extract the db with koin library
+        Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, AppDatabase.DB_NAME
+        ).build().let {
+            it.withTransaction {
+                val orderDao = it.orderDao()
+                orderDao.insertAll(finalOrder)
+                Log.i(DishDetailsActivity.TAG, "order saved to database")
+            }
         }
     }
 
