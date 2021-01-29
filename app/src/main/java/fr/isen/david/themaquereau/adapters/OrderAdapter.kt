@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.set
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -70,24 +71,26 @@ class OrderAdapter(
         // Price
         holder.realPrice.text = order.realPrice.toString()
         // Quantity
-        holder.quantity.setText(order.quantity.toString())
+        holder.quantity.text = order.quantity.toString()
 
-        // Number Input Listener
-        holder.quantity.addTextChangedListener { txt ->
-            updateQuantity(position, txt)
-        }
     }
 
     private fun updateQuantity(position: Int, quantityValue: Editable?) {
         try {
-            // save the previous quantity
-            previousQuantity = orders[position].quantity
-            // update the new quantity
-            orders[position].quantity = Integer.parseInt(quantityValue.toString())
-            orders[position].realPrice = orders[position].quantity * orders[position].item.prices[0].price
-            binding.realPrice.text = orders[position].realPrice.toString()
-            // save changes in file
-            updateOrder(position)
+            val inputQuantity = Integer.parseInt(quantityValue.toString())
+            if (inputQuantity > 0) {
+                // save the previous quantity
+                previousQuantity = orders[position].quantity
+                // update the new quantity
+                orders[position].quantity = inputQuantity
+                orders[position].realPrice =
+                    orders[position].quantity * orders[position].item.prices[0].price
+                binding.realPrice.text = orders[position].realPrice.toString()
+                // save changes in file
+                updateOrder(position)
+            } else {
+                displayToast("La quantité doit etre superieur a 0", context)
+            }
         } catch (e: NumberFormatException) {
             displayToast("no number", context)
         }
@@ -131,15 +134,17 @@ class OrderAdapter(
                         if (previousQuantity < orderNewQuantity) {
                             // if the user increase the number
                             newQuantity = orders[position].quantity - previousQuantity
+                            putInt(DishDetailsActivity.QUANTITY_KEY, currentQuantity + newQuantity)
                             Log.d("OrderAdapter", "offset quantity: $newQuantity")
                         } else if (previousQuantity > orderNewQuantity) {
                             // if the user decrease the number
                             newQuantity = previousQuantity - orders[position].quantity
+                            putInt(DishDetailsActivity.QUANTITY_KEY, currentQuantity - newQuantity)
                             Log.d("OrderAdapter", "offset quantity: $newQuantity")
                         }
-                        putInt(DishDetailsActivity.QUANTITY_KEY, currentQuantity + newQuantity)
                         apply()
                     }
+                    notifyItemChanged(position)
                 }
             }
         } catch(e: FileNotFoundException) {
