@@ -28,18 +28,22 @@ class DishImageFragment : Fragment() {
             // get image link from parent fragment
             val imageLink = getString(ARG_OBJECT)
             // Image
-            val picasso = Picasso.get()
-            if (!imageLink.isNullOrEmpty()) {
-                // image link is found
-                picasso
-                    .load(imageLink)
-                    .into(binding.dishPagedImage)
-            } else {
-                // by default
-                picasso
-                    .load(R.drawable.maquereau_not_found)
-                    .into(binding.dishPagedImage)
-            }
+            renderImage(imageLink)
+        }
+    }
+
+    private fun renderImage(imageLink: String?) {
+        val picasso = Picasso.get()
+        if (!imageLink.isNullOrEmpty()) {
+            // image link is found
+            picasso
+                .load(imageLink)
+                .into(binding.dishPagedImage)
+        } else {
+            // by default
+            picasso
+                .load(R.drawable.maquereau_not_found)
+                .into(binding.dishPagedImage)
         }
     }
 

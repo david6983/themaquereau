@@ -17,6 +17,7 @@ import fr.isen.david.themaquereau.R
 import fr.isen.david.themaquereau.databinding.LayoutOrderBasketBinding
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
+import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.lang.NumberFormatException
 
@@ -56,6 +57,15 @@ class OrderAdapter(
         val textView = holder.dishName
         textView.text = order.item.name_fr
         // Image
+        renderImage(order, holder)
+        // Price
+        holder.realPrice.text = order.realPrice.toString()
+        // Quantity
+        holder.quantity.text = order.quantity.toString()
+
+    }
+
+    private fun renderImage(order: Order, holder: OrderHolder) {
         val picasso = Picasso.get()
         if (order.item.images.first().isNotEmpty()) {
             picasso
@@ -68,13 +78,13 @@ class OrderAdapter(
                 .resize(400, 400)
                 .into(holder.dishImage)
         }
-        // Price
-        holder.realPrice.text = order.realPrice.toString()
-        // Quantity
-        holder.quantity.text = order.quantity.toString()
-
     }
 
+    /**
+     * Use this function to update quantity from the basket
+     *
+     * Currently, the features has been removed but will be solved later on
+     */
     private fun updateQuantity(position: Int, quantityValue: Editable?) {
         try {
             val inputQuantity = Integer.parseInt(quantityValue.toString())
@@ -112,8 +122,7 @@ class OrderAdapter(
             view.context.openFileInput(DishDetailsActivity.ORDER_FILE).use { inputStream ->
                 inputStream.bufferedReader().use {
                     val gson = Gson()
-                    val ordersJsonString = it.readText()
-                    val ordersFromFile = gson.fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
+                    val ordersFromFile = retrieveOrdersFromReader(it, gson)
                     // update the order
                     ordersFromFile[position] = orders[position]
                     val ordersToFile = gson.toJson(ordersFromFile)
@@ -158,8 +167,7 @@ class OrderAdapter(
             view.context.openFileInput(DishDetailsActivity.ORDER_FILE).use { inputStream ->
                 inputStream.bufferedReader().use {
                     val gson = Gson()
-                    val ordersJsonString = it.readText()
-                    val ordersFromFile = gson.fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
+                    val ordersFromFile = retrieveOrdersFromReader(it, gson)
                     // delete the order
                     ordersFromFile.removeAt(position)
                     val ordersToFile = gson.toJson(ordersFromFile)
@@ -183,6 +191,11 @@ class OrderAdapter(
             // Alert the user that there are no orders yet
             displayToast("cannot retrieve orders", view.context)
         }
+    }
+
+    private fun retrieveOrdersFromReader(reader: BufferedReader, gson: Gson): MutableList<Order> {
+        val ordersJsonString = reader.readText()
+        return gson.fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
     }
 
     private fun showUndoSnackbar() {

@@ -51,6 +51,30 @@ class ItemAdapter(
         val textView = holder.dishNameView
         textView.text = item.name_fr
         // Image
+        renderImage(item, holder)
+        // Price
+        item.prices.isNotEmpty().let {
+            // Extract the first price only ('from ...')
+            holder.dishPrice.text = item.prices[0].price.toString()
+        }
+
+        // listener on the item
+        holder.layout.setOnClickListener {
+            itemClickCallback(item)
+        }
+    }
+
+    private fun itemClickCallback(item: Item) {
+        // intent with external context
+        val intent = Intent(context, DishDetailsActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        // give the id of the item to the next activity to retrieve it from the API
+        intent.putExtra(ITEM, item)
+        intent.putExtra(HomeActivity.CATEGORY, category)
+        context.startActivity(intent)
+    }
+
+    private fun renderImage(item: Item, holder: ItemHolder) {
         val picasso = Picasso.get()
         if (item.images.first().isNotEmpty()) {
             picasso
@@ -62,22 +86,6 @@ class ItemAdapter(
                 .load(R.drawable.maquereau_not_found)
                 .resize(400, 400)
                 .into(holder.dishImage)
-        }
-        // Price
-        if (item.prices.isNotEmpty()) {
-            // Extract the first price only ('from ...')
-            holder.dishPrice.text = item.prices[0].price.toString()
-        }
-
-        // listener on the item
-        holder.layout.setOnClickListener {
-            // intent with external context
-            val intent = Intent(context, DishDetailsActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            // give the id of the item to the next activity to retrieve it from the API
-            intent.putExtra(ITEM, item)
-            intent.putExtra(HomeActivity.CATEGORY, category)
-            context.startActivity(intent)
         }
     }
 
