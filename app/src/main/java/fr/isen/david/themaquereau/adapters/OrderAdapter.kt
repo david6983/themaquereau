@@ -1,10 +1,12 @@
 package fr.isen.david.themaquereau.adapters
 
 import android.content.Context
+import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -15,12 +17,14 @@ import fr.isen.david.themaquereau.databinding.LayoutOrderBasketBinding
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
 import java.io.FileNotFoundException
+import java.lang.NumberFormatException
 
 class OrderAdapter(
     private var orders: MutableList<Order>,
     val context: Context
 ) : RecyclerView.Adapter<OrderAdapter.OrderHolder>() {
     private lateinit var recentlyDeletedOrder: Order
+    private var previousQuantity: Int = 0
     private var recentlyDeletedOrderPosition: Int = -1
     private lateinit var binding: LayoutOrderBasketBinding
     private lateinit var view: View
@@ -66,9 +70,27 @@ class OrderAdapter(
         // Price
         holder.realPrice.text = order.realPrice.toString()
         // Quantity
-        holder.quantity.text = order.quantity.toString()
+        holder.quantity.setText(order.quantity.toString())
 
-        //TODO Swipe to delete
+        // Number Input Listener
+        holder.quantity.addTextChangedListener { txt ->
+            updateQuantity(position, txt)
+        }
+    }
+
+    private fun updateQuantity(position: Int, quantityValue: Editable?) {
+        try {
+            // save the previous quantity
+            previousQuantity = orders[position].quantity
+            // update the new quantity
+            orders[position].quantity = Integer.parseInt(quantityValue.toString())
+            orders[position].realPrice = orders[position].quantity * orders[position].item.prices[0].price
+            binding.realPrice.text = orders[position].realPrice.toString()
+            // save changes in file
+            updateOrder(position)
+        } catch (e: NumberFormatException) {
+            displayToast("no number", context)
+        }
     }
 
     fun deleteItem(position: Int) {
@@ -76,13 +98,57 @@ class OrderAdapter(
         recentlyDeletedOrderPosition = position
         orders.removeAt(position)
         // remove it in the file
-        updateOrders(position)
+        deleteOrder(position)
         // notify the recycler view
         notifyItemRemoved(position)
         showUndoSnackbar()
     }
 
-    private fun updateOrders(position: Int) {
+    private fun updateOrder(position: Int) {
+        try {
+            view.context.openFileInput(DishDetailsActivity.ORDER_FILE).use { inputStream ->
+                inputStream.bufferedReader().use {
+                    val gson = Gson()
+                    val ordersJsonString = it.readText()
+                    val ordersFromFile = gson.fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
+                    // update the order
+                    ordersFromFile[position] = orders[position]
+                    val ordersToFile = gson.toJson(ordersFromFile)
+                    // save the file again
+                    view.context.applicationContext.openFileOutput(DishDetailsActivity.ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
+                        outputStream.write(ordersToFile.toString().toByteArray())
+                        Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
+                    }
+                    // Update shared preferences
+                    val sharedPref = context.getSharedPreferences(
+                        context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+                    val currentQuantity = sharedPref.getInt(DishDetailsActivity.QUANTITY_KEY, 0)
+                    // add the quantity to the previous quantity
+                    with(sharedPref.edit()) {
+                        val orderNewQuantity = orders[position].quantity
+                        var newQuantity = 0
+                        // the user can decrease or increase the quantity
+                        if (previousQuantity < orderNewQuantity) {
+                            // if the user increase the number
+                            newQuantity = orders[position].quantity - previousQuantity
+                            Log.d("OrderAdapter", "offset quantity: $newQuantity")
+                        } else if (previousQuantity > orderNewQuantity) {
+                            // if the user decrease the number
+                            newQuantity = previousQuantity - orders[position].quantity
+                            Log.d("OrderAdapter", "offset quantity: $newQuantity")
+                        }
+                        putInt(DishDetailsActivity.QUANTITY_KEY, currentQuantity + newQuantity)
+                        apply()
+                    }
+                }
+            }
+        } catch(e: FileNotFoundException) {
+            // Alert the user that there are no orders yet
+            displayToast("cannot retrieve orders", view.context)
+        }
+    }
+
+    private fun deleteOrder(position: Int) {
         try {
             view.context.openFileInput(DishDetailsActivity.ORDER_FILE).use { inputStream ->
                 inputStream.bufferedReader().use {

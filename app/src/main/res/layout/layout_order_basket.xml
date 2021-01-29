@@ -50,20 +50,21 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.96" />
 
-        <TextView
+        <EditText
             android:id="@+id/quantityBasketOrder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
+            android:ems="10"
             android:fontFamily="cursive"
+            android:inputType="number"
             android:text="10"
-            android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textStyle="italic"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.587"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.023"
+            app:layout_constraintStart_toEndOf="@+id/quantityText"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.95" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/realPrice"
@@ -85,11 +86,11 @@
             android:id="@+id/quantityText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
+            android:layout_marginStart="40dp"
             android:fontFamily="cursive"
             android:text="@string/quantity_text"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/quantityBasketOrder"
+            app:layout_constraintStart_toEndOf="@+id/devise"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.96" />
 
