@@ -105,7 +105,17 @@ class DishDetailsActivity : AppCompatActivity() {
                     val previousOrders = Gson().fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
                     // update id
                     order.order_id += 1
-                    previousOrders.add(order)
+                    // verify if the order already exist by name
+                    previousOrders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
+                        if (foundOrder !== null) {
+                            val position = previousOrders.indexOf(foundOrder);
+                            foundOrder.quantity += order.quantity
+                            foundOrder.realPrice += order.realPrice
+                            previousOrders.set(position, foundOrder)
+                        } else {
+                            previousOrders.add(order)
+                        }
+                    }
                     val newJsonOrders = Gson().toJson(previousOrders)
                     applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
                         outputStream.write(newJsonOrders.toString().toByteArray())
