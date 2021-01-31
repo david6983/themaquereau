@@ -3,6 +3,8 @@
     <string name="app_name">The Maquereau</string>
     <!-- Toolbar -->
     <string name="basket">Panier</string>
+    <!-- Home -->
+    <string name="signature">Par Jean-Tanguy Talamoni de corse</string>
     <!-- Display Menu Items Activity Titles -->
     <string name="entree_title">Nos Entrées</string>
     <string name="plats_title">Nos Plats</string>
