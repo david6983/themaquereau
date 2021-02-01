@@ -75,12 +75,20 @@ class DishDetailsActivity : AppCompatActivity() {
             }
 
             binding.fishImageButton.setOnClickListener { v ->
+                // first time: redirect to sign up page the first time
+                val intent = Intent(this, SignUpActivity::class.java)
+                intent.putExtra(ItemAdapter.ITEM, item)
+                startActivity(intent)
+                // else: redirect to sign in page
+
+                // else if connected: save the order
+
                 // Save the order in a file
-                saveOrder(order)
+                //saveOrder(order)
                 // Save the quantity
-                updateQuantity(order.quantity)
+                //updateQuantity(order.quantity)
                 // Alert the user with a snack bar
-                alertUser(v)
+                //alertUser(v)
             }
         }
     }

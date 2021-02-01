@@ -8,4 +8,6 @@
     <color name="main_darker">#6D4C41</color>
     <color name="secondary">#BCAAA4</color>
     <color name="secondary_variant">#A4958F</color>
+    <color name="invalid">#A32222</color>
+    <color name="valid">#46982A</color>
 </resources>

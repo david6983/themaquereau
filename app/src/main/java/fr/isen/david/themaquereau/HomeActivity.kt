@@ -42,6 +42,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     // Inflate the menu to the toolbar
+    //TODO move to a AppCompactActivity that will be heritate
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.basket_toolbar, menu)
 

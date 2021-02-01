@@ -37,6 +37,22 @@
     <string name="quantity_text">Quantity :</string>
     <string name="dish_description">Image du plat</string>
     <string name="final_order">Finaliser la commande</string>
+    <!-- Sign Up -->
+    <string name="title_sign_up">Créer un compte</string>
+    <string name="submit_sign_up">Créer</string>
+    <string name="submit_sign_in">Se connecter</string>
+    <string name="label_name">Votre nom</string>
+    <string name="label_lastname">Votre prénom</string>
+    <string name="label_address">Votre adresse</string>
+    <string name="label_email">Votre email</string>
+    <string name="label_password">Votre mot de passe</string>
+    <string name="error_email_non_valid">L\'email n\'est pas valide !</string>
+    <string name="error_empty">Ne peux pas être vide !</string>
+    <string name="error_at_least_one_number">Doit contenir au moins un nombre !</string>
+    <string name="error_at_least_one_uppercase">Doit contenir au moins une lettre en majuscule !</string>
+    <string name="error_length_prefix">Doit contenir </string>
+    <string name="error_length_suffix"> lettres !</string>
+    <string name="error_at_least_one_special">Doit contenir au moins une lettre spécial !</string>
     <!-- Shared preferences -->
     <string name="preference_file_key">fr.isen.david.themaquereau.preferences</string>
     <string name="deleted_order">Commande annulée</string>
