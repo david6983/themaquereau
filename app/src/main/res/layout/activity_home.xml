@@ -67,6 +67,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/homeBackground" />
 
+    <TextView
+        android:id="@+id/findUsLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="cursive"
+        android:text="@string/find_us"
+        android:textColor="@color/link"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/michelinLogo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeBackground"
+        app:layout_constraintVertical_bias="0.0" />
+
     <ImageView
         android:id="@+id/mainTitle"
         android:layout_width="wrap_content"
@@ -76,7 +91,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/homeBackground"
-        app:srcCompat="@drawable/title_white" />
+        app:srcCompat="@drawable/title_white"
+        android:contentDescription="TODO" />
 
     <ImageView
         android:id="@+id/michelinLogo"
@@ -86,7 +102,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/michelin" />
+        app:srcCompat="@drawable/michelin"
+        android:contentDescription="TODO" />
 
     <ImageView
         android:id="@+id/homeBackground"
@@ -102,7 +119,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/background"
-        app:tint="#46000000" />
+        app:tint="#46000000"
+        android:contentDescription="TODO" />
 
     <ImageView
         android:id="@+id/homeDivider1"

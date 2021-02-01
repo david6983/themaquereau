@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -20,7 +19,16 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        //setSupportActionBar(binding.basketToolbar)
+
+        manageMainMenu()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, " destroyed") // log the destroy cycle
+    }
+
+    private fun manageMainMenu() {
         val intent = Intent(this, DishesListActivity::class.java)
         binding.homeEntreeButton.setOnClickListener {
             intent.putExtra(CATEGORY, 0)
@@ -36,13 +44,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.i(TAG, " destroyed") // log the destroy cycle
-    }
-
     // Inflate the menu to the toolbar
-    //TODO move to a AppCompactActivity that will be heritate
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.basket_toolbar, menu)
 
@@ -56,7 +58,6 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(menuItemIntent)
             }
         }
-
 
         return true
     }
@@ -80,6 +81,5 @@ class HomeActivity : AppCompatActivity() {
 
     companion object {
         val TAG: String = HomeActivity::class.java.simpleName
-        const val CATEGORY = "category"
     }
 }

@@ -146,12 +146,27 @@
         android:id="@+id/submitSignUp"
         android:layout_width="210dp"
         android:layout_height="40dp"
-        android:layout_marginTop="45dp"
         android:layout_marginBottom="32dp"
+        android:fontFamily="serif"
         android:text="@string/submit_sign_up"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputAddress" />
+
+    <TextView
+        android:id="@+id/alreadyHaveAccountLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="cursive"
+        android:text="@string/have_account"
+        android:textColor="@color/link"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submitSignUp"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,33 +1,28 @@
 package fr.isen.david.themaquereau.adapters
 
 import android.content.Context
-import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.text.set
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import fr.isen.david.themaquereau.DishDetailsActivity
-import fr.isen.david.themaquereau.R
+import fr.isen.david.themaquereau.*
 import fr.isen.david.themaquereau.databinding.LayoutOrderBasketBinding
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
-import java.io.BufferedReader
-import java.io.FileNotFoundException
-import java.lang.NumberFormatException
+import java.io.File
 
 class OrderAdapter(
     private var orders: MutableList<Order>,
-    val context: Context
+    val context: Context,
+    private val cacheDir: File
 ) : RecyclerView.Adapter<OrderAdapter.OrderHolder>() {
-    private lateinit var recentlyDeletedOrder: Order
     private var previousQuantity: Int = 0
     private var recentlyDeletedOrderPosition: Int = -1
+    private lateinit var recentlyDeletedOrder: Order
     private lateinit var binding: LayoutOrderBasketBinding
     private lateinit var view: View
 
@@ -70,39 +65,13 @@ class OrderAdapter(
         if (order.item.images.first().isNotEmpty()) {
             picasso
                 .load(order.item.images.first())
-                .resize(400, 400)
+                .resize(IMAGE_WIDTH, IMAGE_WIDTH)
                 .into(holder.dishImage)
         } else {
             picasso
                 .load(R.drawable.maquereau_not_found)
-                .resize(400, 400)
+                .resize(IMAGE_WIDTH, IMAGE_WIDTH)
                 .into(holder.dishImage)
-        }
-    }
-
-    /**
-     * Use this function to update quantity from the basket
-     *
-     * Currently, the features has been removed but will be solved later on
-     */
-    private fun updateQuantity(position: Int, quantityValue: Editable?) {
-        try {
-            val inputQuantity = Integer.parseInt(quantityValue.toString())
-            if (inputQuantity > 0) {
-                // save the previous quantity
-                previousQuantity = orders[position].quantity
-                // update the new quantity
-                orders[position].quantity = inputQuantity
-                orders[position].realPrice =
-                    orders[position].quantity * orders[position].item.prices[0].price
-                binding.realPrice.text = orders[position].realPrice.toString()
-                // save changes in file
-                updateOrder(position)
-            } else {
-                displayToast("La quantité doit etre superieur a 0", context)
-            }
-        } catch (e: NumberFormatException) {
-            displayToast("no number", context)
         }
     }
 
@@ -117,85 +86,35 @@ class OrderAdapter(
         showUndoSnackbar()
     }
 
-    private fun updateOrder(position: Int) {
-        try {
-            view.context.openFileInput(DishDetailsActivity.ORDER_FILE).use { inputStream ->
-                inputStream.bufferedReader().use {
-                    val gson = Gson()
-                    val ordersFromFile = retrieveOrdersFromReader(it, gson)
-                    // update the order
-                    ordersFromFile[position] = orders[position]
-                    val ordersToFile = gson.toJson(ordersFromFile)
-                    // save the file again
-                    view.context.applicationContext.openFileOutput(DishDetailsActivity.ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
-                        outputStream.write(ordersToFile.toString().toByteArray())
-                        Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
-                    }
-                    // Update shared preferences
-                    val sharedPref = context.getSharedPreferences(
-                        context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-                    val currentQuantity = sharedPref.getInt(DishDetailsActivity.QUANTITY_KEY, 0)
-                    // add the quantity to the previous quantity
-                    with(sharedPref.edit()) {
-                        val orderNewQuantity = orders[position].quantity
-                        val newQuantity: Int
-                        // the user can decrease or increase the quantity
-                        if (previousQuantity < orderNewQuantity) {
-                            // if the user increase the number
-                            newQuantity = orders[position].quantity - previousQuantity
-                            putInt(DishDetailsActivity.QUANTITY_KEY, currentQuantity + newQuantity)
-                            Log.d("OrderAdapter", "offset quantity: $newQuantity")
-                        } else if (previousQuantity > orderNewQuantity) {
-                            // if the user decrease the number
-                            newQuantity = previousQuantity - orders[position].quantity
-                            putInt(DishDetailsActivity.QUANTITY_KEY, currentQuantity - newQuantity)
-                            Log.d("OrderAdapter", "offset quantity: $newQuantity")
-                        }
-                        apply()
-                    }
-                    notifyItemChanged(position)
-                }
-            }
-        } catch(e: FileNotFoundException) {
-            // Alert the user that there are no orders yet
-            displayToast("cannot retrieve orders", view.context)
-        }
-    }
-
     private fun deleteOrder(position: Int) {
-        try {
-            view.context.openFileInput(DishDetailsActivity.ORDER_FILE).use { inputStream ->
-                inputStream.bufferedReader().use {
-                    val gson = Gson()
-                    val ordersFromFile = retrieveOrdersFromReader(it, gson)
-                    // delete the order
-                    ordersFromFile.removeAt(position)
-                    val ordersToFile = gson.toJson(ordersFromFile)
-                    // save the file again
-                    view.context.applicationContext.openFileOutput(DishDetailsActivity.ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
-                        outputStream.write(ordersToFile.toString().toByteArray())
-                        Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
-                    }
-                    // Update shared preferences
-                    val sharedPref = context.getSharedPreferences(
-                        context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-                    val currentQuantity = sharedPref.getInt(DishDetailsActivity.QUANTITY_KEY, 0)
-                    // add the quantity to the previous quantity
-                    with(sharedPref.edit()) {
-                        putInt(DishDetailsActivity.QUANTITY_KEY, currentQuantity - recentlyDeletedOrder.quantity)
-                        apply()
-                    }
-                }
+        val file = File(cacheDir.absolutePath + "/$ORDER_FILE")
+        if (file.exists()) {
+            val gson = Gson()
+            val ordersFromFile = retrieveOrders(file, gson)
+            // delete the order
+            ordersFromFile.removeAt(position)
+            val ordersToFile = gson.toJson(ordersFromFile)
+            // save the file again
+            file.writeText(ordersToFile.toString())
+            Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
+
+            // Update shared preferences
+            val sharedPref = context.getSharedPreferences(
+                context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+            val currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
+            // add the quantity to the previous quantity
+            with(sharedPref.edit()) {
+                putInt(QUANTITY_KEY, currentQuantity - recentlyDeletedOrder.quantity)
+                apply()
             }
-        } catch(e: FileNotFoundException) {
+        } else {
             // Alert the user that there are no orders yet
             displayToast("cannot retrieve orders", view.context)
         }
     }
 
-    private fun retrieveOrdersFromReader(reader: BufferedReader, gson: Gson): MutableList<Order> {
-        val ordersJsonString = reader.readText()
-        return gson.fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
+    private fun retrieveOrders(file: File, gson: Gson): MutableList<Order> {
+        return gson.fromJson(file.readText(), Array<Order>::class.java).toMutableList()
     }
 
     private fun showUndoSnackbar() {

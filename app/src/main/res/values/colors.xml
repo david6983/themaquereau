@@ -10,4 +10,5 @@
     <color name="secondary_variant">#A4958F</color>
     <color name="invalid">#A32222</color>
     <color name="valid">#46982A</color>
+    <color name="link">#3F51B5</color>
 </resources>

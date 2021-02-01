@@ -27,8 +27,6 @@
                 android:value="fr.isen.david.themaquereau.HomeActivity" />
         </activity>
         <activity android:name=".DishDetailsActivity">
-
-            <!-- DishesListActivity is the main parent of DishDetailActivity -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fr.isen.david.themaquereau.DishesListActivity" />
@@ -36,8 +34,6 @@
         <activity
             android:name=".DishesListActivity"
             android:parentActivityName=".HomeActivity">
-
-            <!-- HomeActivity is the main parent for any other activities -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fr.isen.david.themaquereau.HomeActivity" />

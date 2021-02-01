@@ -5,6 +5,7 @@
     <string name="basket">Panier</string>
     <!-- Home -->
     <string name="signature">Par Jean-Tanguy Talamoni de corse</string>
+    <string name="find_us">Nous trouver</string>
     <!-- Display Menu Items Activity Titles -->
     <string name="entree_title">Nos Entrées</string>
     <string name="plats_title">Nos Plats</string>
@@ -37,6 +38,8 @@
     <string name="quantity_text">Quantity :</string>
     <string name="dish_description">Image du plat</string>
     <string name="final_order">Finaliser la commande</string>
+    <!-- Sign In -->
+    <string name="title_sign_in">Se connecter</string>
     <!-- Sign Up -->
     <string name="title_sign_up">Créer un compte</string>
     <string name="submit_sign_up">Créer</string>
@@ -45,6 +48,8 @@
     <string name="label_lastname">Votre prénom</string>
     <string name="label_address">Votre adresse</string>
     <string name="label_email">Votre email</string>
+    <string name="no_account">Je n\'ai pas de compte</string>
+    <string name="have_account">J\'ai déja un compte</string>
     <string name="label_password">Votre mot de passe</string>
     <string name="error_email_non_valid">L\'email n\'est pas valide !</string>
     <string name="error_empty">Ne peux pas être vide !</string>

@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
+import com.android.volley.*
+import com.android.volley.toolbox.JsonObjectRequest
 import com.wajahatkarim3.easyvalidation.core.Validator
 import com.wajahatkarim3.easyvalidation.core.view_ktx.validator
-import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivitySignUpBinding
+import fr.isen.david.themaquereau.model.domain.User
+import org.json.JSONObject
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
@@ -31,13 +34,34 @@ class SignUpActivity : AppCompatActivity() {
         inputPassword = binding.inputPassword
 
         binding.submitSignUp.setOnClickListener {
-            emailValidator().check()
-            passwordValidator().check()
-            textValidator(inputName).check()
-            textValidator(inputLastName).check()
-            textValidator(inputAddress).check()
-            Log.i(TAG, "name: ${inputName.text}; last name: ${inputLastName.text}; email: ${inputEmail.text}; address: ${inputAddress.text}; password: ${inputPassword.text}")
+            val emailValid = emailValidator().check()
+            val passwordValid = passwordValidator().check()
+            val nameValid = textValidator(inputName).check()
+            val lastnameValid = textValidator(inputLastName).check()
+            val addressValid = textValidator(inputAddress).check()
 
+            if (
+                emailValid &&
+                passwordValid &&
+                nameValid &&
+                lastnameValid &&
+                addressValid
+            ) {
+                val user = User(
+                   inputName.text.toString(),
+                   inputLastName.text.toString(),
+                   inputEmail.text.toString(),
+                   inputAddress.text.toString(),
+                   inputPassword.text.toString() //TODO encrypt password & salt
+                )
+                Log.d(TAG, "new sign up : $user")
+            }
+        }
+
+        binding.alreadyHaveAccountLink.setOnClickListener {
+            val intent = Intent(this, SignInActivity::class.java)
+            //intent.putExtra(ItemAdapter.ITEM, item)
+            startActivity(intent)
         }
     }
 
@@ -52,8 +76,8 @@ class SignUpActivity : AppCompatActivity() {
     private fun getParentActivityIntentImpl(): Intent {
         val parentIntent = Intent(this, DishDetailsActivity::class.java)
         // give back the item to the parent
-        intent.extras?.getSerializable(ItemAdapter.ITEM)?.let {
-            parentIntent.putExtra(ItemAdapter.ITEM, it)
+        intent.extras?.getSerializable(ITEM)?.let {
+            parentIntent.putExtra(ITEM, it)
 
         }
         return parentIntent
@@ -103,13 +127,22 @@ class SignUpActivity : AppCompatActivity() {
             }
     }
 
+    private fun signUp(user: User, id_shop: String): JsonObjectRequest {
+        // params
+        val params = JSONObject()
+        params.put("id_shop", id_shop)
+        user.toSignUpParams(params)
+        return JsonObjectRequest(
+            Request.Method.POST, API_REGISTER_URL, params,
+            Response.Listener { response ->
+                Log.d(TAG, "Response: $response")
+            },
+            Response.ErrorListener { error ->
+                Log.e(DishesListActivity.TAG, "Error: ${error.message}")
+            })
+    }
+
     companion object {
         val TAG = SignUpActivity::class.java.simpleName
-        const val PASSWORD_LENGTH: Int = 12
-        const val ERROR_EMPTY = "Can't be empty!"
-        const val ERROR_LENGTH = "Length should be greater than"
-        const val ERROR_NO_NUMBER = "At least one letter should be a number!"
-        const val ERROR_NO_UPPERCASE = "At least one letter should be in uppercase!"
-        const val ERROR_NO_SPECIAL = "Should contain at least 1 special characters!"
     }
 }

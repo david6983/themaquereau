@@ -15,13 +15,12 @@ import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
-import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityDishDetailsBinding
 import fr.isen.david.themaquereau.fragments.DishImagesPagerFragment
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
-import java.io.FileNotFoundException
+import java.io.File
 import java.lang.NumberFormatException
 
 class DishDetailsActivity : AppCompatActivity() {
@@ -37,59 +36,67 @@ class DishDetailsActivity : AppCompatActivity() {
         setContentView(view)
 
         // get the selected item id
-        intent.extras?.getSerializable(ItemAdapter.ITEM)?.let { serializedItem ->
+        intent.extras?.getSerializable(ITEM)?.let { serializedItem ->
             item = serializedItem as Item
-            binding.dishDetailName.text = item.name_fr
-            // Create an order
-            order = Order(0, item, 1 , 0.0)
-            // Ingredients
-            binding.dishDetailIngredients.text = item.ingredients.joinToString(", ") { it.name_fr }
-            // Get quantity
-            try {
-                val quantity = Integer.parseInt(binding.quantity.text.toString())
-                // Price
-                if (item.prices.isNotEmpty()) {
-                    // convert the price to int
-                    order.realPrice = quantity * item.prices[0].price
-                    binding.dishDetailPrice.text = order.realPrice.toString()
-                }
-            } catch (e: NumberFormatException) {
-                displayToast("Cannot parse default value", applicationContext)
+        }
+
+        binding.dishDetailName.text = item.name_fr
+        // Create an order
+        order = Order(0, item, 1 , 0.0)
+        // Ingredients
+        binding.dishDetailIngredients.text = item.ingredients.joinToString(", ") { it.name_fr }
+        // Get quantity
+        getQuantity()
+
+        // Images Pager
+        setImagePager()
+
+        // Number Input Listener
+        binding.quantity.addTextChangedListener { txt ->
+            updateQuantity(item, txt)
+        }
+
+        binding.fishImageButton.setOnClickListener { v ->
+            // first time: redirect to sign up page the first time
+            //val intent = Intent(this, SignUpActivity::class.java)
+            //intent.putExtra(ItemAdapter.ITEM, item)
+            //startActivity(intent)
+            // else: redirect to sign in page
+            // else if connected: save the order
+            // Save the order in a file
+            saveOrder(order)
+            // Save the quantity
+            updateQuantity(order.quantity)
+            // Alert the user with a snack bar
+            alertUser(v)
+        }
+    }
+
+    private fun setImagePager() {
+        val pagerFragment = DishImagesPagerFragment()
+        pagerFragment.arguments = Bundle().apply {
+            // Give the item to the pager
+            putSerializable(DishImagesPagerFragment.ARG_OBJECT, item)
+        }
+
+        // Replace the fragment by the new one
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.dishPagerFragment, pagerFragment)
+            .addToBackStack("DishImagesPagerFragment")
+            .commit()
+    }
+
+    private fun getQuantity() {
+        try {
+            val quantity = Integer.parseInt(binding.quantity.text.toString())
+            // Price
+            if (item.prices.isNotEmpty()) {
+                // convert the price to int
+                order.realPrice = quantity * item.prices[0].price
+                binding.dishDetailPrice.text = order.realPrice.toString()
             }
-
-            // Images Pager
-            val pagerFragment = DishImagesPagerFragment()
-            pagerFragment.arguments = Bundle().apply {
-                // Give the item to the pager
-                putSerializable(DishImagesPagerFragment.ARG_OBJECT, item)
-            }
-            // Replace the fragment by the new one
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.dishPagerFragment, pagerFragment)
-                .addToBackStack("DishImagesPagerFragment")
-                .commit()
-
-            // Number Input Listener
-            binding.quantity.addTextChangedListener { txt ->
-                updateQuantity(item, txt)
-            }
-
-            binding.fishImageButton.setOnClickListener { v ->
-                // first time: redirect to sign up page the first time
-                val intent = Intent(this, SignUpActivity::class.java)
-                intent.putExtra(ItemAdapter.ITEM, item)
-                startActivity(intent)
-                // else: redirect to sign in page
-
-                // else if connected: save the order
-
-                // Save the order in a file
-                //saveOrder(order)
-                // Save the quantity
-                //updateQuantity(order.quantity)
-                // Alert the user with a snack bar
-                //alertUser(v)
-            }
+        } catch (e: NumberFormatException) {
+            displayToast("Cannot parse default value", applicationContext)
         }
     }
 
@@ -104,42 +111,32 @@ class DishDetailsActivity : AppCompatActivity() {
     }
 
     private fun saveOrder(order: Order) {
-        // Try to read the json file if exist
-        try {
-            //TODO simplify with write text
-            applicationContext.openFileInput(ORDER_FILE).use { inputStream ->
-                inputStream.bufferedReader().use {
-                    val ordersJsonString = it.readText()
-                    val previousOrders = Gson().fromJson(ordersJsonString, Array<Order>::class.java).toMutableList()
-                    // update id
-                    order.order_id += 1
-                    // verify if the order already exist by name
-                    previousOrders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
-                        if (foundOrder !== null) {
-                            val position = previousOrders.indexOf(foundOrder);
-                            foundOrder.quantity += order.quantity
-                            foundOrder.realPrice += order.realPrice
-                            previousOrders.set(position, foundOrder)
-                        } else {
-                            previousOrders.add(order)
-                        }
-                    }
-                    val newJsonOrders = Gson().toJson(previousOrders)
-                    applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
-                        outputStream.write(newJsonOrders.toString().toByteArray())
-                        Log.i(TAG, "updated orders: $newJsonOrders")
-                    }
+        val file = File(cacheDir.absolutePath + "/$ORDER_FILE")
+
+        if (file.exists()) {
+            val previousOrders = Gson().fromJson(file.readText(), Array<Order>::class.java).toMutableList()
+            // update id
+            order.order_id += 1
+            // verify if the order already exist by name
+            previousOrders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
+                if (foundOrder !== null) {
+                    val position = previousOrders.indexOf(foundOrder);
+                    foundOrder.quantity += order.quantity
+                    foundOrder.realPrice += order.realPrice
+                    previousOrders.set(position, foundOrder)
+                } else {
+                    previousOrders.add(order)
                 }
             }
-        } catch(e: FileNotFoundException) {
+            val newJsonOrders = Gson().toJson(previousOrders)
+            file.writeText(newJsonOrders.toString())
+            Log.i(TAG, "updated orders: $newJsonOrders")
+        } else {
             val orders = JsonArray()
             val jsonOrder = Gson().toJsonTree(order)
             orders.add(Gson().toJsonTree(jsonOrder))
-            // Otherwise save json order to file
-            applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use {
-                it.write(orders.toString().toByteArray())
-                Log.i(TAG, "order saved: $jsonOrder")
-            }
+            file.writeText(orders.toString())
+            Log.i(TAG, "order saved: $jsonOrder")
         }
     }
 
@@ -172,7 +169,7 @@ class DishDetailsActivity : AppCompatActivity() {
         // Add a click listener
         basketMenu.actionView.setOnClickListener {
             val menuItemIntent = Intent(this, BasketActivity::class.java)
-            menuItemIntent.putExtra(ItemAdapter.ITEM, this.item)
+            menuItemIntent.putExtra(ITEM, this.item)
             startActivity(menuItemIntent)
         }
 
@@ -195,11 +192,10 @@ class DishDetailsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.showBasket -> {
             val menuItemIntent = Intent(this, BasketActivity::class.java)
-            menuItemIntent.putExtra(ItemAdapter.ITEM, this.item)
+            menuItemIntent.putExtra(ITEM, this.item)
             startActivity(menuItemIntent)
             true
         }
-
         else -> {
             super.onOptionsItemSelected(item)
         }
@@ -216,8 +212,8 @@ class DishDetailsActivity : AppCompatActivity() {
     private fun getParentActivityIntentImpl(): Intent {
         val parentIntent = Intent(this, DishesListActivity::class.java)
         // Get the category number to display the right parent view
-        intent.extras?.getInt(HomeActivity.CATEGORY)?.let {
-            parentIntent.putExtra(HomeActivity.CATEGORY, it)
+        intent.extras?.getInt(CATEGORY)?.let {
+            parentIntent.putExtra(CATEGORY, it)
 
         }
         return parentIntent
@@ -225,8 +221,5 @@ class DishDetailsActivity : AppCompatActivity() {
 
     companion object {
         val TAG: String = DishDetailsActivity::class.java.simpleName
-        //TODO move to strings.xml
-        const val ORDER_FILE: String = "basket.json"
-        const val QUANTITY_KEY: String = "quantity"
     }
 }

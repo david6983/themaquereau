@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.*
 import com.android.volley.toolbox.*
 import com.google.gson.GsonBuilder
-import com.squareup.picasso.Picasso
 import fr.isen.david.themaquereau.adapters.ItemAdapter
 import fr.isen.david.themaquereau.databinding.ActivityDishListBinding
 import fr.isen.david.themaquereau.model.domain.Data
@@ -44,7 +43,7 @@ class DishesListActivity : AppCompatActivity() {
         binding.itemRecyclerView.isVisible = false
 
         // Get the category number
-        intent.extras?.getInt(HomeActivity.CATEGORY)?.let {
+        intent.extras?.getInt(CATEGORY)?.let {
             category = it
         }
 
@@ -173,7 +172,7 @@ class DishesListActivity : AppCompatActivity() {
             it.actionView.setOnClickListener {
                 val menuItemIntent = Intent(this, BasketActivity::class.java)
                 // to return to the right activity, the basket activity need the category
-                menuItemIntent.putExtra(HomeActivity.CATEGORY, category)
+                menuItemIntent.putExtra(CATEGORY, category)
                 startActivity(menuItemIntent)
             }
         }
@@ -202,7 +201,7 @@ class DishesListActivity : AppCompatActivity() {
         R.id.showBasket -> {
             val menuItemIntent = Intent(this, BasketActivity::class.java)
             // to return to the right activity, the basket activity need the category
-            menuItemIntent.putExtra(HomeActivity.CATEGORY, category)
+            menuItemIntent.putExtra(CATEGORY, category)
             startActivity(menuItemIntent)
             true
         }
@@ -214,6 +213,5 @@ class DishesListActivity : AppCompatActivity() {
 
     companion object {
         val TAG: String = DishesListActivity::class.java.simpleName
-        const val API_URL = "http://test.api.catering.bluecodegames.com/menu"
     }
 }
