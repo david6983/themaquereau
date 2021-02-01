@@ -86,11 +86,11 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun getParentActivityIntentImpl(): Intent {
-        val parentIntent = Intent(this, DishDetailsActivity::class.java)
+        var parentIntent = Intent(this, HomeActivity::class.java)
         // give back the item to the parent
         intent.extras?.getSerializable(ITEM)?.let {
+            parentIntent = Intent(this, DishDetailsActivity::class.java)
             parentIntent.putExtra(ITEM, it)
-
         }
         return parentIntent
     }
@@ -181,6 +181,10 @@ class SignUpActivity : AppCompatActivity() {
             val parent = Intent(this, DishDetailsActivity::class.java)
             // to return to the right activity, the basket activity need the category
             parent.putExtra(ITEM, it)
+            startActivity(parent)
+        } ?: run {
+            // by default
+            val parent = Intent(this, HomeActivity::class.java)
             startActivity(parent)
         }
     }

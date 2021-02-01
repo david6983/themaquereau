@@ -5,7 +5,7 @@
         android:id="@+id/showBasket"
         android:title="@string/basket"
         app:actionLayout="@layout/layout_cart_action"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <group
         android:id="@+id/actions">
         <item

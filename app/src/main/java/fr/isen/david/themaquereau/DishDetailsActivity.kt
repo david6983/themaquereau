@@ -129,6 +129,7 @@ class DishDetailsActivity : AppCompatActivity() {
     }
 
     private fun saveOrder(order: Order) {
+        //TODO add id to the basket to separate baskets
         try {
             applicationContext.openFileInput(ORDER_FILE).use { inputStream ->
                 inputStream.bufferedReader().use {

@@ -27,7 +27,7 @@ class HomeActivity : AppCompatActivity() {
             getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         manageMainMenu()
-
+        //TODO change the action Log Out if not connected to Log In and vice versa
         setFirstTimeSignIn(true)
     }
 
@@ -79,15 +79,31 @@ class HomeActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.actionLogOut)?.let {
+            if (!sharedPref.contains(ID_CLIENT)) {
+                it.setTitle(R.string.action_log_in)
+            } else {
+                it.setTitle(R.string.action_log_out)
+            }
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
             R.id.actionLogOut -> {
-                with(sharedPref.edit()) {
-                    remove(ID_CLIENT)
-                    apply()
+                if (sharedPref.contains(ID_CLIENT)) {
+                    with(sharedPref.edit()) {
+                        remove(ID_CLIENT)
+                        apply()
+                    }
+                    displayToast("Log Out successfully", applicationContext)
+                } else {
+                    val intent = Intent(this, SignInActivity::class.java)
+                    startActivity(intent)
                 }
-                displayToast("Log Out successfully", applicationContext)
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -80,6 +80,10 @@ class SignInActivity : AppCompatActivity() {
             // to return to the right activity, the basket activity need the category
             parent.putExtra(ITEM, it)
             startActivity(parent)
+        } ?: run {
+            // by default
+            val parent = Intent(this, HomeActivity::class.java)
+            startActivity(parent)
         }
     }
 
