@@ -18,7 +18,7 @@ import fr.isen.david.themaquereau.model.database.AppDatabase
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
 import kotlinx.coroutines.launch
-import java.io.File
+import java.io.FileNotFoundException
 
 class BasketActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBasketBinding
@@ -33,12 +33,15 @@ class BasketActivity : AppCompatActivity() {
         val gson = Gson()
 
         // Retrieve the orders from file if exist
-        val file = File(cacheDir.absolutePath + "/$ORDER_FILE")
-        if (file.exists()) {
-            orders = gson.fromJson(file.readText(), Array<Order>::class.java).toMutableList()
-            // Render the orders in the recycle view
-            renderOrders()
-        } else {
+        try {
+            applicationContext.openFileInput(ORDER_FILE).use { inputStream ->
+                inputStream.bufferedReader().use {
+                    orders = gson.fromJson(it.readText(), Array<Order>::class.java).toMutableList()
+                    // Render the orders in the recycle view
+                    renderOrders()
+                }
+            }
+        } catch(e: FileNotFoundException) {
             // Alert the user that there are no orders yet
             displayToast("no orders found", applicationContext)
             // redirect to the parent activity
@@ -55,7 +58,7 @@ class BasketActivity : AppCompatActivity() {
     private fun renderOrders() {
         // Render the orders in the recycle view
         val rvOrders = binding.orderList
-        val adapter = OrderAdapter(orders, applicationContext, cacheDir)
+        val adapter = OrderAdapter(orders, applicationContext)
         rvOrders.adapter = adapter
         rvOrders.layoutManager = LinearLayoutManager(this)
         // Add our touch helper
@@ -85,7 +88,6 @@ class BasketActivity : AppCompatActivity() {
                 val orderDao = it.orderDao()
                 orderDao.insertAll(finalOrder)
                 Log.i(DishDetailsActivity.TAG, "order saved to database")
-                displayToast("order saved", applicationContext)
             }
         }
     }

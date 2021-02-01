@@ -2,6 +2,7 @@ package fr.isen.david.themaquereau
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -20,7 +21,7 @@ import fr.isen.david.themaquereau.fragments.DishImagesPagerFragment
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
-import java.io.File
+import java.io.FileNotFoundException
 import java.lang.NumberFormatException
 
 class DishDetailsActivity : AppCompatActivity() {
@@ -28,12 +29,15 @@ class DishDetailsActivity : AppCompatActivity() {
     private lateinit var order: Order
     private lateinit var item: Item
     private lateinit var basketMenu: MenuItem
+    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDishDetailsBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        sharedPref = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         // get the selected item id
         intent.extras?.getSerializable(ITEM)?.let { serializedItem ->
@@ -57,18 +61,30 @@ class DishDetailsActivity : AppCompatActivity() {
         }
 
         binding.fishImageButton.setOnClickListener { v ->
-            // first time: redirect to sign up page the first time
-            //val intent = Intent(this, SignUpActivity::class.java)
-            //intent.putExtra(ItemAdapter.ITEM, item)
-            //startActivity(intent)
-            // else: redirect to sign in page
-            // else if connected: save the order
+            /*
+            if (sharedPref.contains(ID_CLIENT)) {
+                // Save the order in a file
+                saveOrder(order)
+                // Save the quantity
+                updateQuantity(order.quantity)
+                // Alert the user with a snack bar
+                alertUser(v)
+            } else {
+                Intent(this, SignUpActivity::class.java)
+                intent.putExtra(ITEM, item)
+                startActivity(intent)
+            }*/
+
             // Save the order in a file
             saveOrder(order)
             // Save the quantity
             updateQuantity(order.quantity)
             // Alert the user with a snack bar
             alertUser(v)
+
+            // else: redirect to sign in page
+            // else if connected: save the order
+
         }
     }
 
@@ -76,7 +92,7 @@ class DishDetailsActivity : AppCompatActivity() {
         val pagerFragment = DishImagesPagerFragment()
         pagerFragment.arguments = Bundle().apply {
             // Give the item to the pager
-            putSerializable(DishImagesPagerFragment.ARG_OBJECT, item)
+            putSerializable(ARG_OBJECT, item)
         }
 
         // Replace the fragment by the new one
@@ -111,32 +127,38 @@ class DishDetailsActivity : AppCompatActivity() {
     }
 
     private fun saveOrder(order: Order) {
-        val file = File(cacheDir.absolutePath + "/$ORDER_FILE")
-
-        if (file.exists()) {
-            val previousOrders = Gson().fromJson(file.readText(), Array<Order>::class.java).toMutableList()
-            // update id
-            order.order_id += 1
-            // verify if the order already exist by name
-            previousOrders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
-                if (foundOrder !== null) {
-                    val position = previousOrders.indexOf(foundOrder);
-                    foundOrder.quantity += order.quantity
-                    foundOrder.realPrice += order.realPrice
-                    previousOrders.set(position, foundOrder)
-                } else {
-                    previousOrders.add(order)
+        try {
+            applicationContext.openFileInput(ORDER_FILE).use { inputStream ->
+                inputStream.bufferedReader().use {
+                    val previousOrders = Gson().fromJson(it.readText(), Array<Order>::class.java).toMutableList()
+                    // update id
+                    order.order_id += 1
+                    // verify if the order already exist by name
+                    previousOrders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
+                        if (foundOrder !== null) {
+                            val position = previousOrders.indexOf(foundOrder);
+                            foundOrder.quantity += order.quantity
+                            foundOrder.realPrice += order.realPrice
+                            previousOrders.set(position, foundOrder)
+                        } else {
+                            previousOrders.add(order)
+                        }
+                    }
+                    val newJsonOrders = Gson().toJson(previousOrders)
+                    applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
+                        outputStream.write(newJsonOrders.toString().toByteArray())
+                        Log.i(TAG, "updated orders: $newJsonOrders")
+                    }
                 }
             }
-            val newJsonOrders = Gson().toJson(previousOrders)
-            file.writeText(newJsonOrders.toString())
-            Log.i(TAG, "updated orders: $newJsonOrders")
-        } else {
+        } catch(e: FileNotFoundException) {
             val orders = JsonArray()
             val jsonOrder = Gson().toJsonTree(order)
             orders.add(Gson().toJsonTree(jsonOrder))
-            file.writeText(orders.toString())
-            Log.i(TAG, "order saved: $jsonOrder")
+            applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
+                outputStream.write(orders.toString().toByteArray())
+                Log.i(TAG, "order saved: $jsonOrder")
+            }
         }
     }
 
@@ -147,8 +169,6 @@ class DishDetailsActivity : AppCompatActivity() {
 
     private fun updateQuantity(newQuantity: Int) {
         // Save the quantity
-        val sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
         val currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
         // add the quantity to the previous quantity
         with(sharedPref.edit()) {
@@ -178,8 +198,6 @@ class DishDetailsActivity : AppCompatActivity() {
 
     private fun setupBadge(menuItem: MenuItem) {
         val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
-        val sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
         val quantity = sharedPref.getInt(QUANTITY_KEY, 0)
         if (quantity == 0) {
             textView.isVisible = false

@@ -2,6 +2,7 @@ package fr.isen.david.themaquereau
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,14 +12,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
 
+
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding // Best practise instead of findViewById
+    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        sharedPref = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         manageMainMenu()
     }
@@ -26,6 +31,15 @@ class HomeActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.i(TAG, " destroyed") // log the destroy cycle
+    }
+
+    private fun setFirstTimeSignIn(value: Boolean) {
+        if (!sharedPref.contains(FIRST_TIME_SIGN_IN)) {
+            with(sharedPref.edit()) {
+                putBoolean(FIRST_TIME_SIGN_IN, value)
+                apply()
+            }
+        }
     }
 
     private fun manageMainMenu() {
@@ -62,10 +76,20 @@ class HomeActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.actionLogIn -> {
+                val menuItemIntent = Intent(this, SignUpActivity::class.java)
+                startActivity(menuItemIntent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun setupBadge(menuItem: MenuItem) {
         val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
-        val sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
         if (sharedPref.contains("quantity")) {
             val quantity = sharedPref.getInt("quantity", 0)
             if (quantity == 0) {

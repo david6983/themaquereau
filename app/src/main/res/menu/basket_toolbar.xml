@@ -6,4 +6,9 @@
         android:title="@string/basket"
         app:actionLayout="@layout/layout_cart_action"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/actionLogIn"
+        app:showAsAction="never"
+        android:title="Sign Up">
+    </item>
 </menu>

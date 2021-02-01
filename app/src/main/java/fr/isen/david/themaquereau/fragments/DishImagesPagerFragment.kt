@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import fr.isen.david.themaquereau.ARG_OBJECT
 import fr.isen.david.themaquereau.R
 import fr.isen.david.themaquereau.adapters.DishImageAdapter
 import fr.isen.david.themaquereau.model.domain.Item
@@ -40,6 +41,5 @@ class DishImagesPagerFragment : Fragment() {
 
     companion object {
         val TAG = DishImagesPagerFragment::class.java.simpleName
-        const val ARG_OBJECT = "object"
     }
 }

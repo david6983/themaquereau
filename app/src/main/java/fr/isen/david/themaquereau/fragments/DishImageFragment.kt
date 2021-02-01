@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.squareup.picasso.Picasso
+import fr.isen.david.themaquereau.ARG_OBJECT
 import fr.isen.david.themaquereau.R
 import fr.isen.david.themaquereau.databinding.FragmentDishImageBinding
 
@@ -45,9 +46,5 @@ class DishImageFragment : Fragment() {
                 .load(R.drawable.maquereau_not_found)
                 .into(binding.dishPagedImage)
         }
-    }
-
-    companion object {
-        const val ARG_OBJECT = "object"
     }
 }

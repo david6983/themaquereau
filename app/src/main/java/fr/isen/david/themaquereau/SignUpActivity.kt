@@ -55,6 +55,9 @@ class SignUpActivity : AppCompatActivity() {
                    inputPassword.text.toString() //TODO encrypt password & salt
                 )
                 Log.d(TAG, "new sign up : $user")
+                //val queue = Volley.newRequestQueue(this)
+                //val req = signUp(user, "1")
+                //queue.add(req)
             }
         }
 
@@ -135,7 +138,7 @@ class SignUpActivity : AppCompatActivity() {
         return JsonObjectRequest(
             Request.Method.POST, API_REGISTER_URL, params,
             Response.Listener { response ->
-                Log.d(TAG, "Response: $response")
+                Log.d(TAG, "Sign Up Response: $response")
             },
             Response.ErrorListener { error ->
                 Log.e(DishesListActivity.TAG, "Error: ${error.message}")
