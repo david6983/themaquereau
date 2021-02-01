@@ -205,7 +205,16 @@ class DishesListActivity : AppCompatActivity() {
             startActivity(menuItemIntent)
             true
         }
-
+        R.id.actionLogOut -> {
+            val sharedPref = this.getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                remove(ID_CLIENT)
+                apply()
+            }
+            displayToast("Log Out successfully", applicationContext)
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }

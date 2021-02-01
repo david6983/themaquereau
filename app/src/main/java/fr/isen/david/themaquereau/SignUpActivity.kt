@@ -1,17 +1,26 @@
 package fr.isen.david.themaquereau
 
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
-import com.android.volley.*
+import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.Request
+import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
 import com.wajahatkarim3.easyvalidation.core.Validator
 import com.wajahatkarim3.easyvalidation.core.view_ktx.validator
 import fr.isen.david.themaquereau.databinding.ActivitySignUpBinding
+import fr.isen.david.themaquereau.model.domain.Data
+import fr.isen.david.themaquereau.model.domain.RegisterResponse
 import fr.isen.david.themaquereau.model.domain.User
+import fr.isen.david.themaquereau.util.displayToast
 import org.json.JSONObject
+
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
@@ -55,9 +64,9 @@ class SignUpActivity : AppCompatActivity() {
                    inputPassword.text.toString() //TODO encrypt password & salt
                 )
                 Log.d(TAG, "new sign up : $user")
-                //val queue = Volley.newRequestQueue(this)
-                //val req = signUp(user, "1")
-                //queue.add(req)
+                val queue = Volley.newRequestQueue(this)
+                val req = signUp(user, "1")
+                queue.add(req)
             }
         }
 
@@ -131,18 +140,49 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun signUp(user: User, id_shop: String): JsonObjectRequest {
+        //TODO handle 400
+
         // params
         val params = JSONObject()
         params.put("id_shop", id_shop)
         user.toSignUpParams(params)
+        Log.i(TAG, "with params $params")
         return JsonObjectRequest(
             Request.Method.POST, API_REGISTER_URL, params,
             Response.Listener { response ->
                 Log.d(TAG, "Sign Up Response: $response")
+                Gson().fromJson(response["data"].toString(), RegisterResponse::class.java).let {
+                    val sharedPref = this.getSharedPreferences(
+                        getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+                    with(sharedPref.edit()) {
+                        putInt(ID_CLIENT, it.id)
+                        apply()
+                    }
+                    displayToast("Sign up successfully", applicationContext)
+                    redirectToParent()
+                }
             },
             Response.ErrorListener { error ->
-                Log.e(DishesListActivity.TAG, "Error: ${error.message}")
-            })
+                invalidateInput(inputEmail)
+                displayToast("Cannot create an account, The user might already exist)", applicationContext)
+                Log.e(TAG, "Error: $error")
+            }
+        )
+    }
+
+    private fun invalidateInput(input: EditText) {
+        input.setTextColor(getColor(R.color.invalid))
+        input.error = getString(R.string.error_exist)
+    }
+
+    private fun redirectToParent() {
+        // redirect to dish list
+        intent.extras?.getSerializable(ITEM)?.let {
+            val parent = Intent(this, DishDetailsActivity::class.java)
+            // to return to the right activity, the basket activity need the category
+            parent.putExtra(ITEM, it)
+            startActivity(parent)
+        }
     }
 
     companion object {

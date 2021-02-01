@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
+import fr.isen.david.themaquereau.util.displayToast
 
 
 class HomeActivity : AppCompatActivity() {
@@ -26,6 +27,8 @@ class HomeActivity : AppCompatActivity() {
             getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         manageMainMenu()
+
+        setFirstTimeSignIn(true)
     }
 
     override fun onDestroy() {
@@ -79,9 +82,12 @@ class HomeActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
-            R.id.actionLogIn -> {
-                val menuItemIntent = Intent(this, SignUpActivity::class.java)
-                startActivity(menuItemIntent)
+            R.id.actionLogOut -> {
+                with(sharedPref.edit()) {
+                    remove(ID_CLIENT)
+                    apply()
+                }
+                displayToast("Log Out successfully", applicationContext)
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -61,30 +61,32 @@ class DishDetailsActivity : AppCompatActivity() {
         }
 
         binding.fishImageButton.setOnClickListener { v ->
-            /*
-            if (sharedPref.contains(ID_CLIENT)) {
-                // Save the order in a file
-                saveOrder(order)
-                // Save the quantity
-                updateQuantity(order.quantity)
-                // Alert the user with a snack bar
-                alertUser(v)
-            } else {
-                Intent(this, SignUpActivity::class.java)
-                intent.putExtra(ITEM, item)
-                startActivity(intent)
-            }*/
+            orderCallback(v)
+        }
+    }
 
+    private fun orderCallback(view: View) {
+        if (sharedPref.contains(ID_CLIENT)) {
             // Save the order in a file
             saveOrder(order)
             // Save the quantity
             updateQuantity(order.quantity)
             // Alert the user with a snack bar
-            alertUser(v)
-
-            // else: redirect to sign in page
-            // else if connected: save the order
-
+            alertUser(view)
+        } else {
+            if (sharedPref.contains(FIRST_TIME_SIGN_IN)) {
+                sharedPref.getBoolean(FIRST_TIME_SIGN_IN, false).let {
+                    intent = if (it) {
+                        Intent(this, SignUpActivity::class.java)
+                    } else {
+                        Intent(this, SignInActivity::class.java)
+                    }
+                }
+            } else { // by default
+                intent = Intent(this, SignUpActivity::class.java)
+            }
+            intent.putExtra(ITEM, item)
+            startActivity(intent)
         }
     }
 
@@ -212,6 +214,16 @@ class DishDetailsActivity : AppCompatActivity() {
             val menuItemIntent = Intent(this, BasketActivity::class.java)
             menuItemIntent.putExtra(ITEM, this.item)
             startActivity(menuItemIntent)
+            true
+        }
+        R.id.actionLogOut -> {
+            val sharedPref = this.getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                remove(ID_CLIENT)
+                apply()
+            }
+            displayToast("Log Out successfully", applicationContext)
             true
         }
         else -> {

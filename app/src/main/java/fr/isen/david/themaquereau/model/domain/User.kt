@@ -10,16 +10,18 @@ data class User(
     val address: String,
     val password: String
 ) : Serializable {
-    fun toSignUpParams(params: JSONObject) {
+    fun toSignUpParams(params: JSONObject): JSONObject {
         params.put("firstname", firstName)
         params.put("lastname", lastName)
-        params.put("email", email)
         params.put("address", address)
+        params.put("email", email)
         params.put("password", password)
+        return params
     }
 
-    fun toSignInParams(params: JSONObject) {
+    fun toSignInParams(params: JSONObject): JSONObject {
         params.put("email", email)
         params.put("password", password)
+        return params
     }
 }

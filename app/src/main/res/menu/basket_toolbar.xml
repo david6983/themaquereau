@@ -6,9 +6,11 @@
         android:title="@string/basket"
         app:actionLayout="@layout/layout_cart_action"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/actionLogIn"
-        app:showAsAction="never"
-        android:title="Sign Up">
-    </item>
+    <group
+        android:id="@+id/actions">
+        <item
+            android:id="@+id/actionLogOut"
+            android:title="Log Out"
+            app:showAsAction="never" />
+    </group>
 </menu>

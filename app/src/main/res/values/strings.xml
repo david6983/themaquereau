@@ -54,6 +54,7 @@
     <string name="label_password">Votre mot de passe</string>
     <string name="error_email_non_valid">L\'email n\'est pas valide !</string>
     <string name="error_empty">Ne peux pas être vide !</string>
+    <string name="error_exist">Ce champ existe déja !</string>
     <string name="error_at_least_one_number">Doit contenir au moins un nombre !</string>
     <string name="error_at_least_one_uppercase">Doit contenir au moins une lettre en majuscule !</string>
     <string name="error_length_prefix">Doit contenir </string>
