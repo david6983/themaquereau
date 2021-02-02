@@ -45,7 +45,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fr.isen.david.themaquereau.DishDetailsActivity" />
         </activity>
-        <activity android:name=".SignInActivity" />
+        <activity android:name=".SignInActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fr.isen.david.themaquereau.HomeActivity" />
+        </activity>
         <activity android:name=".BasketActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

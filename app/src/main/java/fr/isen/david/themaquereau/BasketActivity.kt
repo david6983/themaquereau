@@ -20,6 +20,7 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import fr.isen.david.themaquereau.adapters.OrderAdapter
 import fr.isen.david.themaquereau.databinding.ActivityBasketBinding
+import fr.isen.david.themaquereau.helpers.AppPreferencesHelper
 import fr.isen.david.themaquereau.helpers.SwipeToDeleteCallback
 import fr.isen.david.themaquereau.model.database.AppDatabase
 import fr.isen.david.themaquereau.model.domain.FinalOrderResponse
@@ -27,6 +28,7 @@ import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import org.koin.android.ext.android.inject
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -35,6 +37,8 @@ class BasketActivity : AppCompatActivity() {
     private lateinit var orders: MutableList<Order>
     private lateinit var rvOrders: RecyclerView
     private var userId: Int = -1
+
+    private val preferences: AppPreferencesHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

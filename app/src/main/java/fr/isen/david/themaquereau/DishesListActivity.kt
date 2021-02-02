@@ -1,14 +1,8 @@
 package fr.isen.david.themaquereau
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.*
@@ -24,13 +18,10 @@ import org.json.JSONObject
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 
-
-class DishesListActivity : AppCompatActivity() {
+class DishesListActivity : BaseActivity() {
     private lateinit var binding: ActivityDishListBinding
     private var items: List<Item> = listOf()
-    private lateinit var toolbarMenu: MenuItem
     private val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
-    private lateinit var sharedPref: SharedPreferences
     private val params = JSONObject()
     private var category = 0
 
@@ -39,9 +30,6 @@ class DishesListActivity : AppCompatActivity() {
         binding = ActivityDishListBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         params.put("id_shop", "1")
 
@@ -166,91 +154,10 @@ class DishesListActivity : AppCompatActivity() {
         }
     }
 
-    // Inflate the menu to the toolbar
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.basket_toolbar, menu)
-
-        menu?.findItem(R.id.showBasket)?.let {
-            toolbarMenu = it
-            // Setup the badge with the quantity
-            setupBadge(it)
-
-            // Add a click listener
-            it.actionView.setOnClickListener {
-                val menuItemIntent = Intent(this, BasketActivity::class.java)
-                // to return to the right activity, the basket activity need the category
-                menuItemIntent.putExtra(CATEGORY, category)
-                startActivity(menuItemIntent)
-            }
-        }
-
-        return true
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.actionLogOut)?.let {
-            if (!sharedPref.contains(ID_CLIENT)) {
-                it.setTitle(R.string.action_log_in)
-            } else {
-                it.setTitle(R.string.action_log_out)
-            }
-        }
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    private fun setupBadge(menuItem: MenuItem) {
-        val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
-        val sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-        if (sharedPref.contains("quantity")) {
-            val quantity = sharedPref.getInt("quantity", 0)
-            if (quantity == 0) {
-                textView.isVisible = false
-            } else {
-                textView.text = quantity.toString()
-                textView.isVisible = true
-            }
-        } else {
-            textView.isVisible = false
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.showBasket -> {
-            val menuItemIntent = Intent(this, BasketActivity::class.java)
-            // to return to the right activity, the basket activity need the category
-            menuItemIntent.putExtra(CATEGORY, category)
-            startActivity(menuItemIntent)
-            true
-        }
-        R.id.actionLogOut -> {
-            if (sharedPref.contains(ID_CLIENT)) {
-                with(sharedPref.edit()) {
-                    remove(ID_CLIENT)
-                    apply()
-                }
-                // reset quantity badge
-                resetQuantity()
-                displayToast("Log Out successfully", applicationContext)
-            } else {
-                val intent = Intent(this, SignInActivity::class.java)
-                startActivity(intent)
-            }
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun resetQuantity() {
-        if (sharedPref.contains(QUANTITY_KEY)) {
-            with(sharedPref.edit()) {
-                remove(fr.isen.david.themaquereau.QUANTITY_KEY)
-                apply()
-            }
-        }
-        setupBadge(toolbarMenu)
+    override fun setBasketListener() {
+        val menuItemIntent = Intent(this, BasketActivity::class.java)
+        menuItemIntent.putExtra(CATEGORY, category)
+        startActivity(menuItemIntent)
     }
 
     companion object {

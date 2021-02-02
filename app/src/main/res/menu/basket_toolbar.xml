@@ -9,8 +9,11 @@
     <group
         android:id="@+id/actions">
         <item
-            android:id="@+id/actionLogOut"
+            android:id="@+id/accountAction"
             android:title="Log Out"
+            app:showAsAction="never" />
+        <item
+            android:title="Mon Compte"
             app:showAsAction="never" />
     </group>
 </menu>

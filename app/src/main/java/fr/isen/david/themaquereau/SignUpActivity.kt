@@ -1,6 +1,5 @@
 package fr.isen.david.themaquereau
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,10 +13,12 @@ import com.google.gson.Gson
 import com.wajahatkarim3.easyvalidation.core.Validator
 import com.wajahatkarim3.easyvalidation.core.view_ktx.validator
 import fr.isen.david.themaquereau.databinding.ActivitySignUpBinding
+import fr.isen.david.themaquereau.helpers.AppPreferencesHelper
 import fr.isen.david.themaquereau.model.domain.RegisterResponse
 import fr.isen.david.themaquereau.model.domain.User
 import fr.isen.david.themaquereau.util.displayToast
 import org.json.JSONObject
+import org.koin.android.ext.android.inject
 
 
 class SignUpActivity : AppCompatActivity() {
@@ -27,6 +28,8 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var inputEmail: EditText
     private lateinit var inputAddress: EditText
     private lateinit var inputPassword: EditText
+
+    private val preferences: AppPreferencesHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,12 +153,7 @@ class SignUpActivity : AppCompatActivity() {
             Response.Listener { response ->
                 Log.d(TAG, "Sign Up Response: $response")
                 Gson().fromJson(response["data"].toString(), RegisterResponse::class.java).let {
-                    val sharedPref = this.getSharedPreferences(
-                        getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-                    with(sharedPref.edit()) {
-                        putInt(ID_CLIENT, it.id)
-                        apply()
-                    }
+                    preferences.setClientId(it.id)
                     displayToast("Sign up successfully", applicationContext)
                     redirectToParent()
                 }

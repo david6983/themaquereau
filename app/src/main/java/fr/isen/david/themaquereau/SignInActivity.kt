@@ -1,6 +1,5 @@
 package fr.isen.david.themaquereau
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,13 +10,19 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import fr.isen.david.themaquereau.databinding.ActivitySignInBinding
+import fr.isen.david.themaquereau.helpers.AppPreferencesHelper
+import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.model.domain.RegisterResponse
 import fr.isen.david.themaquereau.model.domain.User
 import fr.isen.david.themaquereau.util.displayToast
 import org.json.JSONObject
+import org.koin.android.ext.android.inject
+import java.io.FileNotFoundException
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
+
+    private val preferences: AppPreferencesHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,15 +30,9 @@ class SignInActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
         // Set checkbox if not the first time
-        if (sharedPref.contains(FIRST_TIME_SIGN_IN)) {
-            sharedPref.getBoolean(FIRST_TIME_SIGN_IN, true).let {
-                if (!it) {
-                    binding.remindMeCheckBox.isChecked = true
-                }
-            }
+        preferences.getFirstTimeSignIn().let {
+            binding.remindMeCheckBox.isChecked = true
         }
 
         binding.submitSignIn.setOnClickListener {
@@ -49,15 +48,11 @@ class SignInActivity : AppCompatActivity() {
             queue.add(req)
 
             if (binding.remindMeCheckBox.isChecked) {
-                with(sharedPref.edit()) {
-                    putBoolean(FIRST_TIME_SIGN_IN, false)
-                    apply()
-                }
+                Log.i(TAG, "checked")
+                preferences.setFirstTimeSignIn(false)
             } else {
-                with(sharedPref.edit()) {
-                    putBoolean(FIRST_TIME_SIGN_IN, true)
-                    apply()
-                }
+                Log.i(TAG, "noy checked")
+                preferences.setFirstTimeSignIn(true)
             }
 
             displayToast("Sign in successfully", applicationContext)
@@ -71,6 +66,11 @@ class SignInActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
     }
 
     private fun redirectToParent() {
@@ -97,12 +97,7 @@ class SignInActivity : AppCompatActivity() {
             Response.Listener { response ->
                 Log.d(TAG, "Sign In Response: $response")
                 Gson().fromJson(response["data"].toString(), RegisterResponse::class.java).let {
-                    val sharedPref = this.getSharedPreferences(
-                        getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-                    with(sharedPref.edit()) {
-                        putInt(ID_CLIENT, it.id)
-                        apply()
-                    }
+                    preferences.setClientId(it.id)
                 }
             },
             Response.ErrorListener { error ->

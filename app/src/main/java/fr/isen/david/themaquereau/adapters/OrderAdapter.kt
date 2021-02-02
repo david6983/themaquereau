@@ -97,7 +97,7 @@ class OrderAdapter(
                     ordersFromFile.removeAt(position)
                     val ordersToFile = gson.toJson(ordersFromFile)
                     // save the file again
-                    context.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
+                    context.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
                         outputStream.write(ordersToFile.toString().toByteArray())
                     }
                     Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")

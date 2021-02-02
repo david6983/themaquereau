@@ -2,12 +2,9 @@ package fr.isen.david.themaquereau
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
@@ -24,20 +21,16 @@ import fr.isen.david.themaquereau.util.displayToast
 import java.io.FileNotFoundException
 import java.lang.NumberFormatException
 
-class DishDetailsActivity : AppCompatActivity() {
+class DishDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityDishDetailsBinding
     private lateinit var order: Order
     private lateinit var item: Item
-    private lateinit var basketMenu: MenuItem
-    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDishDetailsBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         // get the selected item id
         intent.extras?.getSerializable(ITEM)?.let { serializedItem ->
@@ -66,18 +59,15 @@ class DishDetailsActivity : AppCompatActivity() {
     }
 
     private fun orderCallback(view: View) {
-        if (sharedPref.contains(ID_CLIENT)) {
-            sharedPref.getInt(ID_CLIENT, -1).let {
-                if (it != -1) {
-                    // Save the order in a file
-                    saveOrder(order, it)
-                    // Alert the user with a snack bar
-                    alertUser(view)
-                }
-            }
+        val id = preferences.getClientId()
+        if (preferences.getClientId() != -1) {
+            // Save the order in a file
+            saveOrder(order, id)
+            // Alert the user with a snack bar
+            alertUser(view)
         } else {
-            if (sharedPref.contains(FIRST_TIME_SIGN_IN)) {
-                sharedPref.getBoolean(FIRST_TIME_SIGN_IN, false).let {
+            if (preferences.isFirstTimeSignInDefined()) {
+                preferences.getFirstTimeSignIn().let {
                     intent = if (it) {
                         Intent(this, SignUpActivity::class.java)
                     } else {
@@ -163,6 +153,7 @@ class DishDetailsActivity : AppCompatActivity() {
             orders.add(Gson().toJsonTree(jsonOrder))
             applicationContext.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
                 outputStream.write(orders.toString().toByteArray())
+                updateQuantity(order.quantity)
                 Log.i(TAG, "order saved: $jsonOrder")
             }
         }
@@ -174,89 +165,15 @@ class DishDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateQuantity(newQuantity: Int) {
-        // overwrite quantity
-        with(sharedPref.edit()) {
-            putInt(QUANTITY_KEY,  newQuantity)
-            apply()
-        }
-        // Setup the badge with the quantity
-        setupBadge(basketMenu)
-        Log.i(TAG, "added to pref: ${sharedPref.getInt(QUANTITY_KEY, 0)}")
+        preferences.setQuantity(newQuantity)
+        setupBadge()
+        Log.i(TAG, "added to pref: ${preferences.getQuantity()}")
     }
 
-    // Inflate the menu to the toolbar
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.basket_toolbar, menu)
-
-        basketMenu = menu?.findItem(R.id.showBasket)!!
-        setupBadge(basketMenu)
-        // Add a click listener
-        basketMenu.actionView.setOnClickListener {
-            val menuItemIntent = Intent(this, BasketActivity::class.java)
-            menuItemIntent.putExtra(ITEM, this.item)
-            startActivity(menuItemIntent)
-        }
-
-        return true
-    }
-
-    private fun setupBadge(menuItem: MenuItem) {
-        val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
-        val quantity = sharedPref.getInt(QUANTITY_KEY, 0)
-        if (quantity == 0) {
-            textView.isVisible = false
-        } else {
-            textView.text = quantity.toString()
-            textView.isVisible = true
-        }
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.actionLogOut)?.let {
-            if (!sharedPref.contains(ID_CLIENT)) {
-                it.setTitle(R.string.action_log_in)
-            } else {
-                it.setTitle(R.string.action_log_out)
-            }
-        }
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.showBasket -> {
-            val menuItemIntent = Intent(this, BasketActivity::class.java)
-            menuItemIntent.putExtra(ITEM, this.item)
-            startActivity(menuItemIntent)
-            true
-        }
-        R.id.actionLogOut -> {
-            if (sharedPref.contains(ID_CLIENT)) {
-                with(sharedPref.edit()) {
-                    remove(ID_CLIENT)
-                    apply()
-                }
-                // reset quantity badge
-                resetQuantity()
-                displayToast("Log Out successfully", applicationContext)
-            } else {
-                val intent = Intent(this, SignInActivity::class.java)
-                startActivity(intent)
-            }
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun resetQuantity() {
-        if (sharedPref.contains(QUANTITY_KEY)) {
-            with(sharedPref.edit()) {
-                remove(QUANTITY_KEY)
-                apply()
-            }
-        }
-        setupBadge(basketMenu)
+    override fun setBasketListener() {
+        val menuItemIntent = Intent(this, BasketActivity::class.java)
+        menuItemIntent.putExtra(ITEM, this.item)
+        startActivity(menuItemIntent)
     }
 
     override fun getSupportParentActivityIntent(): Intent? {
