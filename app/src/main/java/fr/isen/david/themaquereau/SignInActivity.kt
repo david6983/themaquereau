@@ -87,10 +87,10 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun signIn(user: User, id_shop: String): JsonObjectRequest {
+    private fun signIn(user: User, idShop: String): JsonObjectRequest {
         // params
         val params = JSONObject()
-        params.put("id_shop", id_shop)
+        params.put("id_shop", idShop)
         user.toSignInParams(params)
         return JsonObjectRequest(
             Request.Method.POST, API_LOGIN_URL, params,

@@ -19,7 +19,8 @@ import java.io.FileNotFoundException
 
 class OrderAdapter(
     private var orders: MutableList<Order>,
-    val context: Context
+    val context: Context,
+    private val userId: Int
 ) : RecyclerView.Adapter<OrderAdapter.OrderHolder>() {
     private var recentlyDeletedOrderPosition: Int = -1
     private lateinit var recentlyDeletedOrder: Order
@@ -88,7 +89,7 @@ class OrderAdapter(
 
     private fun deleteOrder(position: Int) {
         try {
-            context.openFileInput(ORDER_FILE).use { inputStream ->
+            context.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
                 inputStream.bufferedReader().use {
                     val gson = Gson()
                     val ordersFromFile = retrieveOrders(it, gson)

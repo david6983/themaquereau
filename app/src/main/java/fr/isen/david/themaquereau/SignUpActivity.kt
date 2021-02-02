@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -15,7 +14,6 @@ import com.google.gson.Gson
 import com.wajahatkarim3.easyvalidation.core.Validator
 import com.wajahatkarim3.easyvalidation.core.view_ktx.validator
 import fr.isen.david.themaquereau.databinding.ActivitySignUpBinding
-import fr.isen.david.themaquereau.model.domain.Data
 import fr.isen.david.themaquereau.model.domain.RegisterResponse
 import fr.isen.david.themaquereau.model.domain.User
 import fr.isen.david.themaquereau.util.displayToast
@@ -61,7 +59,7 @@ class SignUpActivity : AppCompatActivity() {
                    inputLastName.text.toString(),
                    inputEmail.text.toString(),
                    inputAddress.text.toString(),
-                   inputPassword.text.toString() //TODO encrypt password & salt
+                   inputPassword.text.toString() //TODO encrypt password
                 )
                 Log.d(TAG, "new sign up : $user")
                 val queue = Volley.newRequestQueue(this)
@@ -139,12 +137,12 @@ class SignUpActivity : AppCompatActivity() {
             }
     }
 
-    private fun signUp(user: User, id_shop: String): JsonObjectRequest {
+    private fun signUp(user: User, idShop: String): JsonObjectRequest {
         //TODO handle 400
 
         // params
         val params = JSONObject()
-        params.put("id_shop", id_shop)
+        params.put("id_shop", idShop)
         user.toSignUpParams(params)
         Log.i(TAG, "with params $params")
         return JsonObjectRequest(

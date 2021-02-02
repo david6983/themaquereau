@@ -14,6 +14,6 @@ interface OrderDao {
     @Update
     suspend fun updateOrders(vararg orders: Order)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(orders: List<Order>)
 }

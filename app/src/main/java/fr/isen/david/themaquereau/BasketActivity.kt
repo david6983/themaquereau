@@ -1,28 +1,37 @@
 package fr.isen.david.themaquereau
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenStarted
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import androidx.room.withTransaction
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import fr.isen.david.themaquereau.adapters.OrderAdapter
 import fr.isen.david.themaquereau.databinding.ActivityBasketBinding
 import fr.isen.david.themaquereau.helpers.SwipeToDeleteCallback
 import fr.isen.david.themaquereau.model.database.AppDatabase
+import fr.isen.david.themaquereau.model.domain.FinalOrderResponse
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.io.FileNotFoundException
 
 class BasketActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBasketBinding
     private lateinit var orders: MutableList<Order>
+    private var userId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,23 +41,35 @@ class BasketActivity : AppCompatActivity() {
 
         val gson = Gson()
 
+        // progress bar not visible
+        binding.orderProgress.isVisible = false
+
+        val sharedPref = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        userId = sharedPref.getInt(ID_CLIENT, -1)
         // Retrieve the orders from file if exist
-        try {
-            applicationContext.openFileInput(ORDER_FILE).use { inputStream ->
-                inputStream.bufferedReader().use {
-                    orders = gson.fromJson(it.readText(), Array<Order>::class.java).toMutableList()
-                    // Render the orders in the recycle view
-                    renderOrders()
+        if (userId != -1) {
+            try {
+                applicationContext.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
+                    inputStream.bufferedReader().use {
+                        orders =
+                            gson.fromJson(it.readText(), Array<Order>::class.java).toMutableList()
+                        // Render the orders in the recycle view
+                        renderOrders()
+                    }
                 }
+            } catch (e: FileNotFoundException) {
+                // Alert the user that there are no orders yet
+                displayToast("no orders found", applicationContext)
+                // redirect to the parent activity
+                val intent = getParentActivityIntentImpl()
+                startActivity(intent)
             }
-        } catch(e: FileNotFoundException) {
-            // Alert the user that there are no orders yet
-            displayToast("no orders found", applicationContext)
-            // redirect to the parent activity
-            val intent = getParentActivityIntentImpl()
+        } else {
+            // redirect to the login page
+            val intent = Intent(this, SignInActivity::class.java)
             startActivity(intent)
         }
-
         // Listener finalise order
         binding.finalOrderButton.setOnClickListener {
             finalOrderCallback(gson)
@@ -58,7 +79,7 @@ class BasketActivity : AppCompatActivity() {
     private fun renderOrders() {
         // Render the orders in the recycle view
         val rvOrders = binding.orderList
-        val adapter = OrderAdapter(orders, applicationContext)
+        val adapter = OrderAdapter(orders, applicationContext, userId)
         rvOrders.adapter = adapter
         rvOrders.layoutManager = LinearLayoutManager(this)
         // Add our touch helper
@@ -73,12 +94,46 @@ class BasketActivity : AppCompatActivity() {
         // Save the order in a database
         lifecycleScope.launch {
             whenStarted {
-                persistFinalOrderToDb(orders)
+                persistFinalOrderToDb()
             }
+        }
+        // Save the order to the api
+        saveToApi(1, finalOrder)
+    }
+
+    private fun saveToApi(idShop: Int, message: String) {
+        val queue = Volley.newRequestQueue(this)
+        // params
+        val params = JSONObject()
+        params.put("id_shop", idShop)
+        params.put("id_user", userId)
+        params.put("msg", message)
+        //params.put()
+        val req = JsonObjectRequest(
+            Request.Method.POST, API_ORDER_URL, params,
+            Response.Listener { response ->
+                Log.d(SignInActivity.TAG, "Sent Order Response: $response")
+                // reset basket
+
+                // alert the user
+                Gson().fromJson(response["data"].toString(), Array<FinalOrderResponse>::class.java).let {
+                    displayToast("${it[0].receiver} a reçu votre commande", applicationContext)
+                    // redirect to Home
+
+                }
+            },
+            Response.ErrorListener { error ->
+                Log.e(DishesListActivity.TAG, "Error: ${error.message}")
+            })
+        queue.add(req)
+        binding.orderProgress.isVisible = true
+        queue.addRequestFinishedListener<JsonObjectRequest> {
+            // dismiss progress bar
+            binding.orderProgress.isVisible = false
         }
     }
 
-    private suspend fun persistFinalOrderToDb(finalOrder: List<Order>) {
+    private suspend fun persistFinalOrderToDb() {
         //TODO extract the db with koin library
         Room.databaseBuilder(
             applicationContext,
@@ -86,7 +141,7 @@ class BasketActivity : AppCompatActivity() {
         ).build().let {
             it.withTransaction {
                 val orderDao = it.orderDao()
-                orderDao.insertAll(finalOrder)
+                orderDao.insertAll(orders)
                 Log.i(DishDetailsActivity.TAG, "order saved to database")
             }
         }

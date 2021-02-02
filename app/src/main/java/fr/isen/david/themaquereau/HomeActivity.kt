@@ -10,13 +10,16 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.google.gson.Gson
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
+import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
 
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding // Best practise instead of findViewById
     private lateinit var sharedPref: SharedPreferences
+    private lateinit var toolbarMenu: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +30,7 @@ class HomeActivity : AppCompatActivity() {
             getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         manageMainMenu()
-        //TODO change the action Log Out if not connected to Log In and vice versa
+        retrieveQuantity()
         setFirstTimeSignIn(true)
     }
 
@@ -41,6 +44,26 @@ class HomeActivity : AppCompatActivity() {
             with(sharedPref.edit()) {
                 putBoolean(FIRST_TIME_SIGN_IN, value)
                 apply()
+            }
+        }
+    }
+
+    private fun retrieveQuantity() {
+        sharedPref.getInt(ID_CLIENT, -1).let { userId ->
+            if (userId != -1) {
+                applicationContext.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
+                    inputStream.bufferedReader().use { reader ->
+                        val orders =
+                            Gson().fromJson(reader.readText(), Array<Order>::class.java).toMutableList()
+                        Log.i(TAG, "$orders")
+                        with(sharedPref.edit()) {
+                            putInt(QUANTITY_KEY, orders.sumBy { it.quantity })
+                            apply()
+                        }
+                    }
+                }
+            } else {
+                //recreate()
             }
         }
     }
@@ -66,9 +89,11 @@ class HomeActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.basket_toolbar, menu)
 
         menu?.findItem(R.id.showBasket)?.let {
+            // keep a reference
+            toolbarMenu = it
             // Setup the badge with the quantity
+            retrieveQuantity()
             setupBadge(it)
-
             // Add a click listener
             it.actionView.setOnClickListener {
                 val menuItemIntent = Intent(this, BasketActivity::class.java)
@@ -99,6 +124,8 @@ class HomeActivity : AppCompatActivity() {
                         remove(ID_CLIENT)
                         apply()
                     }
+                    // reset quantity badge
+                    resetQuantity()
                     displayToast("Log Out successfully", applicationContext)
                 } else {
                     val intent = Intent(this, SignInActivity::class.java)
@@ -110,10 +137,20 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    private fun resetQuantity() {
+        if (sharedPref.contains(QUANTITY_KEY)) {
+            with(sharedPref.edit()) {
+                remove(QUANTITY_KEY)
+                apply()
+            }
+        }
+        setupBadge(toolbarMenu)
+    }
+
     private fun setupBadge(menuItem: MenuItem) {
         val textView = menuItem.actionView.findViewById<TextView>(R.id.nbItems)
-        if (sharedPref.contains("quantity")) {
-            val quantity = sharedPref.getInt("quantity", 0)
+        if (sharedPref.contains(QUANTITY_KEY)) {
+            val quantity = sharedPref.getInt(QUANTITY_KEY, 0)
             if (quantity == 0) {
                 textView.isVisible = false
             } else {

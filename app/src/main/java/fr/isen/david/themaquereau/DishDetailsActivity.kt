@@ -57,7 +57,7 @@ class DishDetailsActivity : AppCompatActivity() {
 
         // Number Input Listener
         binding.quantity.addTextChangedListener { txt ->
-            updateQuantity(item, txt)
+            updateQuantityInput(item, txt)
         }
 
         binding.fishImageButton.setOnClickListener { v ->
@@ -67,12 +67,14 @@ class DishDetailsActivity : AppCompatActivity() {
 
     private fun orderCallback(view: View) {
         if (sharedPref.contains(ID_CLIENT)) {
-            // Save the order in a file
-            saveOrder(order)
-            // Save the quantity
-            updateQuantity(order.quantity)
-            // Alert the user with a snack bar
-            alertUser(view)
+            sharedPref.getInt(ID_CLIENT, -1).let {
+                if (it != -1) {
+                    // Save the order in a file
+                    saveOrder(order, it)
+                    // Alert the user with a snack bar
+                    alertUser(view)
+                }
+            }
         } else {
             if (sharedPref.contains(FIRST_TIME_SIGN_IN)) {
                 sharedPref.getBoolean(FIRST_TIME_SIGN_IN, false).let {
@@ -118,7 +120,7 @@ class DishDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateQuantity(item: Item, quantityValue: Editable?) {
+    private fun updateQuantityInput(item: Item, quantityValue: Editable?) {
         try {
             order.quantity = Integer.parseInt(quantityValue.toString())
             order.realPrice = order.quantity * item.prices[0].price
@@ -128,27 +130,28 @@ class DishDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveOrder(order: Order) {
-        //TODO add id to the basket to separate baskets
+    private fun saveOrder(order: Order, userId: Int) {
         try {
-            applicationContext.openFileInput(ORDER_FILE).use { inputStream ->
-                inputStream.bufferedReader().use {
-                    val previousOrders = Gson().fromJson(it.readText(), Array<Order>::class.java).toMutableList()
+            applicationContext.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
+                inputStream.bufferedReader().use { reader ->
+                    val orders = Gson().fromJson(reader.readText(), Array<Order>::class.java).toMutableList()
                     // update id
                     order.order_id += 1
                     // verify if the order already exist by name
-                    previousOrders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
+                    orders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
                         if (foundOrder !== null) {
-                            val position = previousOrders.indexOf(foundOrder);
+                            val position = orders.indexOf(foundOrder);
                             foundOrder.quantity += order.quantity
                             foundOrder.realPrice += order.realPrice
-                            previousOrders.set(position, foundOrder)
+                            orders.set(position, foundOrder)
                         } else {
-                            previousOrders.add(order)
+                            orders.add(order)
                         }
                     }
-                    val newJsonOrders = Gson().toJson(previousOrders)
-                    applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
+                    // update quantity
+                    updateQuantity(orders.sumBy { it.quantity })
+                    val newJsonOrders = Gson().toJson(orders)
+                    applicationContext.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
                         outputStream.write(newJsonOrders.toString().toByteArray())
                         Log.i(TAG, "updated orders: $newJsonOrders")
                     }
@@ -158,7 +161,7 @@ class DishDetailsActivity : AppCompatActivity() {
             val orders = JsonArray()
             val jsonOrder = Gson().toJsonTree(order)
             orders.add(Gson().toJsonTree(jsonOrder))
-            applicationContext.openFileOutput(ORDER_FILE, Context.MODE_PRIVATE).use { outputStream ->
+            applicationContext.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
                 outputStream.write(orders.toString().toByteArray())
                 Log.i(TAG, "order saved: $jsonOrder")
             }
@@ -171,11 +174,9 @@ class DishDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateQuantity(newQuantity: Int) {
-        // Save the quantity
-        val currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
-        // add the quantity to the previous quantity
+        // overwrite quantity
         with(sharedPref.edit()) {
-            putInt(QUANTITY_KEY, currentQuantity + newQuantity)
+            putInt(QUANTITY_KEY,  newQuantity)
             apply()
         }
         // Setup the badge with the quantity
@@ -210,6 +211,17 @@ class DishDetailsActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.findItem(R.id.actionLogOut)?.let {
+            if (!sharedPref.contains(ID_CLIENT)) {
+                it.setTitle(R.string.action_log_in)
+            } else {
+                it.setTitle(R.string.action_log_out)
+            }
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.showBasket -> {
             val menuItemIntent = Intent(this, BasketActivity::class.java)
@@ -218,18 +230,33 @@ class DishDetailsActivity : AppCompatActivity() {
             true
         }
         R.id.actionLogOut -> {
-            val sharedPref = this.getSharedPreferences(
-                getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-            with(sharedPref.edit()) {
-                remove(ID_CLIENT)
-                apply()
+            if (sharedPref.contains(ID_CLIENT)) {
+                with(sharedPref.edit()) {
+                    remove(ID_CLIENT)
+                    apply()
+                }
+                // reset quantity badge
+                resetQuantity()
+                displayToast("Log Out successfully", applicationContext)
+            } else {
+                val intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
             }
-            displayToast("Log Out successfully", applicationContext)
             true
         }
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun resetQuantity() {
+        if (sharedPref.contains(QUANTITY_KEY)) {
+            with(sharedPref.edit()) {
+                remove(QUANTITY_KEY)
+                apply()
+            }
+        }
+        setupBadge(basketMenu)
     }
 
     override fun getSupportParentActivityIntent(): Intent? {
