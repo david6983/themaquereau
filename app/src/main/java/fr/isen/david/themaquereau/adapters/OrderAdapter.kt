@@ -87,12 +87,12 @@ class OrderAdapter(
         showUndoSnackbar()
     }
 
-    private fun deleteOrder(position: Int) {
+    fun deleteOrder(position: Int) {
         try {
             context.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
-                inputStream.bufferedReader().use {
+                inputStream.bufferedReader().use { reader ->
                     val gson = Gson()
-                    val ordersFromFile = retrieveOrders(it, gson)
+                    val ordersFromFile = retrieveOrders(reader, gson)
                     // delete the order
                     ordersFromFile.removeAt(position)
                     val ordersToFile = gson.toJson(ordersFromFile)
@@ -105,10 +105,9 @@ class OrderAdapter(
                     // Update shared preferences
                     val sharedPref = context.getSharedPreferences(
                         context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-                    val currentQuantity = sharedPref.getInt(QUANTITY_KEY, 0)
                     // add the quantity to the previous quantity
                     with(sharedPref.edit()) {
-                        putInt(QUANTITY_KEY, currentQuantity - recentlyDeletedOrder.quantity)
+                        putInt(QUANTITY_KEY, ordersFromFile.sumBy { it.quantity })
                         apply()
                     }
                 }

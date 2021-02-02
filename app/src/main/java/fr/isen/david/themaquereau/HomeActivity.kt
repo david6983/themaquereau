@@ -14,6 +14,7 @@ import com.google.gson.Gson
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
+import java.io.FileNotFoundException
 
 
 class HomeActivity : AppCompatActivity() {
@@ -32,6 +33,11 @@ class HomeActivity : AppCompatActivity() {
         manageMainMenu()
         retrieveQuantity()
         setFirstTimeSignIn(true)
+
+        binding.findUsLink.setOnClickListener {
+            val intent = Intent(this, ContactActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onDestroy() {
@@ -51,19 +57,21 @@ class HomeActivity : AppCompatActivity() {
     private fun retrieveQuantity() {
         sharedPref.getInt(ID_CLIENT, -1).let { userId ->
             if (userId != -1) {
-                applicationContext.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
-                    inputStream.bufferedReader().use { reader ->
-                        val orders =
-                            Gson().fromJson(reader.readText(), Array<Order>::class.java).toMutableList()
-                        Log.i(TAG, "$orders")
-                        with(sharedPref.edit()) {
-                            putInt(QUANTITY_KEY, orders.sumBy { it.quantity })
-                            apply()
+                try {
+                    applicationContext.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
+                        inputStream.bufferedReader().use { reader ->
+                            val orders =
+                                Gson().fromJson(reader.readText(), Array<Order>::class.java).toMutableList()
+                            Log.i(TAG, "$orders")
+                            with(sharedPref.edit()) {
+                                putInt(QUANTITY_KEY, orders.sumBy { it.quantity })
+                                apply()
+                            }
                         }
                     }
+                } catch (e: FileNotFoundException) {
+                    Log.e(TAG, "error file not found")
                 }
-            } else {
-                //recreate()
             }
         }
     }

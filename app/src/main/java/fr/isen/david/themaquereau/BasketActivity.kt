@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenStarted
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import androidx.room.withTransaction
 import com.android.volley.Request
@@ -26,11 +27,13 @@ import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.io.File
 import java.io.FileNotFoundException
 
 class BasketActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBasketBinding
     private lateinit var orders: MutableList<Order>
+    private lateinit var rvOrders: RecyclerView
     private var userId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +81,7 @@ class BasketActivity : AppCompatActivity() {
 
     private fun renderOrders() {
         // Render the orders in the recycle view
-        val rvOrders = binding.orderList
+        rvOrders = binding.orderList
         val adapter = OrderAdapter(orders, applicationContext, userId)
         rvOrders.adapter = adapter
         rvOrders.layoutManager = LinearLayoutManager(this)
@@ -113,13 +116,11 @@ class BasketActivity : AppCompatActivity() {
             Request.Method.POST, API_ORDER_URL, params,
             Response.Listener { response ->
                 Log.d(SignInActivity.TAG, "Sent Order Response: $response")
-                // reset basket
-
                 // alert the user
                 Gson().fromJson(response["data"].toString(), Array<FinalOrderResponse>::class.java).let {
                     displayToast("${it[0].receiver} a reçu votre commande", applicationContext)
                     // redirect to Home
-
+                    resetBasket()
                 }
             },
             Response.ErrorListener { error ->
@@ -130,6 +131,26 @@ class BasketActivity : AppCompatActivity() {
         queue.addRequestFinishedListener<JsonObjectRequest> {
             // dismiss progress bar
             binding.orderProgress.isVisible = false
+        }
+    }
+
+    private fun resetBasket() {
+        orders.forEachIndexed { index, _ ->
+            (rvOrders.adapter as OrderAdapter).deleteOrder(index)
+            (rvOrders.adapter as OrderAdapter).notifyItemRemoved(index)
+            Log.i(TAG, "deleted at $index")
+        }
+        // delete file
+        val file = File("$ORDER_FILE$userId$ORDER_FILE_SUFFIX")
+        file.delete()
+        // reset quantity
+        val sharedPref = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        if (sharedPref.contains(QUANTITY_KEY)) {
+            with(sharedPref.edit()) {
+                remove(QUANTITY_KEY)
+                apply()
+            }
         }
     }
 
