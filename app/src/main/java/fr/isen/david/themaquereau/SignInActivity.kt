@@ -11,13 +11,11 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import fr.isen.david.themaquereau.databinding.ActivitySignInBinding
 import fr.isen.david.themaquereau.helpers.AppPreferencesHelper
-import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.model.domain.RegisterResponse
 import fr.isen.david.themaquereau.model.domain.User
 import fr.isen.david.themaquereau.util.displayToast
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
-import java.io.FileNotFoundException
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding

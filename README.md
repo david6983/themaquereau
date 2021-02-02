@@ -6,6 +6,6 @@ This is a sample android app to learn how Android Development works
 
 [Read the paper](doc/cache/cache_implementation_volley_android_kotlin.md)
 
-## Release
+## APK Release
 
-The APK wil be found in the release section of github
+The APK can be downloaded from the [release](https://github.com/david6983/themaquereau/releases/tag/v1.0) section
