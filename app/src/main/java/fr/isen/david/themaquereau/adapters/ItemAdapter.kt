@@ -30,8 +30,8 @@ class ItemAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter.ItemHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
-        val contactView = LayoutDishCardBinding.inflate(inflater, parent, false)
-        return ItemHolder(contactView)
+        val itemView = LayoutDishCardBinding.inflate(inflater, parent, false)
+        return ItemHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: ItemAdapter.ItemHolder, position: Int) {

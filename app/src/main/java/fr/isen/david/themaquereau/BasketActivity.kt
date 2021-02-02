@@ -51,9 +51,7 @@ class BasketActivity : AppCompatActivity() {
         // progress bar not visible
         binding.orderProgress.isVisible = false
 
-        val sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-        userId = sharedPref.getInt(ID_CLIENT, -1)
+        userId = preferences.getClientId()
         // Retrieve the orders from file if exist
         if (userId != -1) {
             try {
@@ -116,6 +114,8 @@ class BasketActivity : AppCompatActivity() {
         params.put("id_user", userId)
         params.put("msg", message)
         //params.put()
+
+        //TODO move API CALLS to Service
         val req = JsonObjectRequest(
             Request.Method.POST, API_ORDER_URL, params,
             Response.Listener { response ->
@@ -125,6 +125,7 @@ class BasketActivity : AppCompatActivity() {
                     displayToast("${it[0].receiver} a reçu votre commande", applicationContext)
                     // redirect to Home
                     resetBasket()
+                    //TODO handle error maybe
                 }
             },
             Response.ErrorListener { error ->
@@ -139,27 +140,16 @@ class BasketActivity : AppCompatActivity() {
     }
 
     private fun resetBasket() {
-        orders.forEachIndexed { index, _ ->
-            (rvOrders.adapter as OrderAdapter).deleteOrder(index)
-            (rvOrders.adapter as OrderAdapter).notifyItemRemoved(index)
-            Log.i(TAG, "deleted at $index")
-        }
         // delete file
-        val file = File("$ORDER_FILE$userId$ORDER_FILE_SUFFIX")
-        file.delete()
+        applicationContext.deleteFile("$ORDER_FILE$userId$ORDER_FILE_SUFFIX")
         // reset quantity
-        val sharedPref = this.getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-        if (sharedPref.contains(QUANTITY_KEY)) {
-            with(sharedPref.edit()) {
-                remove(QUANTITY_KEY)
-                apply()
-            }
-        }
+        preferences.setQuantity(0)
+        // redirect
+        val intent = getParentActivityIntentImpl()
+        startActivity(intent)
     }
 
     private suspend fun persistFinalOrderToDb() {
-        //TODO extract the db with koin library
         Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, AppDatabase.DB_NAME

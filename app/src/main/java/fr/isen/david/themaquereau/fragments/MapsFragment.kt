@@ -17,8 +17,8 @@ import fr.isen.david.themaquereau.R
 class MapsFragment : Fragment() {
 
     private val callback = OnMapReadyCallback { googleMap ->
-        val toulon = LatLng(43.12, 5.92)
-        googleMap.addMarker(MarkerOptions().position(toulon).title("Marqueur sur Toulon"))
+        val toulon = LatLng(43.1207309,5.9391841)
+        googleMap.addMarker(MarkerOptions().position(toulon).title("Marqueur sur L'ISEN Toulon"))
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(toulon, 14.0f))
     }
 

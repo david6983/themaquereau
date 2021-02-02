@@ -10,10 +10,11 @@
         android:id="@+id/actions">
         <item
             android:id="@+id/accountAction"
-            android:title="Log Out"
+            android:title="@string/action_log_out"
             app:showAsAction="never" />
         <item
-            android:title="Mon Compte"
+            android:id="@+id/myPreviousOrdersAction"
+            android:title="@string/action_my_previous_orders"
             app:showAsAction="never" />
     </group>
 </menu>

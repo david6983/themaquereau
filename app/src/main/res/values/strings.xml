@@ -65,7 +65,9 @@
     <!-- Menu -->
     <string name="action_log_in">Se connecter</string>
     <string name="action_log_out">Se déconnecter</string>
-    <string name="action_my_account">Mon compte</string>
+    <string name="action_my_previous_orders">Mes commandes passées</string>
+    <!-- Toast -->
+    <string name="log_out_success">Déconnection réussite</string>
     <!-- Shared preferences -->
     <string name="preference_file_key">fr.isen.david.themaquereau.preferences</string>
     <string name="deleted_order">Commande annulée</string>

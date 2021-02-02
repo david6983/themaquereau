@@ -1,7 +1,6 @@
 package fr.isen.david.themaquereau
 
 import android.content.Intent
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -31,7 +30,6 @@ open class BaseActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.basket_toolbar, menu)
         basketMenu = menu?.findItem(R.id.showBasket)!!
         setupBadge()
-        Log.i("BaseActivity", "setuup badge")
         basketMenu.actionView.setOnClickListener {
             setBasketListener()
         }
@@ -43,16 +41,25 @@ open class BaseActivity : AppCompatActivity() {
             if (preferences.isClientIdDefined()) {
                 preferences.removeClientId()
                 hideBadge()
-                displayToast("Log Out successfully", applicationContext)
+                displayToast(getString(R.string.log_out_success), applicationContext)
             } else {
                 val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
             }
             true
         }
+        R.id.myPreviousOrdersAction -> {
+            val intent = Intent(this, PreviousOrdersActivity::class.java)
+            startActivity(intent)
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun setMyAccountItem(menu: Menu?) {
+        menu?.findItem(R.id.myPreviousOrdersAction)?.isVisible = !preferences.isClientIdDefined()
     }
 
     open fun setupBadge() {

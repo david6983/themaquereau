@@ -87,7 +87,7 @@ class OrderAdapter(
         showUndoSnackbar()
     }
 
-    fun deleteOrder(position: Int) {
+    private fun deleteOrder(position: Int) {
         try {
             context.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
                 inputStream.bufferedReader().use { reader ->
