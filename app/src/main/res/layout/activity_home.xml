@@ -75,7 +75,7 @@
         android:fontFamily="cursive"
         android:text="@string/find_us"
         android:textColor="@color/link"
-        android:textSize="18sp"
+        android:textSize="22sp"
         app:layout_constraintBottom_toTopOf="@+id/michelinLogo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

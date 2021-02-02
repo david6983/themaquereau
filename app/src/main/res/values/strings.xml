@@ -6,6 +6,8 @@
     <!-- Home -->
     <string name="signature">Par Jean-Tanguy Talamoni de corse</string>
     <string name="find_us">Nous trouver</string>
+    <!-- Find us activity -->
+    <string name="find_us_title">Nous Contacter</string>
     <!-- Display Menu Items Activity Titles -->
     <string name="entree_title">Nos Entrées</string>
     <string name="plats_title">Nos Plats</string>
