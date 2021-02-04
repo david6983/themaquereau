@@ -5,19 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.Gson
 import com.wajahatkarim3.easyvalidation.core.Validator
 import com.wajahatkarim3.easyvalidation.core.view_ktx.validator
 import fr.isen.david.themaquereau.databinding.ActivitySignUpBinding
-import fr.isen.david.themaquereau.helpers.AppPreferencesHelper
-import fr.isen.david.themaquereau.model.domain.RegisterResponse
+import fr.isen.david.themaquereau.helpers.ApiHelperImpl
+import fr.isen.david.themaquereau.helpers.AppPreferencesHelperImpl
 import fr.isen.david.themaquereau.model.domain.User
-import fr.isen.david.themaquereau.util.displayToast
-import org.json.JSONObject
 import org.koin.android.ext.android.inject
 
 
@@ -29,7 +22,8 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var inputAddress: EditText
     private lateinit var inputPassword: EditText
 
-    private val preferences: AppPreferencesHelper by inject()
+    private val preferencesImpl: AppPreferencesHelperImpl by inject()
+    private val api: ApiHelperImpl by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,9 +59,7 @@ class SignUpActivity : AppCompatActivity() {
                    inputPassword.text.toString() //TODO encrypt password
                 )
                 Log.d(TAG, "new sign up : $user")
-                val queue = Volley.newRequestQueue(this)
-                val req = signUp(user, "1")
-                queue.add(req)
+                api.signUp(user, onSignUpCallback, onSignUpErrorCallback)
             }
         }
 
@@ -140,30 +132,13 @@ class SignUpActivity : AppCompatActivity() {
             }
     }
 
-    private fun signUp(user: User, idShop: String): JsonObjectRequest {
-        //TODO handle 400
+    private val onSignUpCallback = { userId: Int ->
+        preferencesImpl.setClientId(userId)
+        redirectToParent()
+    }
 
-        // params
-        val params = JSONObject()
-        params.put("id_shop", idShop)
-        user.toSignUpParams(params)
-        Log.i(TAG, "with params $params")
-        return JsonObjectRequest(
-            Request.Method.POST, API_REGISTER_URL, params,
-            Response.Listener { response ->
-                Log.d(TAG, "Sign Up Response: $response")
-                Gson().fromJson(response["data"].toString(), RegisterResponse::class.java).let {
-                    preferences.setClientId(it.id)
-                    displayToast("Sign up successfully", applicationContext)
-                    redirectToParent()
-                }
-            },
-            Response.ErrorListener { error ->
-                invalidateInput(inputEmail)
-                displayToast("Cannot create an account, The user might already exist)", applicationContext)
-                Log.e(TAG, "Error: $error")
-            }
-        )
+    private val onSignUpErrorCallback = {
+        invalidateInput(inputEmail)
     }
 
     private fun invalidateInput(input: EditText) {

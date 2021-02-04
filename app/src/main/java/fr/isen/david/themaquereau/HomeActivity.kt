@@ -3,14 +3,7 @@ package fr.isen.david.themaquereau
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
-import android.widget.TextView
-import androidx.core.view.isVisible
-import com.google.gson.Gson
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
-import fr.isen.david.themaquereau.model.domain.Order
-import fr.isen.david.themaquereau.util.displayToast
-import java.io.FileNotFoundException
 
 
 class HomeActivity : BaseActivity() {
@@ -24,8 +17,8 @@ class HomeActivity : BaseActivity() {
         // callbacks
         manageMainMenu()
         manageFindUsButton()
-        if (!preferences.isFirstTimeSignInDefined()) {
-            preferences.setFirstTimeSignIn(true)
+        if (!preferencesImpl.isFirstTimeSignInDefined()) {
+            preferencesImpl.setFirstTimeSignIn(true)
         }
     }
 

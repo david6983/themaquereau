@@ -11,16 +11,17 @@ import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import fr.isen.david.themaquereau.*
 import fr.isen.david.themaquereau.databinding.LayoutOrderBasketBinding
+import fr.isen.david.themaquereau.helpers.AppPreferencesHelperImpl
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
 import java.io.BufferedReader
-import java.io.File
 import java.io.FileNotFoundException
 
 class OrderAdapter(
     private var orders: MutableList<Order>,
     val context: Context,
-    private val userId: Int
+    private val userId: Int,
+    private val preferencesImpl: AppPreferencesHelperImpl
 ) : RecyclerView.Adapter<OrderAdapter.OrderHolder>() {
     private var recentlyDeletedOrderPosition: Int = -1
     private lateinit var recentlyDeletedOrder: Order
@@ -103,13 +104,7 @@ class OrderAdapter(
                     Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
 
                     // Update shared preferences
-                    val sharedPref = context.getSharedPreferences(
-                        context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-                    // add the quantity to the previous quantity
-                    with(sharedPref.edit()) {
-                        putInt(QUANTITY_KEY, ordersFromFile.sumBy { it.quantity })
-                        apply()
-                    }
+                    preferencesImpl.setQuantity(ordersFromFile.sumBy { it.quantity })
                 }
             }
         } catch(e: FileNotFoundException) {

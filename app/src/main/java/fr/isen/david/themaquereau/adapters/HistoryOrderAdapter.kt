@@ -35,9 +35,9 @@ class HistoryOrderAdapter(
         //TODO handle no previous orders
         //TODO add a view pager 2 with titles
         val order: HistoryOrder = orders[position]
-        val messageOrder = parseMessage(order.message)[0]
+        //val messageOrder = parseMessage(order.message)[0]
         holder.receiver.text = order.receiver
-        holder.price.text = messageOrder.realPrice.toString()
+        holder.price.text = "13"
         holder.date.text = order.create_date.toString() //TODO format date
         // listener on the item
         holder.layout.setOnClickListener {

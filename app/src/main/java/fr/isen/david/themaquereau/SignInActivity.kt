@@ -4,23 +4,18 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.Gson
 import fr.isen.david.themaquereau.databinding.ActivitySignInBinding
-import fr.isen.david.themaquereau.helpers.AppPreferencesHelper
-import fr.isen.david.themaquereau.model.domain.RegisterResponse
+import fr.isen.david.themaquereau.helpers.ApiHelperImpl
+import fr.isen.david.themaquereau.helpers.AppPreferencesHelperImpl
 import fr.isen.david.themaquereau.model.domain.User
 import fr.isen.david.themaquereau.util.displayToast
-import org.json.JSONObject
 import org.koin.android.ext.android.inject
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
 
-    private val preferences: AppPreferencesHelper by inject()
+    private val preferencesImpl: AppPreferencesHelperImpl by inject()
+    private val api: ApiHelperImpl by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +24,7 @@ class SignInActivity : AppCompatActivity() {
         setContentView(view)
 
         // Set checkbox if not the first time
-        preferences.getFirstTimeSignIn().let {
+        preferencesImpl.getFirstTimeSignIn().let {
             binding.remindMeCheckBox.isChecked = true
         }
 
@@ -41,16 +36,14 @@ class SignInActivity : AppCompatActivity() {
                 "",
                 binding.passwordInput.text.toString()
             )
-            val queue = Volley.newRequestQueue(this)
-            val req = signIn(user, "1")
-            queue.add(req)
+            api.signIn(user, loginCallback)
 
             if (binding.remindMeCheckBox.isChecked) {
                 Log.i(TAG, "checked")
-                preferences.setFirstTimeSignIn(false)
+                preferencesImpl.setFirstTimeSignIn(false)
             } else {
                 Log.i(TAG, "noy checked")
-                preferences.setFirstTimeSignIn(true)
+                preferencesImpl.setFirstTimeSignIn(true)
             }
 
             displayToast("Sign in successfully", applicationContext)
@@ -58,11 +51,11 @@ class SignInActivity : AppCompatActivity() {
         }
 
         binding.noAccountLink.setOnClickListener {
+            val intent = Intent(this, SignUpActivity::class.java)
             intent.extras?.getSerializable(ITEM)?.let {
-                val intent = Intent(this, SignUpActivity::class.java)
                 intent.putExtra(ITEM, it)
-                startActivity(intent)
             }
+            startActivity(intent)
         }
     }
 
@@ -85,25 +78,9 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun signIn(user: User, idShop: String): JsonObjectRequest {
-        // params
-        val params = JSONObject()
-        params.put("id_shop", idShop)
-        user.toSignInParams(params)
-        return JsonObjectRequest(
-            Request.Method.POST, API_LOGIN_URL, params,
-            Response.Listener { response ->
-                Log.d(TAG, "Sign In Response: $response")
-                Gson().fromJson(response["data"].toString(), RegisterResponse::class.java).let {
-                    preferences.setClientId(it.id)
-                }
-            },
-            Response.ErrorListener { error ->
-                Log.e(DishesListActivity.TAG, "Error: ${error.message}")
-            })
-    }
+    private val loginCallback = { userId: Int -> preferencesImpl.setClientId(userId) }
 
     companion object {
-        val TAG = SignInActivity::class.java.simpleName
+        val TAG: String = SignInActivity::class.java.simpleName
     }
 }

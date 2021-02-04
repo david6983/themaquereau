@@ -5,10 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -59,15 +56,15 @@ class DishDetailsActivity : BaseActivity() {
     }
 
     private fun orderCallback(view: View) {
-        val id = preferences.getClientId()
-        if (preferences.getClientId() != -1) {
+        val id = preferencesImpl.getClientId()
+        if (preferencesImpl.getClientId() != -1) {
             // Save the order in a file
             saveOrder(order, id)
             // Alert the user with a snack bar
             alertUser(view)
         } else {
-            if (preferences.isFirstTimeSignInDefined()) {
-                preferences.getFirstTimeSignIn().let {
+            if (preferencesImpl.isFirstTimeSignInDefined()) {
+                preferencesImpl.getFirstTimeSignIn().let {
                     intent = if (it) {
                         Intent(this, SignUpActivity::class.java)
                     } else {
@@ -165,9 +162,9 @@ class DishDetailsActivity : BaseActivity() {
     }
 
     private fun updateQuantity(newQuantity: Int) {
-        preferences.setQuantity(newQuantity)
+        preferencesImpl.setQuantity(newQuantity)
         setupBadge()
-        Log.i(TAG, "added to pref: ${preferences.getQuantity()}")
+        Log.i(TAG, "added to pref: ${preferencesImpl.getQuantity()}")
     }
 
     override fun setBasketListener() {

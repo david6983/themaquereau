@@ -1,6 +1,5 @@
 package fr.isen.david.themaquereau
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -20,7 +19,8 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import fr.isen.david.themaquereau.adapters.OrderAdapter
 import fr.isen.david.themaquereau.databinding.ActivityBasketBinding
-import fr.isen.david.themaquereau.helpers.AppPreferencesHelper
+import fr.isen.david.themaquereau.helpers.ApiHelperImpl
+import fr.isen.david.themaquereau.helpers.AppPreferencesHelperImpl
 import fr.isen.david.themaquereau.helpers.SwipeToDeleteCallback
 import fr.isen.david.themaquereau.model.database.AppDatabase
 import fr.isen.david.themaquereau.model.domain.FinalOrderResponse
@@ -29,7 +29,6 @@ import fr.isen.david.themaquereau.util.displayToast
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
-import java.io.File
 import java.io.FileNotFoundException
 
 class BasketActivity : AppCompatActivity() {
@@ -38,7 +37,8 @@ class BasketActivity : AppCompatActivity() {
     private lateinit var rvOrders: RecyclerView
     private var userId: Int = -1
 
-    private val preferences: AppPreferencesHelper by inject()
+    private val preferencesImpl: AppPreferencesHelperImpl by inject()
+    private val api: ApiHelperImpl by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +51,7 @@ class BasketActivity : AppCompatActivity() {
         // progress bar not visible
         binding.orderProgress.isVisible = false
 
-        userId = preferences.getClientId()
+        userId = preferencesImpl.getClientId()
         // Retrieve the orders from file if exist
         if (userId != -1) {
             try {
@@ -84,7 +84,7 @@ class BasketActivity : AppCompatActivity() {
     private fun renderOrders() {
         // Render the orders in the recycle view
         rvOrders = binding.orderList
-        val adapter = OrderAdapter(orders, applicationContext, userId)
+        val adapter = OrderAdapter(orders, applicationContext, userId, preferencesImpl)
         rvOrders.adapter = adapter
         rvOrders.layoutManager = LinearLayoutManager(this)
         // Add our touch helper
@@ -103,47 +103,14 @@ class BasketActivity : AppCompatActivity() {
             }
         }
         // Save the order to the api
-        saveToApi(1, finalOrder)
+        api.saveOrder(finalOrder, userId, resetBasket, binding.orderProgress)
     }
 
-    private fun saveToApi(idShop: Int, message: String) {
-        val queue = Volley.newRequestQueue(this)
-        // params
-        val params = JSONObject()
-        params.put("id_shop", idShop)
-        params.put("id_user", userId)
-        params.put("msg", message)
-        //params.put()
-
-        //TODO move API CALLS to Service
-        val req = JsonObjectRequest(
-            Request.Method.POST, API_ORDER_URL, params,
-            Response.Listener { response ->
-                Log.d(SignInActivity.TAG, "Sent Order Response: $response")
-                // alert the user
-                Gson().fromJson(response["data"].toString(), Array<FinalOrderResponse>::class.java).let {
-                    displayToast("${it[0].receiver} a reçu votre commande", applicationContext)
-                    // redirect to Home
-                    resetBasket()
-                    //TODO handle error maybe
-                }
-            },
-            Response.ErrorListener { error ->
-                Log.e(DishesListActivity.TAG, "Error: ${error.message}")
-            })
-        queue.add(req)
-        binding.orderProgress.isVisible = true
-        queue.addRequestFinishedListener<JsonObjectRequest> {
-            // dismiss progress bar
-            binding.orderProgress.isVisible = false
-        }
-    }
-
-    private fun resetBasket() {
+    private val resetBasket = {
         // delete file
         applicationContext.deleteFile("$ORDER_FILE$userId$ORDER_FILE_SUFFIX")
         // reset quantity
-        preferences.setQuantity(0)
+        preferencesImpl.setQuantity(0)
         // redirect
         val intent = getParentActivityIntentImpl()
         startActivity(intent)
