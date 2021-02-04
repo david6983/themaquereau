@@ -27,7 +27,7 @@ import org.koin.android.ext.android.inject
 
 class BasketActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBasketBinding
-    private var orders: MutableList<Order> = mutableListOf()
+    private lateinit var orders: MutableList<Order>
     private lateinit var rvOrders: RecyclerView
     private var userId: Int = -1
 
@@ -72,10 +72,11 @@ class BasketActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private val renderOrders = { orders: MutableList<Order> ->
+    private val renderOrders = { ordersList: MutableList<Order> ->
+        orders = ordersList
         // Render the orders in the recycle view
         rvOrders = binding.orderList
-        val adapter = OrderAdapter(orders, applicationContext, userId, preferencesImpl, persistence)
+        val adapter = OrderAdapter(ordersList, applicationContext, userId, preferencesImpl, persistence)
         rvOrders.adapter = adapter
         rvOrders.layoutManager = LinearLayoutManager(this)
         // Add our touch helper
