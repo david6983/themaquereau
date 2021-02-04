@@ -1,27 +1,25 @@
 package fr.isen.david.themaquereau.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import fr.isen.david.themaquereau.*
 import fr.isen.david.themaquereau.databinding.LayoutOrderBasketBinding
 import fr.isen.david.themaquereau.helpers.AppPreferencesHelperImpl
+import fr.isen.david.themaquereau.helpers.PersistOrdersHelperImpl
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
-import java.io.BufferedReader
-import java.io.FileNotFoundException
 
 class OrderAdapter(
     private var orders: MutableList<Order>,
     val context: Context,
     private val userId: Int,
-    private val preferencesImpl: AppPreferencesHelperImpl
+    private val preferencesImpl: AppPreferencesHelperImpl,
+    private val persistence: PersistOrdersHelperImpl
 ) : RecyclerView.Adapter<OrderAdapter.OrderHolder>() {
     private var recentlyDeletedOrderPosition: Int = -1
     private lateinit var recentlyDeletedOrder: Order
@@ -82,39 +80,20 @@ class OrderAdapter(
         recentlyDeletedOrderPosition = position
         orders.removeAt(position)
         // remove it in the file
-        deleteOrder(position)
+        persistence.deleteOrder(userId, position, updateSharedPrefCallback, errorDeleteCallBack)
         // notify the recycler view
         notifyItemRemoved(position)
         showUndoSnackbar()
     }
 
-    private fun deleteOrder(position: Int) {
-        try {
-            context.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
-                inputStream.bufferedReader().use { reader ->
-                    val gson = Gson()
-                    val ordersFromFile = retrieveOrders(reader, gson)
-                    // delete the order
-                    ordersFromFile.removeAt(position)
-                    val ordersToFile = gson.toJson(ordersFromFile)
-                    // save the file again
-                    context.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
-                        outputStream.write(ordersToFile.toString().toByteArray())
-                    }
-                    Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
-
-                    // Update shared preferences
-                    preferencesImpl.setQuantity(ordersFromFile.sumBy { it.quantity })
-                }
-            }
-        } catch(e: FileNotFoundException) {
-            // Alert the user that there are no orders yet
-            displayToast("cannot retrieve orders", view.context)
-        }
+    private val updateSharedPrefCallback = { ordersFromFile: MutableList<Order> ->
+        // Update shared preferences
+        preferencesImpl.setQuantity(ordersFromFile.sumBy { it.quantity })
     }
 
-    private fun retrieveOrders(reader: BufferedReader, gson: Gson): MutableList<Order> {
-        return gson.fromJson(reader.readText(), Array<Order>::class.java).toMutableList()
+    private val errorDeleteCallBack = {
+        // Alert the user that there are no orders yet
+        displayToast("cannot retrieve orders", view.context)
     }
 
     private fun showUndoSnackbar() {

@@ -1,6 +1,5 @@
 package fr.isen.david.themaquereau
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -8,20 +7,21 @@ import android.util.Log
 import android.view.View
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.gson.JsonArray
 import fr.isen.david.themaquereau.databinding.ActivityDishDetailsBinding
 import fr.isen.david.themaquereau.fragments.DishImagesPagerFragment
+import fr.isen.david.themaquereau.helpers.PersistOrdersHelperImpl
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
-import java.io.FileNotFoundException
 import java.lang.NumberFormatException
+import org.koin.android.ext.android.inject
 
 class DishDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityDishDetailsBinding
     private lateinit var order: Order
     private lateinit var item: Item
+
+    private val persistence: PersistOrdersHelperImpl by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,15 +41,13 @@ class DishDetailsActivity : BaseActivity() {
         binding.dishDetailIngredients.text = item.ingredients.joinToString(", ") { it.name_fr }
         // Get quantity
         getQuantity()
-
         // Images Pager
         setImagePager()
-
         // Number Input Listener
         binding.quantity.addTextChangedListener { txt ->
             updateQuantityInput(item, txt)
         }
-
+        // Order button Listener
         binding.fishImageButton.setOnClickListener { v ->
             orderCallback(v)
         }
@@ -118,42 +116,15 @@ class DishDetailsActivity : BaseActivity() {
     }
 
     private fun saveOrder(order: Order, userId: Int) {
-        try {
-            applicationContext.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
-                inputStream.bufferedReader().use { reader ->
-                    val orders = Gson().fromJson(reader.readText(), Array<Order>::class.java).toMutableList()
-                    // update id
-                    order.order_id += 1
-                    // verify if the order already exist by name
-                    orders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
-                        if (foundOrder !== null) {
-                            val position = orders.indexOf(foundOrder);
-                            foundOrder.quantity += order.quantity
-                            foundOrder.realPrice += order.realPrice
-                            orders.set(position, foundOrder)
-                        } else {
-                            orders.add(order)
-                        }
-                    }
-                    // update quantity
-                    updateQuantity(orders.sumBy { it.quantity })
-                    val newJsonOrders = Gson().toJson(orders)
-                    applicationContext.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
-                        outputStream.write(newJsonOrders.toString().toByteArray())
-                        Log.i(TAG, "updated orders: $newJsonOrders")
-                    }
-                }
-            }
-        } catch(e: FileNotFoundException) {
-            val orders = JsonArray()
-            val jsonOrder = Gson().toJsonTree(order)
-            orders.add(Gson().toJsonTree(jsonOrder))
-            applicationContext.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
-                outputStream.write(orders.toString().toByteArray())
-                updateQuantity(order.quantity)
-                Log.i(TAG, "order saved: $jsonOrder")
-            }
-        }
+        persistence.saveOrder(userId, order, updateQuantityCallback, errorSaveOrderCallback)
+    }
+
+    private val updateQuantityCallback = { orders: MutableList<Order> ->
+        updateQuantity(orders.sumBy { it.quantity })
+    }
+
+    private val errorSaveOrderCallback = { quantity: Int ->
+        updateQuantity(quantity)
     }
 
     private fun alertUser(view: View) {
