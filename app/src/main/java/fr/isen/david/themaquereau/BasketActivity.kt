@@ -27,7 +27,7 @@ import org.koin.android.ext.android.inject
 
 class BasketActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBasketBinding
-    private lateinit var orders: MutableList<Order>
+    private var orders: MutableList<Order> = mutableListOf()
     private lateinit var rvOrders: RecyclerView
     private var userId: Int = -1
 
@@ -56,6 +56,7 @@ class BasketActivity : AppCompatActivity() {
     private fun retrieveOrders() {
         if (userId != -1) {
             persistence.readOrders(userId, renderOrders, noOrdersErrorCallback)
+            Log.i(TAG, "read orders: $orders")
         } else {
             // redirect to the login page
             val intent = Intent(this, SignInActivity::class.java)

@@ -33,7 +33,7 @@ class PreviousOrdersActivity : AppCompatActivity() {
 
     private val onReceiveHistoryOrders = { data: Array<HistoryOrder> ->
         val rvHistory = binding.historyView
-        val adapter = HistoryOrderAdapter(data.toList(), applicationContext)
+        val adapter = HistoryOrderAdapter(data.toList())
         rvHistory.adapter = adapter
         rvHistory.layoutManager = LinearLayoutManager(this)
     }

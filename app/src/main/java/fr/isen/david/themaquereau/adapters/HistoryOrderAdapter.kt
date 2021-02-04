@@ -1,22 +1,20 @@
 package fr.isen.david.themaquereau.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.GsonBuilder
+import com.google.gson.Gson
 import fr.isen.david.themaquereau.databinding.LayoutHistoryOrderCardBinding
 import fr.isen.david.themaquereau.model.domain.HistoryOrder
 import fr.isen.david.themaquereau.model.domain.Order
-import fr.isen.david.themaquereau.util.displayToast
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HistoryOrderAdapter(
-    private var orders: List<HistoryOrder>,
-    private val context: Context
+    private var orders: List<HistoryOrder>
 ) : RecyclerView.Adapter<HistoryOrderAdapter.HistoryOrderHolder>() {
-    private val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
-
     inner class HistoryOrderHolder(binding: LayoutHistoryOrderCardBinding) : RecyclerView.ViewHolder(binding.root) {
         val date: TextView = binding.orderDate
         val price: TextView = binding.orderPrice
@@ -35,22 +33,16 @@ class HistoryOrderAdapter(
         //TODO handle no previous orders
         //TODO add a view pager 2 with titles
         val order: HistoryOrder = orders[position]
-        //val messageOrder = parseMessage(order.message)[0]
         holder.receiver.text = order.receiver
-        holder.price.text = "13"
-        holder.date.text = order.create_date.toString() //TODO format date
-        // listener on the item
-        holder.layout.setOnClickListener {
-            clickCallback(order)
-        }
+        val subOrders = parseMessage(order.message)
+        val total = subOrders.sumByDouble { it.realPrice }
+        holder.price.text = total.toString()
+        val formatter = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRENCH);
+        holder.date.text = formatter.format(order.create_date)
     }
 
-    private fun parseMessage(message: String): List<Order> {
-        return gson.fromJson(message, Array<Order>::class.java).toList()
-    }
-
-    private fun clickCallback(order: HistoryOrder) {
-        displayToast(order.toString(), context)
+    private fun parseMessage(message: String): Array<Order> {
+        return Gson().fromJson(message, Array<Order>::class.java)
     }
 
     override fun getItemCount(): Int {

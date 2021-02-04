@@ -65,9 +65,15 @@
     <string name="action_log_in">Se connecter</string>
     <string name="action_log_out">Se déconnecter</string>
     <string name="action_my_previous_orders">Mes commandes passées</string>
+    <!-- History Order Card -->
+    <string name="price_total">Pour un total de</string>
+    <string name="vendor">Chez</string>
+    <string name="date_label">le</string>
     <!-- Toast -->
     <string name="log_out_success">Déconnection réussite</string>
     <!-- Shared preferences -->
     <string name="preference_file_key">fr.isen.david.themaquereau.preferences</string>
     <string name="deleted_order">Commande annulée</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
