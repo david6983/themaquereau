@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:configChanges="keyboardHidden"
+    android:focusableInTouchMode="true"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,7 +20,7 @@
         android:text="@string/dish_name_default"
         android:textAlignment="center"
         android:textColor="@color/main_text"
-        android:textSize="30sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +40,7 @@
         android:text="@string/ingredients"
         android:textAlignment="center"
         android:textColor="@color/main_light"
-        android:textSize="20sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.045"
@@ -60,7 +62,9 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/fishImageButton"
         app:layout_constraintEnd_toStartOf="@+id/quantity"
-        app:layout_constraintStart_toEndOf="@+id/tagImage" />
+        app:layout_constraintStart_toEndOf="@+id/tagImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/quantity"
@@ -76,7 +80,11 @@
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/fishImageButton"
-        app:layout_constraintStart_toEndOf="@+id/tagImage" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/tagImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <fragment
         android:id="@+id/dishPagerFragment"
@@ -102,20 +110,22 @@
 
     <ImageView
         android:id="@+id/tagImage"
-        android:layout_width="180dp"
-        android:layout_height="150dp"
-        android:layout_marginBottom="48dp"
+        android:layout_width="130dp"
+        android:layout_height="140dp"
+        android:layout_marginBottom="25dp"
         android:rotation="168"
         app:layout_constraintBottom_toBottomOf="@+id/fishImageButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.341"
+        app:layout_constraintHorizontal_bias="0.37"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/tag" />
 
     <ImageView
         android:id="@+id/fishImageButton"
-        android:layout_width="280dp"
-        android:layout_height="130dp"
+        android:layout_width="230dp"
+        android:layout_height="90dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
@@ -129,17 +139,18 @@
         android:id="@+id/dishDetailEuros"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:fontFamily="cursive"
         android:text="@string/euros"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/tagImage"
         app:layout_constraintEnd_toEndOf="@+id/tagImage"
-        app:layout_constraintHorizontal_bias="0.65"
+        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="@+id/tagImage"
         app:layout_constraintTop_toTopOf="@+id/tagImage"
-        app:layout_constraintVertical_bias="0.65999997" />
+        app:layout_constraintVertical_bias="0.647" />
 
     <TextView
         android:id="@+id/dishDetailPrice"
@@ -148,28 +159,28 @@
         android:fontFamily="cursive"
         android:text="12,3"
         android:textColor="@color/secondary"
-        android:textSize="30sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/tagImage"
         app:layout_constraintEnd_toEndOf="@+id/tagImage"
-        app:layout_constraintHorizontal_bias="0.346"
+        app:layout_constraintHorizontal_bias="0.366"
         app:layout_constraintStart_toStartOf="@+id/tagImage"
         app:layout_constraintTop_toTopOf="@+id/tagImage"
-        app:layout_constraintVertical_bias="0.671" />
+        app:layout_constraintVertical_bias="0.635" />
 
     <TextView
         android:id="@+id/disDetailTotal"
-        android:layout_width="60dp"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:fontFamily="cursive"
         android:text="@string/total"
         android:textColor="@color/white"
-        android:textSize="30sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/tagImage"
         app:layout_constraintEnd_toEndOf="@+id/tagImage"
-        app:layout_constraintHorizontal_bias="0.625"
+        app:layout_constraintHorizontal_bias="0.68"
         app:layout_constraintStart_toStartOf="@+id/tagImage"
         app:layout_constraintTop_toTopOf="@+id/tagImage"
-        app:layout_constraintVertical_bias="0.283" />
+        app:layout_constraintVertical_bias="0.36" />
 
     <TextView
         android:id="@+id/textView8"
@@ -179,14 +190,14 @@
         android:text="@string/order"
         android:textAllCaps="true"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:textStyle="italic"
         android:translationZ="1dp"
         app:layout_constraintBottom_toBottomOf="@+id/fishImageButton"
         app:layout_constraintEnd_toEndOf="@+id/fishImageButton"
-        app:layout_constraintHorizontal_bias="0.66"
+        app:layout_constraintHorizontal_bias="0.653"
         app:layout_constraintStart_toStartOf="@+id/fishImageButton"
         app:layout_constraintTop_toTopOf="@+id/fishImageButton"
-        app:layout_constraintVertical_bias="0.631" />
+        app:layout_constraintVertical_bias="0.617" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

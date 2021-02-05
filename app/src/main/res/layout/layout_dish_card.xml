@@ -20,6 +20,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="4dp"
             android:fontFamily="cursive"
             android:text="@string/dish_name_default"
             android:textColor="@color/main_text"
@@ -29,28 +31,13 @@
             app:layout_constraintEnd_toStartOf="@+id/dishImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.060000002" />
-
-        <TextView
-            android:id="@+id/total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:fontFamily="cursive"
-            android:text="@string/from_price"
-            android:textAllCaps="false"
-            android:textColor="@color/main_light"
-            android:textSize="12sp"
-            android:textStyle="italic"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.95" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/dishPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="16dp"
             android:fontFamily="cursive"
             android:text="10,3"
@@ -58,7 +45,7 @@
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.18"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.96" />
@@ -84,6 +71,8 @@
             android:layout_height="119dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0"
             tools:srcCompat="@drawable/maquereau_not_found" />

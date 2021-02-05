@@ -27,7 +27,7 @@ import org.koin.android.ext.android.inject
 
 class BasketActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBasketBinding
-    private lateinit var orders: MutableList<Order>
+    private var orders: MutableList<Order> = mutableListOf()
     private lateinit var rvOrders: RecyclerView
     private var userId: Int = -1
 
