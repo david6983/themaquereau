@@ -13,7 +13,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp">
+        android:layout_height="160dp">
 
         <TextView
             android:id="@+id/dishName"
@@ -23,7 +23,7 @@
             android:fontFamily="cursive"
             android:text="@string/dish_name_default"
             android:textColor="@color/main_text"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:translationZ="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/dishImage"
@@ -33,18 +33,17 @@
 
         <TextView
             android:id="@+id/total"
-            android:layout_width="43dp"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="7dp"
             android:fontFamily="cursive"
             android:text="@string/total2"
             android:textAllCaps="false"
             android:textColor="@color/main_light"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textStyle="italic"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/realPrice"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -54,7 +53,7 @@
             android:id="@+id/quantityBasketOrder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:fontFamily="cursive"
             android:text="10"
             android:textColor="@color/black"
@@ -63,21 +62,22 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/quantityText"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.95" />
+            app:layout_constraintVertical_bias="0.741" />
 
         <TextView
             android:id="@+id/realPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:fontFamily="cursive"
             android:text="10,3"
             android:textColor="@color/main_darker"
-            android:textSize="24sp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.16"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/total"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.96" />
 
@@ -85,14 +85,15 @@
             android:id="@+id/quantityText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
             android:fontFamily="cursive"
             android:text="@string/quantity_text"
             android:textColor="@color/main_light"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/devise"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.03"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.96" />
+            app:layout_constraintVertical_bias="0.741" />
 
         <TextView
             android:id="@+id/devise"
@@ -101,7 +102,7 @@
             android:fontFamily="cursive"
             android:text="@string/euros"
             android:textColor="@color/main_text"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.02"
@@ -111,14 +112,14 @@
 
         <ImageView
             android:id="@+id/dishImage"
-            android:layout_width="149dp"
-            android:layout_height="119dp"
+            android:layout_width="160dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/dish_description"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0"
-            tools:srcCompat="@drawable/maquereau_not_found"
-            android:contentDescription="@string/dish_description" />
+            tools:srcCompat="@drawable/maquereau_not_found" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

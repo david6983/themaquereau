@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.util.Log
 import android.view.View
-import android.view.animation.AccelerateInterpolator
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.snackbar.Snackbar
 import fr.isen.david.themaquereau.databinding.ActivityDishDetailsBinding
@@ -14,8 +13,8 @@ import fr.isen.david.themaquereau.helpers.PersistOrdersHelperImpl
 import fr.isen.david.themaquereau.model.domain.Item
 import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
-import java.lang.NumberFormatException
 import org.koin.android.ext.android.inject
+
 
 class DishDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityDishDetailsBinding
@@ -50,7 +49,7 @@ class DishDetailsActivity : BaseActivity() {
             updateQuantityInput(item, txt)
         }
         // Order button Listener
-        binding.fishImageButton.setOnClickListener { v ->
+        binding.orderButton.setOnClickListener { v ->
             orderCallback(v)
         }
     }

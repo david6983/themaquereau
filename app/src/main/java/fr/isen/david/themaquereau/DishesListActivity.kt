@@ -29,6 +29,7 @@ class DishesListActivity : BaseActivity() {
 
         // The list is not visible until the content is loaded
         binding.itemRecyclerView.isVisible = false
+        binding.progressBar.isVisible = true
 
         // Get the category number
         intent.extras?.getInt(CATEGORY)?.let {
@@ -45,6 +46,7 @@ class DishesListActivity : BaseActivity() {
     private fun setSwipeToRefresh(queue: RequestQueue) {
         val swipeContainer = binding.swipeContainer
         swipeContainer.setOnRefreshListener {
+            binding.progressBar.isVisible = true
             // invalidate the cache
             queue.cache.clear()
             items = listOf()
@@ -73,6 +75,7 @@ class DishesListActivity : BaseActivity() {
         rvItems.layoutManager = LinearLayoutManager(this)
 
         binding.itemRecyclerView.isVisible = true
+        binding.progressBar.isVisible = false
     }
 
     private val errorLoadDishCallback = {

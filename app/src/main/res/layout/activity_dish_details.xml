@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:configChanges="keyboardHidden"
-    android:focusableInTouchMode="true"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/motionLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:configChanges="keyboardHidden"
+    android:focusableInTouchMode="true"
+    app:layoutDescription="@xml/activity_dish_details_scene3"
     tools:context=".DishDetailsActivity">
 
     <TextView
@@ -110,7 +112,7 @@
 
     <ImageView
         android:id="@+id/tagImage"
-        android:layout_width="130dp"
+        android:layout_width="170dp"
         android:layout_height="140dp"
         android:layout_marginBottom="25dp"
         android:rotation="168"
@@ -128,11 +130,12 @@
         android:layout_height="90dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="8dp"
         android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/orderButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dishDetailIngredients"
+        app:layout_constraintVertical_bias="0.85"
         app:srcCompat="@drawable/maquereau_button" />
 
     <TextView
@@ -177,27 +180,22 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/tagImage"
         app:layout_constraintEnd_toEndOf="@+id/tagImage"
-        app:layout_constraintHorizontal_bias="0.68"
+        app:layout_constraintHorizontal_bias="0.675"
         app:layout_constraintStart_toStartOf="@+id/tagImage"
         app:layout_constraintTop_toTopOf="@+id/tagImage"
-        app:layout_constraintVertical_bias="0.36" />
+        app:layout_constraintVertical_bias="0.301" />
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="casual"
+    <Button
+        android:id="@+id/orderButton"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif-medium"
         android:text="@string/order"
-        android:textAllCaps="true"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        android:translationZ="1dp"
-        app:layout_constraintBottom_toBottomOf="@+id/fishImageButton"
-        app:layout_constraintEnd_toEndOf="@+id/fishImageButton"
-        app:layout_constraintHorizontal_bias="0.653"
-        app:layout_constraintStart_toStartOf="@+id/fishImageButton"
-        app:layout_constraintTop_toTopOf="@+id/fishImageButton"
-        app:layout_constraintVertical_bias="0.617" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
