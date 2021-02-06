@@ -27,10 +27,11 @@ class PersistOrdersHelperImpl(
         callback: (MutableList<Order>) -> (Unit),
         errorCallback: () -> (Unit)
     ) {
-        val orders = gson.fromJson(readText(userId), Array<Order>::class.java).toMutableList()
-        if (orders.isEmpty()) {
+        val content = readText(userId)
+        if (content == "") {
             errorCallback()
         } else {
+            val orders = gson.fromJson(content, Array<Order>::class.java).toMutableList()
             callback(orders)
         }
     }

@@ -93,7 +93,7 @@ class OrderAdapter(
 
     private val errorDeleteCallBack = {
         // Alert the user that there are no orders yet
-        displayToast("cannot retrieve orders", view.context)
+        displayToast(context.getString(R.string.cannot_retrieve_orders), view.context)
     }
 
     private fun showUndoSnackbar() {

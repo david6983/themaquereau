@@ -10,7 +10,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import fr.isen.david.themaquereau.*
 import fr.isen.david.themaquereau.model.domain.*
-import fr.isen.david.themaquereau.util.displayToast
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -21,15 +20,25 @@ interface ApiHelper {
     fun loadDishList(
         category: Int,
         receivedDataCallback: (data: Data) -> (Unit),
+        errorCallback: () -> (Unit),
         cacheDir: File
     ): RequestQueue
     fun listPreviousOrders(userId: Int, receivedDataCallback: (data: Array<HistoryOrder>) -> Unit)
-    fun saveOrder(jsonOrder: String, userId: Int, redirectCallback: () -> Unit, progressBar: ProgressBar)
+    fun saveFinalOrder(
+        jsonOrder: String,
+        userId: Int,
+        onSavedCallback: (receiver: String) -> Unit,
+        progressBar: ProgressBar
+    )
     fun signIn(user: User, loginCallback: (userId: Int) -> (Unit))
     fun signUp(user: User, registerCallback: (userId: Int) -> (Unit), errorCallback: () -> (Unit))
     fun getQueue(): RequestQueue
     fun getCacheQueue(cacheDir: File): RequestQueue
-    fun getJsonRequestLoadData(category: Int, callback: (data: Data) -> (Unit)): JsonObjectRequest
+    fun getJsonRequestLoadData(
+        category: Int,
+        callback: (data: Data) -> (Unit),
+        errorCallback: () -> (Unit)
+    ): JsonObjectRequest
 }
 
 class ApiHelperImpl(
@@ -37,14 +46,23 @@ class ApiHelperImpl(
 ) : ApiHelper {
     private val gson: Gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create()
 
-    override fun loadDishList(category: Int, receivedDataCallback: (data: Data) -> (Unit), cacheDir: File): RequestQueue {
+    override fun loadDishList(
+        category: Int,
+        receivedDataCallback: (data: Data) -> (Unit),
+        errorCallback: () -> (Unit),
+        cacheDir: File
+    ): RequestQueue {
         val queue = getCacheQueue(cacheDir)
-        val req = getJsonRequestLoadData(category, receivedDataCallback)
+        val req = getJsonRequestLoadData(category, receivedDataCallback, errorCallback)
         queue.add(req)
         return queue
     }
 
-    override fun getJsonRequestLoadData(category: Int, callback: (data: Data) -> (Unit)): JsonObjectRequest {
+    override fun getJsonRequestLoadData(
+        category: Int,
+        callback: (data: Data) -> (Unit),
+        errorCallback: () -> (Unit)
+    ): JsonObjectRequest {
         val params = getParams()
 
         return object : JsonObjectRequest(
@@ -56,7 +74,7 @@ class ApiHelperImpl(
             },
             Response.ErrorListener { error ->
                 Log.e(DishesListActivity.TAG, "Error: ${error.message}")
-                displayToast("Cannot Load dishes", context)
+                errorCallback()
             }) {
             override fun parseNetworkResponse(response: NetworkResponse?): Response<JSONObject> {
                 response?.let { res ->
@@ -114,7 +132,10 @@ class ApiHelperImpl(
         }
     }
 
-    override fun listPreviousOrders(userId: Int, receivedDataCallback: (data: Array<HistoryOrder>) -> Unit) {
+    override fun listPreviousOrders(
+        userId: Int,
+        receivedDataCallback: (data: Array<HistoryOrder>) -> Unit
+    ) {
         val queue = getQueue()
         // params
         val params = getParams()
@@ -124,9 +145,11 @@ class ApiHelperImpl(
             Request.Method.POST, API_LIST_ORDER_URL, params,
             Response.Listener { response ->
                 Log.d(SignInActivity.TAG, "List Order Response: $response")
-                gson.fromJson(response["data"].toString(), Array<HistoryOrder>::class.java).let {
-                    receivedDataCallback(it)
-                }
+                receivedDataCallback(
+                    gson.fromJson(
+                        response["data"].toString(),
+                        Array<HistoryOrder>::class.java)
+                )
             },
             Response.ErrorListener { error ->
                 Log.e(DishesListActivity.TAG, "Error: ${error.message}")
@@ -134,7 +157,12 @@ class ApiHelperImpl(
         queue.add(req)
     }
 
-    override fun saveOrder(jsonOrder: String, userId: Int, redirectCallback: () -> Unit, progressBar: ProgressBar) {
+    override fun saveFinalOrder(
+        jsonOrder: String,
+        userId: Int,
+        onSavedCallback: (receiver: String) -> Unit,
+        progressBar: ProgressBar
+    ) {
         val queue = getQueue()
         // params
         val params = getParams()
@@ -146,11 +174,11 @@ class ApiHelperImpl(
             Response.Listener { response ->
                 Log.d(SignInActivity.TAG, "Sent Order Response: $response")
                 // alert the user
-                gson.fromJson(response["data"].toString(), Array<FinalOrderResponse>::class.java).let {
-                    displayToast("${it[0].receiver} a reçu votre commande", context)
-                    // redirect to Home
-                    redirectCallback()
-                }
+                onSavedCallback(
+                    gson.fromJson(
+                        response["data"].toString(),
+                        Array<FinalOrderResponse>::class.java)[0].receiver
+                )
             },
             Response.ErrorListener { error ->
                 Log.e(DishesListActivity.TAG, "Error: ${error.message}")
@@ -172,9 +200,11 @@ class ApiHelperImpl(
             Request.Method.POST, API_LOGIN_URL, params,
             Response.Listener { response ->
                 Log.d(SignInActivity.TAG, "Sign In Response: $response")
-                gson.fromJson(response["data"].toString(), RegisterResponse::class.java).let {
-                    loginCallback(it.id)
-                }
+                loginCallback(
+                    gson.fromJson(
+                        response["data"].toString(),
+                        RegisterResponse::class.java).id
+                )
             },
             Response.ErrorListener { error ->
                 Log.e(DishesListActivity.TAG, "Error: ${error.message}")
@@ -183,7 +213,11 @@ class ApiHelperImpl(
         queue.add(req)
     }
 
-    override fun signUp(user: User, registerCallback: (userId: Int) -> (Unit), errorCallback: () -> (Unit)) {
+    override fun signUp(
+        user: User,
+        registerCallback: (userId: Int) -> (Unit),
+        errorCallback: () -> (Unit)
+    ) {
         val queue = getQueue()
         // params
         val params = getParams()
@@ -193,14 +227,14 @@ class ApiHelperImpl(
             Request.Method.POST, API_REGISTER_URL, params,
             Response.Listener { response ->
                 Log.d(SignUpActivity.TAG, "Sign Up Response: $response")
-                gson.fromJson(response["data"].toString(), RegisterResponse::class.java).let {
-                    registerCallback(it.id)
-                    displayToast("Sign up successfully", context)
-                }
+                registerCallback(
+                    gson.fromJson(
+                        response["data"].toString(),
+                        RegisterResponse::class.java).id
+                )
             },
             Response.ErrorListener { error ->
                 errorCallback()
-                displayToast("Cannot create an account, The user might already exist)", context)
                 Log.e(SignUpActivity.TAG, "Error: $error")
             }
         )

@@ -10,6 +10,7 @@ import fr.isen.david.themaquereau.databinding.ActivityDishListBinding
 import fr.isen.david.themaquereau.helpers.ApiHelperImpl
 import fr.isen.david.themaquereau.model.domain.Data
 import fr.isen.david.themaquereau.model.domain.Item
+import fr.isen.david.themaquereau.util.displayToast
 import org.koin.android.ext.android.inject
 
 class DishesListActivity : BaseActivity() {
@@ -34,7 +35,7 @@ class DishesListActivity : BaseActivity() {
         }
 
         // get the list of dish from the api
-        val queue = api.loadDishList(category, onDataReceived, cacheDir)
+        val queue = api.loadDishList(category, onDataReceived, errorLoadDishCallback, cacheDir)
 
         // Swipe container
         setSwipeToRefresh(queue)
@@ -49,7 +50,7 @@ class DishesListActivity : BaseActivity() {
             // The list is not visible until the content is loaded
             binding.itemRecyclerView.isVisible = false
             // Add the request to the RequestQueue.
-            queue.add(api.getJsonRequestLoadData(category, onDataReceived))
+            queue.add(api.getJsonRequestLoadData(category, onDataReceived, errorLoadDishCallback))
             // stop the refresh
             swipeContainer.isRefreshing = false
         }
@@ -65,6 +66,10 @@ class DishesListActivity : BaseActivity() {
         rvItems.layoutManager = LinearLayoutManager(this)
 
         binding.itemRecyclerView.isVisible = true
+    }
+
+    private val errorLoadDishCallback = {
+        displayToast(getString(R.string.cannot_load_dishes), applicationContext)
     }
 
     override fun setBasketListener() {

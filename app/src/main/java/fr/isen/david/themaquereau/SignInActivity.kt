@@ -46,7 +46,7 @@ class SignInActivity : AppCompatActivity() {
                 preferencesImpl.setFirstTimeSignIn(true)
             }
 
-            displayToast("Sign in successfully", applicationContext)
+            displayToast(getString(R.string.log_in_success), applicationContext)
             redirectToParent()
         }
 

@@ -11,6 +11,7 @@ import fr.isen.david.themaquereau.databinding.ActivitySignUpBinding
 import fr.isen.david.themaquereau.helpers.ApiHelperImpl
 import fr.isen.david.themaquereau.helpers.AppPreferencesHelperImpl
 import fr.isen.david.themaquereau.model.domain.User
+import fr.isen.david.themaquereau.util.displayToast
 import org.koin.android.ext.android.inject
 
 
@@ -134,11 +135,13 @@ class SignUpActivity : AppCompatActivity() {
 
     private val onSignUpCallback = { userId: Int ->
         preferencesImpl.setClientId(userId)
+        displayToast(getString(R.string.sign_up_success), applicationContext)
         redirectToParent()
     }
 
     private val onSignUpErrorCallback = {
         invalidateInput(inputEmail)
+        displayToast(getString(R.string.sign_up_error), applicationContext)
     }
 
     private fun invalidateInput(input: EditText) {

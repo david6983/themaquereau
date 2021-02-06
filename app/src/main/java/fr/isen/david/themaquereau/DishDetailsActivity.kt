@@ -101,7 +101,7 @@ class DishDetailsActivity : BaseActivity() {
                 binding.dishDetailPrice.text = order.realPrice.toString()
             }
         } catch (e: NumberFormatException) {
-            displayToast("Cannot parse default value", applicationContext)
+            Log.i(TAG, "Cannot parse quantity")
         }
     }
 
@@ -111,15 +111,15 @@ class DishDetailsActivity : BaseActivity() {
             order.realPrice = order.quantity * item.prices[0].price
             binding.dishDetailPrice.text = order.realPrice.toString()
         } catch (e: NumberFormatException) {
-            displayToast("no number", applicationContext)
+            displayToast(getString(R.string.no_number), applicationContext)
         }
     }
 
     private fun saveOrder(order: Order, userId: Int) {
-        persistence.saveOrder(userId, order, updateQuantityCallback, errorSaveOrderCallback)
+        persistence.saveOrder(userId, order, orderSavedCallback, errorSaveOrderCallback)
     }
 
-    private val updateQuantityCallback = { orders: MutableList<Order> ->
+    private val orderSavedCallback = { orders: MutableList<Order> ->
         updateQuantity(orders.sumBy { it.quantity })
     }
 

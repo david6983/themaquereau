@@ -66,7 +66,7 @@ class BasketActivity : AppCompatActivity() {
 
     private val noOrdersErrorCallback = {
         // Alert the user that there are no orders yet
-        displayToast("no orders found", applicationContext)
+        displayToast(getString(R.string.no_orders_found), applicationContext)
         // redirect to the parent activity
         val intent = getParentActivityIntentImpl()
         startActivity(intent)
@@ -95,10 +95,15 @@ class BasketActivity : AppCompatActivity() {
             }
         }
         // Save the order to the api
-        api.saveOrder(finalOrder, userId, resetBasket, binding.orderProgress)
+        api.saveFinalOrder(finalOrder, userId, finalOrderSavedCallback, binding.orderProgress)
     }
 
-    private val resetBasket = {
+    private val finalOrderSavedCallback = { receiver: String ->
+        displayToast("$receiver ${getString(R.string.received_your_order)}", applicationContext)
+        resetBasket()
+    }
+
+    private fun resetBasket() {
         // delete file
         applicationContext.deleteFile("$ORDER_FILE$userId$ORDER_FILE_SUFFIX")
         // reset quantity
