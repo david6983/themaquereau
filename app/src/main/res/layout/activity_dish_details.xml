@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:configChanges="keyboardHidden"
     android:focusableInTouchMode="true"
-    app:layoutDescription="@xml/activity_dish_details_scene3"
     tools:context=".DishDetailsActivity">
 
     <TextView
