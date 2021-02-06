@@ -47,7 +47,8 @@ class SignInActivity : AppCompatActivity() {
             }
 
             displayToast(getString(R.string.log_in_success), applicationContext)
-            redirectToParent()
+            val parent = getParentIntent()
+            startActivity(parent)
         }
 
         binding.noAccountLink.setOnClickListener {
@@ -64,17 +65,34 @@ class SignInActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun redirectToParent() {
+    override fun getSupportParentActivityIntent(): Intent? {
+        return getParentActivityIntentImpl()
+    }
+
+    override fun getParentActivityIntent(): Intent? {
+        return getParentActivityIntentImpl()
+    }
+
+    private fun getParentActivityIntentImpl(): Intent {
+        return getParentIntent()
+    }
+
+    private fun getParentIntent(): Intent {
         // redirect to dish list
         intent.extras?.getSerializable(ITEM)?.let {
             val parent = Intent(this, DishDetailsActivity::class.java)
             // to return to the right activity, the basket activity need the category
             parent.putExtra(ITEM, it)
-            startActivity(parent)
+            return parent
         } ?: run {
-            // by default
-            val parent = Intent(this, HomeActivity::class.java)
-            startActivity(parent)
+            intent.extras?.getInt(CATEGORY)?.let {
+                val parent = Intent(this, DishesListActivity::class.java)
+                parent.putExtra(CATEGORY, it)
+                return parent
+            } ?:run {
+                // by default
+                return Intent(this, HomeActivity::class.java)
+            }
         }
     }
 

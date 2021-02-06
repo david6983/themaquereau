@@ -58,10 +58,21 @@ class BasketActivity : AppCompatActivity() {
             persistence.readOrders(userId, renderOrders, noOrdersErrorCallback)
             Log.i(TAG, "read orders: $orders")
         } else {
-            // redirect to the login page
-            val intent = Intent(this, SignInActivity::class.java)
-            startActivity(intent)
+            redirectToSignIn()
         }
+    }
+
+    private fun redirectToSignIn() {
+        val signInIntent = Intent(this, SignInActivity::class.java)
+        // Get the category number to display the right parent view
+        intent.extras?.getInt(CATEGORY)?.let {
+            signInIntent.putExtra(CATEGORY, it)
+        } ?:run {
+            intent.extras?.getSerializable(ITEM)?.let {
+                signInIntent.putExtra(ITEM, it)
+            }
+        }
+        startActivity(signInIntent)
     }
 
     private val noOrdersErrorCallback = {

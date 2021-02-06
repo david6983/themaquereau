@@ -50,7 +50,7 @@ class HomeActivity : BaseActivity() {
         Log.i(TAG, " destroyed") // log the destroy cycle
     }
 
-    override fun setBasketListener() {
+    override fun redirectToBasket() {
         val menuItemIntent = Intent(this, BasketActivity::class.java)
         startActivity(menuItemIntent)
     }

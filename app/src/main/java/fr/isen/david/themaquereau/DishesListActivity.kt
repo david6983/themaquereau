@@ -2,6 +2,7 @@ package fr.isen.david.themaquereau
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.RequestQueue
@@ -56,6 +57,12 @@ class DishesListActivity : BaseActivity() {
         }
     }
 
+    override fun redirectSignIn() {
+        val intent = Intent(this, SignInActivity::class.java)
+        intent.putExtra(CATEGORY, category)
+        startActivity(intent)
+    }
+
     private val onDataReceived = { data: Data ->
         binding.categoryText.text = data.name_fr
 
@@ -72,7 +79,7 @@ class DishesListActivity : BaseActivity() {
         displayToast(getString(R.string.cannot_load_dishes), applicationContext)
     }
 
-    override fun setBasketListener() {
+    override fun redirectToBasket() {
         val menuItemIntent = Intent(this, BasketActivity::class.java)
         menuItemIntent.putExtra(CATEGORY, category)
         startActivity(menuItemIntent)

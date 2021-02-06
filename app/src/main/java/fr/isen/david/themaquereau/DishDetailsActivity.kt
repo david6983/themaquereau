@@ -138,7 +138,7 @@ class DishDetailsActivity : BaseActivity() {
         Log.i(TAG, "added to pref: ${preferencesImpl.getQuantity()}")
     }
 
-    override fun setBasketListener() {
+    override fun redirectToBasket() {
         val menuItemIntent = Intent(this, BasketActivity::class.java)
         menuItemIntent.putExtra(ITEM, this.item)
         startActivity(menuItemIntent)
@@ -160,6 +160,12 @@ class DishDetailsActivity : BaseActivity() {
 
         }
         return parentIntent
+    }
+
+    override fun redirectSignIn() {
+        val intent = Intent(this, SignInActivity::class.java)
+        intent.putExtra(ITEM, item)
+        startActivity(intent)
     }
 
     companion object {

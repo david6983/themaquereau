@@ -31,7 +31,7 @@ open class BaseActivity : AppCompatActivity() {
         basketMenu = menu?.findItem(R.id.showBasket)!!
         setupBadge()
         basketMenu.actionView.setOnClickListener {
-            setBasketListener()
+            redirectToBasket()
         }
         return true
     }
@@ -43,9 +43,7 @@ open class BaseActivity : AppCompatActivity() {
                 hideBadge()
                 displayToast(getString(R.string.log_out_success), applicationContext)
             } else {
-                val intent = Intent(this, SignInActivity::class.java)
-                //TODO redirect to the right page
-                startActivity(intent)
+                redirectSignIn()
             }
             true
         }
@@ -57,6 +55,11 @@ open class BaseActivity : AppCompatActivity() {
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    open fun redirectSignIn() {
+        val intent = Intent(this, SignInActivity::class.java)
+        startActivity(intent)
     }
 
     private fun setMyAccountItem(menu: Menu?) {
@@ -86,7 +89,7 @@ open class BaseActivity : AppCompatActivity() {
         badgeTextView.isVisible = true
     }
 
-    open fun setBasketListener() {
+    open fun redirectToBasket() {
         val menuItemIntent = Intent(this, BasketActivity::class.java)
         startActivity(menuItemIntent)
     }
