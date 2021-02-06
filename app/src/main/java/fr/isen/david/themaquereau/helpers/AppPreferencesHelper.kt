@@ -19,7 +19,7 @@ interface AppPreferencesHelper {
 }
 
 class AppPreferencesHelperImpl(
-    encryption: EncryptHelperImpl
+    encryption: SharedPrefEncryptHelperImpl
 ) : AppPreferencesHelper {
     private val sharedPreferences = encryption.getSharedPref()
 

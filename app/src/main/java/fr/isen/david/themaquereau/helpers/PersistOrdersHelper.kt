@@ -5,9 +5,11 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import fr.isen.david.themaquereau.DishDetailsActivity
+import fr.isen.david.themaquereau.ENC_VALUE
+import fr.isen.david.themaquereau.IV_VALUE
 import fr.isen.david.themaquereau.ORDER_FILE
-import fr.isen.david.themaquereau.ORDER_FILE_SUFFIX
 import fr.isen.david.themaquereau.model.domain.Order
+import fr.isen.david.themaquereau.util.fromByteToString
 import java.io.*
 
 interface PersistOrdersHelper {
@@ -32,7 +34,7 @@ interface PersistOrdersHelper {
 
 class PersistOrdersHelperImpl(
     private val context: Context,
-    private val encryption: EncryptHelperImpl
+    private val encryption: AesEncryptHelperImpl
 ): PersistOrdersHelper {
     private val gson: Gson = Gson()
 
@@ -89,18 +91,33 @@ class PersistOrdersHelperImpl(
             callback(orders)
             // Save order
             val newJsonOrders = gson.toJson(orders)
-            writeContent(userId, newJsonOrders.toString().toByteArray())
+            //writeEncrypt(userId, newJsonOrders.toByteArray())
+            writeContent(userId, newJsonOrders.toByteArray())
             Log.i(TAG, "updated orders: $newJsonOrders")
         } else {
             val orders = JsonArray()
             val jsonOrder = gson.toJsonTree(order)
             orders.add(gson.toJsonTree(jsonOrder))
+            //writeEncrypt(userId, orders.toString().toByteArray())
             writeContent(userId, orders.toString().toByteArray())
             val newOrders = gson.fromJson(orders.toString(), Array<Order>::class.java).toMutableList()
             // update quantity
             callback(newOrders)
             Log.i(TAG, "order saved: $jsonOrder")
         }
+    }
+
+    private fun writeEncrypt(userId: Int, bytes: ByteArray) {
+        val enc = encryption.encryptData(bytes)
+        val encryptedData = enc[ENC_VALUE]!!.fromByteToString()
+        val ivVector = enc[IV_VALUE]!!.fromByteToString()
+        writeContent(userId, "$ivVector;$encryptedData".toByteArray())
+        //Log.i(TAG, "decrypted: ${decryptContent("$ivVector;$encryptedData")}")
+    }
+
+    private fun decryptContent(content: String): String {
+        val sp = content.split(";")
+        return encryption.decryptNoBase(sp[0].toByteArray(), sp[1].toByteArray())
     }
 
     override fun deleteOrder(
@@ -126,7 +143,7 @@ class PersistOrdersHelperImpl(
     }
 
     private fun getFile(userId: Int): File {
-        val fileName = "$ORDER_FILE$userId$ORDER_FILE_SUFFIX"
+        val fileName = "$ORDER_FILE$userId"
         val file = File(context.filesDir, fileName)
         if(!file.exists()){
             file.createNewFile()

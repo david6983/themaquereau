@@ -117,7 +117,7 @@ class BasketActivity : AppCompatActivity() {
 
     private fun resetBasket() {
         // delete file
-        applicationContext.deleteFile("$ORDER_FILE$userId$ORDER_FILE_SUFFIX")
+        applicationContext.deleteFile("$ORDER_FILE$userId")
         // reset quantity
         preferencesImpl.setQuantity(0)
         // redirect

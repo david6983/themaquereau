@@ -1,7 +1,6 @@
 package fr.isen.david.themaquereau
 
 const val ORDER_FILE: String = "basket"
-const val ORDER_FILE_SUFFIX: String = ".json"
 const val QUANTITY_KEY: String = "quantity"
 const val API_URL = "http://test.api.catering.bluecodegames.com/menu"
 const val API_LOGIN_URL = "http://test.api.catering.bluecodegames.com/user/login"
@@ -18,3 +17,6 @@ const val FIRST_TIME_SIGN_IN = "first_time_sign_in"
 const val IMAGE_WIDTH = 400
 const val PASSWORD_LENGTH: Int = 12
 const val ERROR_EMPTY = "Can't be empty!"
+const val SALT_VALUE = "salt_value"
+const val IV_VALUE = "iv_value"
+const val ENC_VALUE = "encrypt_value"
