@@ -3,7 +3,6 @@ package fr.isen.david.themaquereau.helpers
 import fr.isen.david.themaquereau.FIRST_TIME_SIGN_IN
 import fr.isen.david.themaquereau.ID_CLIENT
 import fr.isen.david.themaquereau.QUANTITY_KEY
-import fr.isen.david.themaquereau.R
 
 interface AppPreferencesHelper {
     fun getFirstTimeSignIn(): Boolean
