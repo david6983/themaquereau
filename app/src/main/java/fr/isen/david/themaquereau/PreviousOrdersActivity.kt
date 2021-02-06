@@ -2,19 +2,13 @@ package fr.isen.david.themaquereau
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.GsonBuilder
 import fr.isen.david.themaquereau.adapters.HistoryOrderAdapter
 import fr.isen.david.themaquereau.databinding.ActivityPreviousOrdersBinding
 import fr.isen.david.themaquereau.helpers.ApiHelperImpl
 import fr.isen.david.themaquereau.helpers.AppPreferencesHelperImpl
 import fr.isen.david.themaquereau.model.domain.HistoryOrder
-import org.json.JSONObject
 import org.koin.android.ext.android.inject
 
 class PreviousOrdersActivity : AppCompatActivity() {
@@ -28,17 +22,22 @@ class PreviousOrdersActivity : AppCompatActivity() {
         binding = ActivityPreviousOrdersBinding.inflate(layoutInflater)
         setContentView(binding.root)
         userId = preferencesImpl.getClientId()
+        binding.historyView.isVisible = false
         api.listPreviousOrders(userId, onReceiveHistoryOrders)
     }
 
     private val onReceiveHistoryOrders = { data: Array<HistoryOrder> ->
-        val rvHistory = binding.historyView
-        val adapter = HistoryOrderAdapter(data.toList())
-        rvHistory.adapter = adapter
-        rvHistory.layoutManager = LinearLayoutManager(this)
+        if (data.isNotEmpty()) {
+            val rvHistory = binding.historyView
+            val adapter = HistoryOrderAdapter(data.toList())
+            rvHistory.adapter = adapter
+            rvHistory.layoutManager = LinearLayoutManager(this)
+            rvHistory.isVisible = true
+            binding.noOrdersText.isVisible = false
+        }
     }
 
     companion object {
-        val TAG = PreviousOrdersActivity::class.java.simpleName
+        val TAG: String = PreviousOrdersActivity::class.java.simpleName
     }
 }

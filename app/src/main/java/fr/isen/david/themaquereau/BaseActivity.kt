@@ -23,6 +23,7 @@ open class BaseActivity : AppCompatActivity() {
                 it.setTitle(R.string.action_log_out)
             }
         }
+        menu?.findItem(R.id.myPreviousOrdersAction)!!.isVisible = preferencesImpl.isClientIdDefined()
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -33,6 +34,7 @@ open class BaseActivity : AppCompatActivity() {
         basketMenu.actionView.setOnClickListener {
             redirectToBasket()
         }
+        menu.findItem(R.id.myPreviousOrdersAction).isVisible = preferencesImpl.isClientIdDefined()
         return true
     }
 

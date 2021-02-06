@@ -66,7 +66,6 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.alreadyHaveAccountLink.setOnClickListener {
             val intent = Intent(this, SignInActivity::class.java)
-            //intent.putExtra(ItemAdapter.ITEM, item)
             startActivity(intent)
         }
     }

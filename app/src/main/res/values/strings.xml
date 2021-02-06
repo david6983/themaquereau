@@ -76,7 +76,7 @@
     <string name="sign_up_error">Ce compte ne peut pas être crée, l\'utilisateur existe déja</string>
     <string name="no_orders_found">Aucun plats dans le panier</string>
     <string name="no_number">Aucun nombre !</string>
-    <string name="cannot_retrieve_orders">Aucune commandes retrouvées</string>
+    <string name="cannot_retrieve_orders">Aucune commandes</string>
     <string name="cannot_load_dishes">Les plats ne peuvent pas être chargés</string>
     <string name="received_your_order">a reçu votre commande</string>
     <!-- Shared preferences -->

@@ -30,7 +30,6 @@ class HistoryOrderAdapter(
     }
 
     override fun onBindViewHolder(holder: HistoryOrderHolder, position: Int) {
-        //TODO handle no previous orders
         val order: HistoryOrder = orders[position]
         holder.receiver.text = order.receiver
         val subOrders = parseMessage(order.message)
