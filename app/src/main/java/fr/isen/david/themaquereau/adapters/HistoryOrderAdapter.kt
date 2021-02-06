@@ -15,14 +15,18 @@ import java.util.*
 class HistoryOrderAdapter(
     private var orders: List<HistoryOrder>
 ) : RecyclerView.Adapter<HistoryOrderAdapter.HistoryOrderHolder>() {
-    inner class HistoryOrderHolder(binding: LayoutHistoryOrderCardBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class HistoryOrderHolder(
+        binding: LayoutHistoryOrderCardBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
         val date: TextView = binding.orderDate
         val price: TextView = binding.orderPrice
         val receiver: TextView = binding.receiver
-        val layout = binding.root
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryOrderAdapter.HistoryOrderHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): HistoryOrderAdapter.HistoryOrderHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         val orderView = LayoutHistoryOrderCardBinding.inflate(inflater, parent, false)

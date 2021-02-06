@@ -26,7 +26,9 @@ class OrderAdapter(
     private lateinit var binding: LayoutOrderBasketBinding
     private lateinit var view: View
 
-    inner class OrderHolder(binding: LayoutOrderBasketBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class OrderHolder(
+        binding: LayoutOrderBasketBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
         val dishName = binding.dishName
         val quantity = binding.quantityBasketOrder
         val realPrice = binding.realPrice

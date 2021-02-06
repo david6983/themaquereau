@@ -23,7 +23,8 @@ open class BaseActivity : AppCompatActivity() {
                 it.setTitle(R.string.action_log_out)
             }
         }
-        menu?.findItem(R.id.myPreviousOrdersAction)!!.isVisible = preferencesImpl.isClientIdDefined()
+        menu?.findItem(R.id.myPreviousOrdersAction)!!.isVisible =
+            preferencesImpl.isClientIdDefined()
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -64,10 +65,6 @@ open class BaseActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun setMyAccountItem(menu: Menu?) {
-        menu?.findItem(R.id.myPreviousOrdersAction)?.isVisible = !preferencesImpl.isClientIdDefined()
-    }
-
     open fun setupBadge() {
         badgeTextView = basketMenu.actionView.findViewById<TextView>(R.id.nbItems)
         if (preferencesImpl.isQuantityDefined() && !preferencesImpl.getFirstTimeSignIn()) {
@@ -85,10 +82,6 @@ open class BaseActivity : AppCompatActivity() {
 
     open fun hideBadge() {
         badgeTextView.isVisible = false
-    }
-
-    open fun showBadge() {
-        badgeTextView.isVisible = true
     }
 
     open fun redirectToBasket() {

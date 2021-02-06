@@ -11,9 +11,23 @@ import fr.isen.david.themaquereau.model.domain.Order
 import java.io.*
 
 interface PersistOrdersHelper {
-    fun readOrders(userId: Int, callback: (MutableList<Order>) -> (Unit), errorCallback: () -> (Unit))
-    fun saveOrder(userId: Int, order: Order, callback: (MutableList<Order>) -> (Unit), errorCallback: (quantity: Int) -> (Unit))
-    fun deleteOrder(userId: Int, position: Int, callback: (MutableList<Order>) -> (Unit), errorCallback: () -> (Unit))
+    fun readOrders(
+        userId: Int,
+        callback: (MutableList<Order>) -> (Unit),
+        errorCallback: () -> (Unit)
+    )
+    fun saveOrder(
+        userId: Int,
+        order: Order,
+        callback: (MutableList<Order>) -> (Unit),
+        errorCallback: (quantity: Int) -> (Unit)
+    )
+    fun deleteOrder(
+        userId: Int,
+        position: Int,
+        callback: (MutableList<Order>) -> (Unit),
+        errorCallback: () -> (Unit)
+    )
 }
 
 class PersistOrdersHelperImpl(
@@ -89,7 +103,12 @@ class PersistOrdersHelperImpl(
         }
     }
 
-    override fun deleteOrder(userId: Int, position: Int, callback: (MutableList<Order>) -> (Unit), errorCallback: () -> (Unit)) {
+    override fun deleteOrder(
+        userId: Int,
+        position: Int,
+        callback: (MutableList<Order>) -> (Unit),
+        errorCallback: () -> (Unit)
+    ) {
         val content: String = readText(userId)
         if (content != "") {
             val gson = Gson()

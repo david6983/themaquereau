@@ -87,7 +87,8 @@ class BasketActivity : AppCompatActivity() {
         orders = ordersList
         // Render the orders in the recycle view
         rvOrders = binding.orderList
-        val adapter = OrderAdapter(ordersList, applicationContext, userId, preferencesImpl, persistence)
+        val adapter = OrderAdapter(
+            ordersList, applicationContext, userId, preferencesImpl, persistence)
         rvOrders.adapter = adapter
         rvOrders.layoutManager = LinearLayoutManager(this)
         // Add our touch helper

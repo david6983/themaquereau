@@ -38,7 +38,8 @@ class DishDetailsActivity : BaseActivity() {
         // Create an order
         order = Order(0, item, 1 , 0.0)
         // Ingredients
-        binding.dishDetailIngredients.text = item.ingredients.joinToString(", ") { it.name_fr }
+        binding.dishDetailIngredients.text = item.ingredients
+            .joinToString(", ") { it.name_fr }
         // Get quantity
         getQuantity()
         // Images Pager
