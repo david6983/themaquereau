@@ -19,6 +19,7 @@ class HomeActivity : BaseActivity() {
         manageFindUsButton()
         if (!preferencesImpl.isFirstTimeSignInDefined()) {
             preferencesImpl.setFirstTimeSignIn(true)
+            preferencesImpl.setQuantity(0)
         }
     }
 

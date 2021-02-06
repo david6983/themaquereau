@@ -8,8 +8,7 @@ import fr.isen.david.themaquereau.DishDetailsActivity
 import fr.isen.david.themaquereau.ORDER_FILE
 import fr.isen.david.themaquereau.ORDER_FILE_SUFFIX
 import fr.isen.david.themaquereau.model.domain.Order
-import java.io.BufferedReader
-import java.io.FileNotFoundException
+import java.io.*
 
 interface PersistOrdersHelper {
     fun readOrders(userId: Int, callback: (MutableList<Order>) -> (Unit), errorCallback: () -> (Unit))
@@ -17,7 +16,10 @@ interface PersistOrdersHelper {
     fun deleteOrder(userId: Int, position: Int, callback: (MutableList<Order>) -> (Unit), errorCallback: () -> (Unit))
 }
 
-class PersistOrdersHelperImpl(private val context: Context): PersistOrdersHelper {
+class PersistOrdersHelperImpl(
+    private val context: Context,
+    private val encryption: EncryptHelperImpl
+): PersistOrdersHelper {
     private val gson: Gson = Gson()
 
     override fun readOrders(
@@ -25,19 +27,25 @@ class PersistOrdersHelperImpl(private val context: Context): PersistOrdersHelper
         callback: (MutableList<Order>) -> (Unit),
         errorCallback: () -> (Unit)
     ) {
-        try {
-            context.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
-                inputStream.bufferedReader().use {
-                    val orders = gson.fromJson(it.readText(), Array<Order>::class.java).toMutableList()
-                    if (orders.isEmpty()) {
-                        errorCallback()
-                    } else {
-                        callback(orders)
-                    }
-                }
-            }
-        } catch (e: FileNotFoundException) {
+        val orders = gson.fromJson(readText(userId), Array<Order>::class.java).toMutableList()
+        if (orders.isEmpty()) {
             errorCallback()
+        } else {
+            callback(orders)
+        }
+    }
+
+    private fun readText(userId: Int): String {
+        val file = getFile(userId)
+        return file.readText()
+    }
+
+    private fun writeContent(userId: Int, content: ByteArray) {
+        val file = getFile(userId)
+        file.outputStream().apply {
+            write(content)
+            flush()
+            close()
         }
     }
 
@@ -46,70 +54,66 @@ class PersistOrdersHelperImpl(private val context: Context): PersistOrdersHelper
         callback: (MutableList<Order>) -> (Unit),
         errorCallback: (quantity: Int) -> (Unit)
     ) {
-        try {
-            context.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
-                inputStream.bufferedReader().use { reader ->
-                    val orders = gson.fromJson(reader.readText(), Array<Order>::class.java).toMutableList()
-                    // update id
-                    order.order_id += 1
-                    // verify if the order already exist by name
-                    orders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
-                        if (foundOrder !== null) {
-                            val position = orders.indexOf(foundOrder);
-                            foundOrder.quantity += order.quantity
-                            foundOrder.realPrice += order.realPrice
-                            orders.set(position, foundOrder)
-                        } else {
-                            orders.add(order)
-                        }
-                    }
-                    // update quantity
-                    callback(orders)
-                    // Save order
-                    val newJsonOrders = gson.toJson(orders)
-                    context.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
-                        outputStream.write(newJsonOrders.toString().toByteArray())
-                        Log.i(TAG, "updated orders: $newJsonOrders")
-                    }
+        val content: String = readText(userId)
+        if (content != "") {
+            val orders = gson.fromJson(content, Array<Order>::class.java).toMutableList()
+            // update id
+            order.order_id += 1
+            // verify if the order already exist by name
+            orders.find { ord -> ord.item.name_fr == order.item.name_fr }.let { foundOrder ->
+                if (foundOrder !== null) {
+                    val position = orders.indexOf(foundOrder)
+                    foundOrder.quantity += order.quantity
+                    foundOrder.realPrice += order.realPrice
+                    orders.set(position, foundOrder)
+                } else {
+                    orders.add(order)
                 }
             }
-        } catch(e: FileNotFoundException) {
+            // update quantity
+            callback(orders)
+            // Save order
+            val newJsonOrders = gson.toJson(orders)
+            writeContent(userId, newJsonOrders.toString().toByteArray())
+            Log.i(TAG, "updated orders: $newJsonOrders")
+        } else {
             val orders = JsonArray()
             val jsonOrder = gson.toJsonTree(order)
             orders.add(gson.toJsonTree(jsonOrder))
-            context.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
-                outputStream.write(orders.toString().toByteArray())
-                errorCallback(order.quantity)
-                Log.i(TAG, "order saved: $jsonOrder")
-            }
+            writeContent(userId, orders.toString().toByteArray())
+            val newOrders = gson.fromJson(orders.toString(), Array<Order>::class.java).toMutableList()
+            // update quantity
+            callback(newOrders)
+            Log.i(TAG, "order saved: $jsonOrder")
         }
     }
 
     override fun deleteOrder(userId: Int, position: Int, callback: (MutableList<Order>) -> (Unit), errorCallback: () -> (Unit)) {
-        try {
-            context.openFileInput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX").use { inputStream ->
-                inputStream.bufferedReader().use { reader ->
-                    val gson = Gson()
-                    val ordersFromFile = retrieveOrders(reader, gson)
-                    // delete the order
-                    ordersFromFile.removeAt(position)
-                    val ordersToFile = gson.toJson(ordersFromFile)
-                    // save the file again
-                    context.openFileOutput("$ORDER_FILE$userId$ORDER_FILE_SUFFIX", Context.MODE_PRIVATE).use { outputStream ->
-                        outputStream.write(ordersToFile.toString().toByteArray())
-                    }
-                    Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
+        val content: String = readText(userId)
+        if (content != "") {
+            val gson = Gson()
+            val ordersFromFile = gson.fromJson(content, Array<Order>::class.java).toMutableList()
+            // delete the order
+            ordersFromFile.removeAt(position)
+            val ordersToFile = gson.toJson(ordersFromFile)
+            writeContent(userId, ordersToFile.toString().toByteArray())
+            Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
 
-                    callback(ordersFromFile)
-                }
-            }
-        } catch(e: FileNotFoundException) {
+            callback(ordersFromFile)
+        } else {
             errorCallback()
         }
     }
 
-    private fun retrieveOrders(reader: BufferedReader, gson: Gson): MutableList<Order> {
-        return gson.fromJson(reader.readText(), Array<Order>::class.java).toMutableList()
+    private fun getFile(userId: Int): File {
+        val fileName = "$ORDER_FILE$userId$ORDER_FILE_SUFFIX"
+        val file = File(context.filesDir, fileName)
+        if(!file.exists()){
+            file.createNewFile()
+        }else{
+            Log.i(TAG, "file already exist")
+        }
+        return file
     }
 
     companion object {

@@ -1,6 +1,5 @@
 package fr.isen.david.themaquereau.helpers
 
-import android.content.Context
 import fr.isen.david.themaquereau.FIRST_TIME_SIGN_IN
 import fr.isen.david.themaquereau.ID_CLIENT
 import fr.isen.david.themaquereau.QUANTITY_KEY
@@ -20,9 +19,10 @@ interface AppPreferencesHelper {
     fun removeQuantity()
 }
 
-class AppPreferencesHelperImpl(context: Context) : AppPreferencesHelper {
-    private val sharedPreferences = context.getSharedPreferences(
-        context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+class AppPreferencesHelperImpl(
+    encryption: EncryptHelperImpl
+) : AppPreferencesHelper {
+    private val sharedPreferences = encryption.getSharedPref()
 
     override fun getFirstTimeSignIn(): Boolean = sharedPreferences.getBoolean(FIRST_TIME_SIGN_IN, false)
 

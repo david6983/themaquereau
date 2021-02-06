@@ -44,6 +44,7 @@ open class BaseActivity : AppCompatActivity() {
                 displayToast(getString(R.string.log_out_success), applicationContext)
             } else {
                 val intent = Intent(this, SignInActivity::class.java)
+                //TODO redirect to the right page
                 startActivity(intent)
             }
             true
