@@ -82,6 +82,4 @@
     <!-- Shared preferences -->
     <string name="preference_file_key">fr.isen.david.themaquereau.preferences</string>
     <string name="deleted_order">Commande annulée</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -57,7 +57,7 @@ class SignUpActivity : AppCompatActivity() {
                    inputLastName.text.toString(),
                    inputEmail.text.toString(),
                    inputAddress.text.toString(),
-                   inputPassword.text.toString() //TODO encrypt password
+                   inputPassword.text.toString()
                 )
                 Log.d(TAG, "new sign up : $user")
                 api.signUp(user, onSignUpCallback, onSignUpErrorCallback)

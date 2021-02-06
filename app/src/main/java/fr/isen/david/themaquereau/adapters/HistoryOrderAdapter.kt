@@ -31,7 +31,6 @@ class HistoryOrderAdapter(
 
     override fun onBindViewHolder(holder: HistoryOrderHolder, position: Int) {
         //TODO handle no previous orders
-        //TODO add a view pager 2 with titles
         val order: HistoryOrder = orders[position]
         holder.receiver.text = order.receiver
         val subOrders = parseMessage(order.message)
