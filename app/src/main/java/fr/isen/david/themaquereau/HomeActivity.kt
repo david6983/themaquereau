@@ -39,6 +39,14 @@ class HomeActivity : BaseActivity() {
         translation(binding.homeDivider3, -1000.0f, 0.0f, 200)
 
         rotateMichelin()
+        manageClickMichelin()
+    }
+
+    private fun manageClickMichelin() {
+        binding.michelinLogo.setOnClickListener {
+            val intent = Intent(this, ManageEggsActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun rotateMichelin() {
