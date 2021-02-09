@@ -7,7 +7,6 @@ import org.koin.dsl.module
 val applicationModule = module {
     single { AppPreferencesHelperImpl(SharedPrefEncryptHelperImpl(androidContext())) }
     single { ApiHelperImpl(androidContext()) }
-    single { PersistOrdersHelperImpl(androidContext(), AesEncryptHelperImpl()) }
+    single { PersistOrdersHelperImpl(androidContext()) }
     single { SharedPrefEncryptHelperImpl(androidContext()) }
-    single { AesEncryptHelperImpl() }
 }

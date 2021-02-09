@@ -34,9 +34,9 @@ class HomeActivity : BaseActivity() {
         binding.homeEntreeButton.animation = fadeIn
         binding.homePlatsButton.animation = fadeIn
         binding.homeDesertsButton.animation = fadeIn
-        translation(binding.homeDivider1, -1000.0f, 0.0f, 200)
-        translation(binding.homeDivider2, +1000.0f, 0.0f, 200)
-        translation(binding.homeDivider3, -1000.0f, 0.0f, 200)
+        translation(binding.homeDivider1, -1000.0f, 0.0f, 500)
+        translation(binding.homeDivider2, +1000.0f, 0.0f, 500)
+        translation(binding.homeDivider3, -1000.0f, 0.0f, 500)
 
         rotateMichelin()
         manageClickMichelin()

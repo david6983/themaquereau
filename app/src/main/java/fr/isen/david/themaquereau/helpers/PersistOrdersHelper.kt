@@ -1,6 +1,7 @@
 package fr.isen.david.themaquereau.helpers
 
 import android.content.Context
+import android.util.Base64
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -33,8 +34,7 @@ interface PersistOrdersHelper {
 }
 
 class PersistOrdersHelperImpl(
-    private val context: Context,
-    private val encryption: AesEncryptHelperImpl
+    private val context: Context
 ): PersistOrdersHelper {
     private val gson: Gson = Gson()
 
@@ -91,33 +91,18 @@ class PersistOrdersHelperImpl(
             callback(orders)
             // Save order
             val newJsonOrders = gson.toJson(orders)
-            //writeEncrypt(userId, newJsonOrders.toByteArray())
             writeContent(userId, newJsonOrders.toByteArray())
             Log.i(TAG, "updated orders: $newJsonOrders")
         } else {
             val orders = JsonArray()
             val jsonOrder = gson.toJsonTree(order)
             orders.add(gson.toJsonTree(jsonOrder))
-            //writeEncrypt(userId, orders.toString().toByteArray())
             writeContent(userId, orders.toString().toByteArray())
             val newOrders = gson.fromJson(orders.toString(), Array<Order>::class.java).toMutableList()
             // update quantity
             callback(newOrders)
             Log.i(TAG, "order saved: $jsonOrder")
         }
-    }
-
-    private fun writeEncrypt(userId: Int, bytes: ByteArray) {
-        val enc = encryption.encryptData(bytes)
-        val encryptedData = enc[ENC_VALUE]!!.fromByteToString()
-        val ivVector = enc[IV_VALUE]!!.fromByteToString()
-        writeContent(userId, "$ivVector;$encryptedData".toByteArray())
-        //Log.i(TAG, "decrypted: ${decryptContent("$ivVector;$encryptedData")}")
-    }
-
-    private fun decryptContent(content: String): String {
-        val sp = content.split(";")
-        return encryption.decryptNoBase(sp[0].toByteArray(), sp[1].toByteArray())
     }
 
     override fun deleteOrder(
