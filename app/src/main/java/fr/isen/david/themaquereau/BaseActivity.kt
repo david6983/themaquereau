@@ -67,7 +67,7 @@ open class BaseActivity : AppCompatActivity() {
 
     open fun setupBadge() {
         badgeTextView = basketMenu.actionView.findViewById<TextView>(R.id.nbItems)
-        if (preferencesImpl.isQuantityDefined() && !preferencesImpl.getFirstTimeSignIn()) {
+        if (preferencesImpl.isQuantityDefined()) {
             val quantity = preferencesImpl.getQuantity()
             if (quantity == 0) {
                 badgeTextView.isVisible = false

@@ -10,6 +10,7 @@ const val API_REGISTER_URL = "http://test.api.catering.bluecodegames.com/user/re
 const val MASTER_KEY_ALIAS = "fr.isen.david.themaquereau.mkey"
 const val KEY_SIZE = 256
 const val CATEGORY = "category"
+const val QUANTITY_DETAIL = "quantity_detail"
 const val ITEM = "item"
 const val ARG_OBJECT = "object"
 const val ID_CLIENT = "id_client"

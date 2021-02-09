@@ -36,27 +36,18 @@ class SignInActivity : AppCompatActivity() {
                 "",
                 binding.passwordInput.text.toString()
             )
-            api.signIn(user, loginCallback)
-
-            if (binding.remindMeCheckBox.isChecked) {
-                Log.i(TAG, "checked")
-                preferencesImpl.setFirstTimeSignIn(false)
-            } else {
-                Log.i(TAG, "noy checked")
-                preferencesImpl.setFirstTimeSignIn(true)
-            }
-
-            displayToast(getString(R.string.log_in_success), applicationContext)
-            val parent = getParentIntent()
-            startActivity(parent)
+            api.signIn(user, loginCallback, errorCallBack)
         }
 
         binding.noAccountLink.setOnClickListener {
-            val intent = Intent(this, SignUpActivity::class.java)
-            intent.extras?.getSerializable(ITEM)?.let {
-                intent.putExtra(ITEM, it)
+            val toSignUp = Intent(this, SignUpActivity::class.java)
+            toSignUp.extras?.getSerializable(ITEM)?.let {
+                toSignUp.putExtra(ITEM, it)
+                intent.extras?.getString(QUANTITY_DETAIL)?.let { quantity ->
+                    toSignUp.putExtra(QUANTITY_DETAIL, quantity)
+                }
             }
-            startActivity(intent)
+            startActivity(toSignUp)
         }
     }
 
@@ -83,6 +74,9 @@ class SignInActivity : AppCompatActivity() {
             val parent = Intent(this, DishDetailsActivity::class.java)
             // to return to the right activity, the basket activity need the category
             parent.putExtra(ITEM, it)
+            intent.extras?.getString(QUANTITY_DETAIL)?.let { quantity ->
+                parent.putExtra(QUANTITY_DETAIL, quantity)
+            }
             return parent
         } ?: run {
             intent.extras?.getInt(CATEGORY)?.let {
@@ -96,7 +90,25 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private val loginCallback = { userId: Int -> preferencesImpl.setClientId(userId) }
+    private val loginCallback = {
+            userId: Int ->
+        preferencesImpl.setClientId(userId)
+        if (binding.remindMeCheckBox.isChecked) {
+            Log.i(TAG, "checked")
+            preferencesImpl.setFirstTimeSignIn(false)
+        } else {
+            Log.i(TAG, "noy checked")
+            preferencesImpl.setFirstTimeSignIn(true)
+        }
+
+        displayToast(getString(R.string.log_in_success), applicationContext)
+        val parent = getParentIntent()
+        startActivity(parent)
+    }
+
+    private val errorCallBack = {
+        displayToast(getString(R.string.log_in_fail), applicationContext)
+    }
 
     companion object {
         val TAG: String = SignInActivity::class.java.simpleName

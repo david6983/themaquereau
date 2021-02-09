@@ -65,8 +65,14 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         binding.alreadyHaveAccountLink.setOnClickListener {
-            val intent = Intent(this, SignInActivity::class.java)
-            startActivity(intent)
+            val toSignIn = Intent(this, SignInActivity::class.java)
+            toSignIn.extras?.getSerializable(ITEM)?.let {
+                toSignIn.putExtra(ITEM, it)
+                intent.extras?.getString(QUANTITY_DETAIL)?.let { quantity ->
+                    toSignIn.putExtra(QUANTITY_DETAIL, quantity)
+                }
+            }
+            startActivity(toSignIn)
         }
     }
 
@@ -84,6 +90,9 @@ class SignUpActivity : AppCompatActivity() {
         intent.extras?.getSerializable(ITEM)?.let {
             parentIntent = Intent(this, DishDetailsActivity::class.java)
             parentIntent.putExtra(ITEM, it)
+            intent.extras?.getString(QUANTITY_DETAIL)?.let { quantity ->
+                parentIntent.putExtra(QUANTITY_DETAIL, quantity)
+            }
         }
         return parentIntent
     }
@@ -134,6 +143,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private val onSignUpCallback = { userId: Int ->
         preferencesImpl.setClientId(userId)
+        preferencesImpl.setQuantity(0)
         displayToast(getString(R.string.sign_up_success), applicationContext)
         redirectToParent()
     }
@@ -154,6 +164,9 @@ class SignUpActivity : AppCompatActivity() {
             val parent = Intent(this, DishDetailsActivity::class.java)
             // to return to the right activity, the basket activity need the category
             parent.putExtra(ITEM, it)
+            intent.extras?.getString(QUANTITY_DETAIL)?.let { quantity ->
+                parent.putExtra(QUANTITY_DETAIL, quantity)
+            }
             startActivity(parent)
         } ?: run {
             // by default
@@ -163,6 +176,6 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     companion object {
-        val TAG = SignUpActivity::class.java.simpleName
+        val TAG: String = SignUpActivity::class.java.simpleName
     }
 }

@@ -33,6 +33,9 @@ class DishDetailsActivity : BaseActivity() {
         intent.extras?.getSerializable(ITEM)?.let { serializedItem ->
             item = serializedItem as Item
         }
+        intent.extras?.getString(QUANTITY_DETAIL)?.let { quantity ->
+            binding.quantity.setText(quantity)
+        }
 
         binding.dishDetailName.text = item.name_fr
         // Create an order
@@ -74,6 +77,7 @@ class DishDetailsActivity : BaseActivity() {
                 intent = Intent(this, SignUpActivity::class.java)
             }
             intent.putExtra(ITEM, item)
+            intent.putExtra(QUANTITY_DETAIL, binding.quantity.text.toString())
             startActivity(intent)
         }
     }
@@ -94,7 +98,11 @@ class DishDetailsActivity : BaseActivity() {
 
     private fun getQuantity() {
         try {
-            val quantity = Integer.parseInt(binding.quantity.text.toString())
+            intent.extras?.getString(QUANTITY_DETAIL)?.let { quantity ->
+                binding.quantity.setText(quantity)
+            }
+            val currentQuantity = binding.quantity.text.toString()
+            val quantity = Integer.parseInt(currentQuantity)
             // Price
             if (item.prices.isNotEmpty()) {
                 // convert the price to int

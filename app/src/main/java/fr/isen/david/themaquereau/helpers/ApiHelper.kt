@@ -30,7 +30,7 @@ interface ApiHelper {
         onSavedCallback: (receiver: String) -> Unit,
         progressBar: ProgressBar
     )
-    fun signIn(user: User, loginCallback: (userId: Int) -> (Unit))
+    fun signIn(user: User, loginCallback: (userId: Int) -> (Unit), errorCallback: () -> (Unit))
     fun signUp(user: User, registerCallback: (userId: Int) -> (Unit), errorCallback: () -> (Unit))
     fun getQueue(): RequestQueue
     fun getCacheQueue(cacheDir: File): RequestQueue
@@ -186,7 +186,11 @@ class ApiHelperImpl(
         }
     }
 
-    override fun signIn(user: User, loginCallback: (userId: Int) -> (Unit)) {
+    override fun signIn(
+        user: User,
+        loginCallback: (userId: Int) -> (Unit),
+        errorCallback: () -> (Unit)
+    ) {
         val queue = getQueue()
         // params
         val params = getParams()
@@ -201,6 +205,7 @@ class ApiHelperImpl(
                 )
             },
             Response.ErrorListener { error ->
+                errorCallback()
                 Log.e(DishesListActivity.TAG, "Error: ${error.message}")
             })
 

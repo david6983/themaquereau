@@ -72,6 +72,7 @@
     <!-- Toast -->
     <string name="log_out_success">Déconnection réussite</string>
     <string name="log_in_success">Connection réussite</string>
+    <string name="log_in_fail">Erreur de connexion</string>
     <string name="sign_up_success">Inscription réussite</string>
     <string name="sign_up_error">Ce compte ne peut pas être crée, l\'utilisateur existe déja</string>
     <string name="no_orders_found">Aucun plats dans le panier</string>
