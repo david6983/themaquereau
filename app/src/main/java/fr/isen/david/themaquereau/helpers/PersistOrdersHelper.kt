@@ -1,16 +1,11 @@
 package fr.isen.david.themaquereau.helpers
 
 import android.content.Context
-import android.util.Base64
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonArray
-import fr.isen.david.themaquereau.DishDetailsActivity
-import fr.isen.david.themaquereau.ENC_VALUE
-import fr.isen.david.themaquereau.IV_VALUE
 import fr.isen.david.themaquereau.ORDER_FILE
 import fr.isen.david.themaquereau.model.domain.Order
-import fr.isen.david.themaquereau.util.fromByteToString
 import java.io.*
 
 interface PersistOrdersHelper {
@@ -92,7 +87,6 @@ class PersistOrdersHelperImpl(
             // Save order
             val newJsonOrders = gson.toJson(orders)
             writeContent(userId, newJsonOrders.toByteArray())
-            Log.i(TAG, "updated orders: $newJsonOrders")
         } else {
             val orders = JsonArray()
             val jsonOrder = gson.toJsonTree(order)
@@ -101,7 +95,6 @@ class PersistOrdersHelperImpl(
             val newOrders = gson.fromJson(orders.toString(), Array<Order>::class.java).toMutableList()
             // update quantity
             callback(newOrders)
-            Log.i(TAG, "order saved: $jsonOrder")
         }
     }
 
@@ -119,7 +112,6 @@ class PersistOrdersHelperImpl(
             ordersFromFile.removeAt(position)
             val ordersToFile = gson.toJson(ordersFromFile)
             writeContent(userId, ordersToFile.toString().toByteArray())
-            Log.i(DishDetailsActivity.TAG, "deleted order from basket: $ordersToFile")
 
             callback(ordersFromFile)
         } else {

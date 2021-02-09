@@ -68,7 +68,6 @@ class ApiHelperImpl(
         return object : JsonObjectRequest(
             Method.POST, API_URL, params,
             Response.Listener { response ->
-                Log.d(DishesListActivity.TAG, "Response: $response")
                 val dataList = gson.fromJson(response["data"].toString(), Array<Data>::class.java)
                 callback(dataList[category])
             },
@@ -117,7 +116,6 @@ class ApiHelperImpl(
                             response.data,
                             Charset.forName("UTF-8")
                         )
-                        Log.i(TAG, "from cache: $jsonString")
                         return Response.success(JSONObject(jsonString), cacheEntry)
                     } catch (e: UnsupportedEncodingException) {
                         Log.e(TAG, "Not supported encoding")
@@ -140,11 +138,9 @@ class ApiHelperImpl(
         // params
         val params = getParams()
         params.put("id_user", userId)
-        Log.i(PreviousOrdersActivity.TAG, "Sending params: $params")
         val req = JsonObjectRequest(
             Request.Method.POST, API_LIST_ORDER_URL, params,
             Response.Listener { response ->
-                Log.d(SignInActivity.TAG, "List Order Response: $response")
                 receivedDataCallback(
                     gson.fromJson(
                         response["data"].toString(),
@@ -172,7 +168,6 @@ class ApiHelperImpl(
         val req = JsonObjectRequest(
             Request.Method.POST, API_ORDER_URL, params,
             Response.Listener { response ->
-                Log.d(SignInActivity.TAG, "Sent Order Response: $response")
                 // alert the user
                 onSavedCallback(
                     gson.fromJson(
@@ -199,7 +194,6 @@ class ApiHelperImpl(
         val req = JsonObjectRequest(
             Request.Method.POST, API_LOGIN_URL, params,
             Response.Listener { response ->
-                Log.d(SignInActivity.TAG, "Sign In Response: $response")
                 loginCallback(
                     gson.fromJson(
                         response["data"].toString(),
@@ -222,11 +216,9 @@ class ApiHelperImpl(
         // params
         val params = getParams()
         user.toSignUpParams(params)
-        Log.i(SignUpActivity.TAG, "with params $params")
         val req = JsonObjectRequest(
             Request.Method.POST, API_REGISTER_URL, params,
             Response.Listener { response ->
-                Log.d(SignUpActivity.TAG, "Sign Up Response: $response")
                 registerCallback(
                     gson.fromJson(
                         response["data"].toString(),

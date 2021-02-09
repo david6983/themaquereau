@@ -12,8 +12,6 @@ import fr.isen.david.themaquereau.adapters.DishImageAdapter
 import fr.isen.david.themaquereau.model.domain.Item
 
 class DishImagesPagerFragment : Fragment() {
-    // When requested, this adapter returns a DishImageFragment,
-    // representing an object in the collection.
     private lateinit var dishDetailsImageAdapter: DishImageAdapter
     private lateinit var viewPager: ViewPager2
     private var item: Item = Item()
@@ -40,6 +38,6 @@ class DishImagesPagerFragment : Fragment() {
     }
 
     companion object {
-        val TAG = DishImagesPagerFragment::class.java.simpleName
+        val TAG: String = DishImagesPagerFragment::class.java.simpleName
     }
 }

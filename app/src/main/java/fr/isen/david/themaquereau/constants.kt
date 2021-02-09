@@ -17,6 +17,3 @@ const val FIRST_TIME_SIGN_IN = "first_time_sign_in"
 const val IMAGE_WIDTH = 400
 const val PASSWORD_LENGTH: Int = 12
 const val ERROR_EMPTY = "Can't be empty!"
-const val SALT_VALUE = "salt_value"
-const val IV_VALUE = "iv_value"
-const val ENC_VALUE = "encrypt_value"
