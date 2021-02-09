@@ -13,13 +13,3 @@ val fadeOut = AlphaAnimation(1f, 0f).apply {
     duration = 1000
     interpolator = AccelerateInterpolator()
 }
-
-fun translation(image: ImageView, xStart: Float, xEnd: Float, time: Long) {
-    image.translationX = xStart
-    image.animate().apply {
-        translationX(xEnd)
-        duration = time
-        interpolator = AccelerateInterpolator()
-
-    }
-}

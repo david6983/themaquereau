@@ -19,15 +19,14 @@
         android:theme="@style/Theme.Themaquereau"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${mapsApiKey}" />
         <activity android:name=".ManageEggsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fr.isen.david.themaquereau.HomeActivity" />
         </activity>
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
         <activity android:name=".PreviousOrdersActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

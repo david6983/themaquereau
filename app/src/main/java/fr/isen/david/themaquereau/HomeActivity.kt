@@ -8,11 +8,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.animation.*
-import androidx.core.animation.addListener
 import fr.isen.david.themaquereau.databinding.ActivityHomeBinding
 import fr.isen.david.themaquereau.util.fadeIn
 import fr.isen.david.themaquereau.util.fadeOut
-import fr.isen.david.themaquereau.util.translation
 
 
 class HomeActivity : BaseActivity() {
@@ -34,9 +32,6 @@ class HomeActivity : BaseActivity() {
         binding.homeEntreeButton.animation = fadeIn
         binding.homePlatsButton.animation = fadeIn
         binding.homeDesertsButton.animation = fadeIn
-        translation(binding.homeDivider1, -1000.0f, 0.0f, 500)
-        translation(binding.homeDivider2, +1000.0f, 0.0f, 500)
-        translation(binding.homeDivider3, -1000.0f, 0.0f, 500)
 
         rotateMichelin()
         manageClickMichelin()

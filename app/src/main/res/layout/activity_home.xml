@@ -147,7 +147,7 @@
         android:background="@color/secondary_variant"
         android:contentDescription="@string/divider_description"
         android:src="@android:drawable/divider_horizontal_dark"
-        app:layout_constraintBottom_toTopOf="@+id/michelinLogo"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
