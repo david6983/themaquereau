@@ -24,6 +24,8 @@ import fr.isen.david.themaquereau.model.domain.Order
 import fr.isen.david.themaquereau.util.displayToast
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import java.io.File
+import java.io.FileOutputStream
 
 class BasketActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBasketBinding
@@ -40,7 +42,6 @@ class BasketActivity : AppCompatActivity() {
         binding = ActivityBasketBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
         // progress bar not visible
         binding.orderProgress.isVisible = false
         // get the client id
@@ -108,6 +109,57 @@ class BasketActivity : AppCompatActivity() {
         }
         // Save the order to the api
         api.saveFinalOrder(finalOrder, userId, finalOrderSavedCallback, binding.orderProgress)
+        // send analytic
+        sendAnalytic()
+    }
+
+    private external fun saveOrderAnalytic(
+        nbEntree: Int,
+        nbDesserts: Int,
+        nbPlats: Int,
+        quantity: Int,
+        price: Double,
+        userId: Int
+    ): String
+
+    private fun sendAnalytic() {
+        if (userId != -1) {
+            var quantityCount = 0
+            var priceCount = 0.0
+            var nbEntrees = 0
+            var nbPlats = 0
+            var nbDesserts = 0
+            orders.forEach { order ->
+                quantityCount += order.quantity
+                priceCount += order.realPrice
+                when (order.item.categ_name_fr) {
+                    "Entrées" -> {
+                        nbEntrees += 1
+                    }
+                    "Plats" -> {
+                        nbPlats += 1
+                    }
+                    "Désserts" -> {
+                        nbDesserts += 1
+                    }
+                }
+            }
+            var encodedAnalytic = saveOrderAnalytic(nbEntrees, nbDesserts, nbPlats, quantityCount, priceCount, userId)
+            val file = File(applicationContext.filesDir, "analytics")
+            if(!file.exists()){
+                file.createNewFile()
+            }else{
+                Log.i(PersistOrdersHelperImpl.TAG, "analytics file already exist")
+            }
+            encodedAnalytic += "\n"
+            FileOutputStream(file, true).apply {
+                write(encodedAnalytic.toByteArray())
+                flush()
+                close()
+            }
+        } else {
+            Log.i(TAG, "cannot have the user id for analytics")
+        }
     }
 
     private val finalOrderSavedCallback = { receiver: String ->
@@ -163,5 +215,9 @@ class BasketActivity : AppCompatActivity() {
 
     companion object {
         val TAG: String = BasketActivity::class.java.simpleName
+
+        init {
+            System.loadLibrary("native-lib")
+        }
     }
 }

@@ -195,6 +195,7 @@ class ApiHelperImpl(
         // params
         val params = getParams()
         user.toSignInParams(params)
+        Log.i(TAG, params.toString())
         val req = JsonObjectRequest(
             Request.Method.POST, API_LOGIN_URL, params,
             Response.Listener { response ->
@@ -208,7 +209,6 @@ class ApiHelperImpl(
                 errorCallback()
                 Log.e(DishesListActivity.TAG, "Error: ${error.message}")
             })
-
         queue.add(req)
     }
 
