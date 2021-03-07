@@ -111,7 +111,9 @@ Java_fr_isen_david_themaquereau_BasketActivity_saveOrderAnalytic(
         jint userId
 ) {
     std::stringstream st;
-    st << quantity << ";" << nbPlats << ";" << userId << ";" << price << ";" << nbDesserts << ";" << nbEntree;
+    std::string serverIdHeader = "TLN-ISN-A3I8d-2FjO-";
+    int random = rand() % 100 + 1;
+    st << quantity << ";" << nbPlats << ";" << userId << ";" << price << ";" << nbDesserts << ";" << nbEntree << ";" << serverIdHeader << random;
     std::string encoded = macaron::Base64::Encode(st.str());
     return env->NewStringUTF(encoded.c_str());
 }
